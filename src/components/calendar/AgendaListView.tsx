@@ -115,20 +115,20 @@ export const AgendaListView: React.FC = () => {
                 >
                   <div className="space-y-1.5 text-xs flex-1">
                     <div className="flex flex-wrap items-center gap-2 font-bold app-text-primary">
-                      <span className="text-amber-600 dark:text-amber-400 font-mono">{ev.time}</span>
-                      <span className="text-sm">{ev.title}</span>
-                      <span className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 font-mono">
-                        <Flame className="w-3.5 h-3.5 text-amber-500" />
+                      <span className="text-amber-600 dark:text-amber-400 font-mono flex-shrink-0">{ev.time}</span>
+                      <span className="text-sm break-words">{ev.title}</span>
+                      <span className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 font-mono flex-shrink-0">
+                        <Flame className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
                         <span>{ev.streak} {t('common.days')}</span>
                       </span>
-                      {priorityBadge}
+                      <span className="flex-shrink-0">{priorityBadge}</span>
                       {ev.isPremium && (
-                        <span className="bg-amber-400 text-slate-950 text-[9px] px-2 py-0.5 rounded-full font-extrabold uppercase">
+                        <span className="bg-amber-400 text-slate-950 text-[9px] px-2 py-0.5 rounded-full font-extrabold uppercase flex-shrink-0">
                           VIP
                         </span>
                       )}
                     </div>
-                    <p className="app-text-muted text-[11px]">
+                    <p className="app-text-muted text-[11px] line-clamp-2">
                       {ev.frequency || (language === 'vi' ? 'Rèn luyện thói quen kỷ luật mỗi ngày.' : 'Daily discipline routine building.')}
                     </p>
                   </div>
@@ -139,9 +139,9 @@ export const AgendaListView: React.FC = () => {
                         e.stopPropagation();
                         triggerPremiumFeature(ev.title);
                       }}
-                      className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-2xl text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer"
+                      className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-2xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1 min-w-[90px] flex-shrink-0 cursor-pointer"
                     >
-                      <Crown className="w-3.5 h-3.5" />
+                      <Crown className="w-3.5 h-3.5 flex-shrink-0" />
                       <span>{language === 'vi' ? 'Mở khóa' : 'Unlock'}</span>
                     </button>
                   ) : (
@@ -154,10 +154,10 @@ export const AgendaListView: React.FC = () => {
                         ev.completed
                           ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40'
                           : 'apple-btn-primary'
-                      } px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center gap-1.5 cursor-pointer`}
+                      } px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 min-w-[124px] flex-shrink-0 cursor-pointer`}
                     >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>{ev.completed ? t('modals.detail.checkedInBadge') : t('modals.detail.checkInBtn')}</span>
+                      <Check className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span className="truncate">{ev.completed ? t('modals.detail.checkedInBadge') : t('modals.detail.checkInBtn')}</span>
                     </button>
                   )}
                 </div>

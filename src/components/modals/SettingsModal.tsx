@@ -70,8 +70,8 @@ export const SettingsModal: React.FC = () => {
                   : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
               }`}
             >
-              <User className="w-4 h-4" />
-              <span>{t('modals.settings.tabProfile')}</span>
+              <User className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{t('modals.settings.tabProfile')}</span>
             </button>
 
             <button
@@ -82,8 +82,8 @@ export const SettingsModal: React.FC = () => {
                   : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
               }`}
             >
-              <Palette className="w-4 h-4" />
-              <span>{t('modals.settings.tabAppearance')}</span>
+              <Palette className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{t('modals.settings.tabAppearance')}</span>
             </button>
 
             <button
@@ -94,8 +94,8 @@ export const SettingsModal: React.FC = () => {
                   : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
               }`}
             >
-              <Globe className="w-4 h-4" />
-              <span>{t('modals.settings.tabLanguage')}</span>
+              <Globe className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{t('modals.settings.tabLanguage')}</span>
             </button>
 
             <button
@@ -106,8 +106,8 @@ export const SettingsModal: React.FC = () => {
                   : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
               }`}
             >
-              <Bell className="w-4 h-4" />
-              <span>{t('modals.settings.tabNotifications')}</span>
+              <Bell className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{t('modals.settings.tabNotifications')}</span>
             </button>
 
             <button
@@ -118,8 +118,8 @@ export const SettingsModal: React.FC = () => {
                   : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
               }`}
             >
-              <Smartphone className="w-4 h-4" />
-              <span>{t('modals.settings.tabDevices')}</span>
+              <Smartphone className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{t('modals.settings.tabDevices')}</span>
             </button>
 
             <button
@@ -130,8 +130,8 @@ export const SettingsModal: React.FC = () => {
                   : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
               }`}
             >
-              <CreditCard className="w-4 h-4" />
-              <span>{t('modals.settings.tabBilling')}</span>
+              <CreditCard className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{t('modals.settings.tabBilling')}</span>
             </button>
           </nav>
         </div>

@@ -78,13 +78,13 @@ export const CheckoutModal: React.FC = () => {
         <div className="grid grid-cols-3 gap-2 text-xs text-center">
           <div
             onClick={() => selectPlan(1, 49000)}
-            className={`p-3 rounded-2xl cursor-pointer transition-all ${
+            className={`p-3 rounded-2xl cursor-pointer transition-all min-h-[92px] flex flex-col justify-between ${
               selectedPlanMonths === 1
                 ? 'bg-blue-500/15 border-2 border-blue-500'
                 : 'apple-glass-pill hover:border-blue-500'
             }`}
           >
-            <div className="font-bold app-text-primary">{language === 'vi' ? '1 Tháng' : '1 Month'}</div>
+            <div className="font-bold app-text-primary truncate">{language === 'vi' ? '1 Tháng' : '1 Month'}</div>
             <div className="text-blue-600 dark:text-sky-400 font-bold mt-1 font-mono">
               {language === 'vi' ? '49.000đ' : '$1.99'}
             </div>
@@ -92,13 +92,13 @@ export const CheckoutModal: React.FC = () => {
 
           <div
             onClick={() => selectPlan(6, 199000)}
-            className={`p-3 rounded-2xl cursor-pointer transition-all ${
+            className={`p-3 rounded-2xl cursor-pointer transition-all min-h-[92px] flex flex-col justify-between ${
               selectedPlanMonths === 6
                 ? 'bg-blue-500/15 border-2 border-blue-500'
                 : 'apple-glass-pill hover:border-blue-500'
             }`}
           >
-            <div className="font-bold app-text-primary">{language === 'vi' ? '6 Tháng' : '6 Months'}</div>
+            <div className="font-bold app-text-primary truncate">{language === 'vi' ? '6 Tháng' : '6 Months'}</div>
             <div className="text-blue-600 dark:text-sky-400 font-bold mt-1 font-mono">
               {language === 'vi' ? '199.000đ' : '$9.99'}
             </div>
@@ -106,16 +106,16 @@ export const CheckoutModal: React.FC = () => {
 
           <div
             onClick={() => selectPlan(12, 179000)}
-            className={`p-3 rounded-2xl cursor-pointer transition-all relative ${
+            className={`p-3 rounded-2xl cursor-pointer transition-all relative min-h-[92px] flex flex-col justify-between ${
               selectedPlanMonths === 12
                 ? 'bg-blue-500/15 border-2 border-blue-500'
                 : 'apple-glass-pill hover:border-blue-500'
             }`}
           >
-            <span className="absolute -top-2 right-2 bg-amber-400 text-slate-950 text-[9px] font-extrabold px-1.5 rounded-full uppercase">
+            <span className="absolute -top-2 right-2 bg-amber-400 text-slate-950 text-[9px] font-extrabold px-1.5 rounded-full uppercase flex-shrink-0">
               HOT -40%
             </span>
-            <div className="font-bold text-blue-700 dark:text-sky-300">{language === 'vi' ? '1 Năm' : '1 Year'}</div>
+            <div className="font-bold text-blue-700 dark:text-sky-300 truncate">{language === 'vi' ? '1 Năm' : '1 Year'}</div>
             <div className="text-blue-600 dark:text-sky-400 font-bold mt-1 font-mono">
               {language === 'vi' ? '179.000đ' : '$19.99'}
             </div>

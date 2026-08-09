@@ -32,29 +32,30 @@ export const TaskItem: React.FC<TaskItemProps> = ({
           className="w-4 h-4 rounded text-blue-600 mt-0.5 cursor-pointer"
         />
 
-        <div className="space-y-1.5 flex-1">
-          <div className="flex items-center justify-between">
+        <div className="space-y-1.5 flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
             <h4
-              className={`font-bold text-xs app-text-primary ${
+              className={`font-bold text-xs app-text-primary truncate ${
                 task.completed ? 'line-through text-slate-400 dark:text-slate-500' : ''
               }`}
+              title={task.title}
             >
               {task.title}
             </h4>
             {task.priority === 'high' && (
-              <span className="text-[9px] bg-rose-500/15 text-rose-800 dark:text-rose-300 border border-rose-400/30 font-bold px-2 py-0.5 rounded-full">
+              <span className="text-[9px] bg-rose-500/15 text-rose-800 dark:text-rose-300 border border-rose-400/30 font-bold px-2 py-0.5 rounded-full flex-shrink-0">
                 {language === 'vi' ? 'GẤP' : 'URGENT'}
               </span>
             )}
             {task.priority === 'medium' && (
-              <span className="text-[9px] bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 font-bold px-2 py-0.5 rounded-full">
+              <span className="text-[9px] bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 font-bold px-2 py-0.5 rounded-full flex-shrink-0">
                 {language === 'vi' ? 'TB' : 'MED'}
               </span>
             )}
           </div>
 
-          <div className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1 font-mono">
-            <Clock className="w-3 h-3" />
+          <div className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1 font-mono flex-shrink-0">
+            <Clock className="w-3 h-3 flex-shrink-0" />
             <span>{task.dueDate}</span>
           </div>
 

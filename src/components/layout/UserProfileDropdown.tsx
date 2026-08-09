@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { User, Palette, Smartphone, Crown, LogOut } from 'lucide-react';
+import { User, Palette, Smartphone, Crown, LogOut, Globe } from 'lucide-react';
 
 interface UserProfileDropdownProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface UserProfileDropdownProps {
 export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen, onClose }) => {
   const { currentUser, currentRole, logout } = useAuth();
   const { openModal } = useApp();
-  const { t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,6 +78,40 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
         <Smartphone className="w-4 h-4 text-slate-400" />
         <span>{t('modals.settings.tabDevices')}</span>
       </button>
+
+      {/* Language Switcher Row */}
+      <div className="p-2 border-t border-b app-border flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs font-semibold app-text-primary">
+          <Globe className="w-4 h-4 text-blue-600 dark:text-sky-400 flex-shrink-0" />
+          <span className="truncate">{t('common.language')}</span>
+        </div>
+        <div className="flex items-center apple-glass-pill p-0.5 rounded-xl text-[11px] border border-slate-300/80 dark:border-slate-700 shadow-xs flex-shrink-0">
+          <button
+            onClick={() => setLanguage('vi')}
+            className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+              language === 'vi'
+                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
+                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 font-bold'
+            }`}
+            title="Tiếng Việt"
+          >
+            <span>🇻🇳</span>
+            <span>VI</span>
+          </button>
+          <button
+            onClick={() => setLanguage('en')}
+            className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+              language === 'en'
+                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
+                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 font-bold'
+            }`}
+            title="English"
+          >
+            <span>🇬🇧</span>
+            <span>EN</span>
+          </button>
+        </div>
+      </div>
 
       <button
         onClick={() => {

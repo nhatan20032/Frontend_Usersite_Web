@@ -27,8 +27,8 @@ export const RightSidebarDock: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-col items-center gap-2 py-1">
-          <span className="text-[10px] font-bold tracking-[0.22em] [writing-mode:vertical-rl] uppercase text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
+        <div className="flex flex-col items-center gap-2 py-1 max-h-[120px] overflow-hidden">
+          <span className="text-[10px] font-bold tracking-[0.22em] [writing-mode:vertical-rl] uppercase text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors truncate">
             {t('sidebar.dockTasks')}
           </span>
         </div>

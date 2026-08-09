@@ -232,6 +232,11 @@ body.theme-dark .apple-input:focus {
 .app-text-muted { color: var(--text-muted); }
 .app-border { border-color: var(--glass-border); }
 
+/* Layout Stability Helpers */
+.layout-anchor-header { min-height: 4rem; }
+.segmented-tab-fixed { min-width: 5rem; text-align: center; }
+.kpi-card-stable { min-height: 9rem; display: flex; flex-direction: column; justify-content: space-between; }
+
 /* Scrollbars */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }

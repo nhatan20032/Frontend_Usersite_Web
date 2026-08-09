@@ -103,7 +103,7 @@ export const AuthForm: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('login')}
-            className={`flex-1 py-2 rounded-xl transition-all cursor-pointer ${
+            className={`flex-1 min-w-0 py-2 rounded-xl transition-all cursor-pointer truncate ${
               activeTab === 'login'
                 ? 'bg-white text-slate-900 font-bold shadow-xs'
                 : 'text-slate-500 hover:text-slate-900'
@@ -114,7 +114,7 @@ export const AuthForm: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('otp')}
-            className={`flex-1 py-2 rounded-xl transition-all cursor-pointer ${
+            className={`flex-1 min-w-0 py-2 rounded-xl transition-all cursor-pointer truncate ${
               activeTab === 'otp'
                 ? 'bg-white text-slate-900 font-bold shadow-xs'
                 : 'text-slate-500 hover:text-slate-900'
@@ -125,7 +125,7 @@ export const AuthForm: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('register')}
-            className={`flex-1 py-2 rounded-xl transition-all cursor-pointer ${
+            className={`flex-1 min-w-0 py-2 rounded-xl transition-all cursor-pointer truncate ${
               activeTab === 'register'
                 ? 'bg-white text-slate-900 font-bold shadow-xs'
                 : 'text-slate-500 hover:text-slate-900'

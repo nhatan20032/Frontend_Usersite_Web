@@ -40,7 +40,7 @@ export const MonthGridView: React.FC = () => {
         {/* Day of Week Headers */}
         <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold app-text-secondary border-b app-border pb-2.5">
           {weekdayHeaders.map((name, i) => (
-            <span key={i}>{name}</span>
+            <span key={i} className="truncate px-0.5" title={name}>{name}</span>
           ))}
         </div>
 

@@ -8,7 +8,7 @@ import { Calendar, Search, Sparkles, Crown, Plus, Settings } from 'lucide-react'
 export const TopHeader: React.FC = () => {
   const { currentUser, currentRole, setRole } = useAuth();
   const { searchQuery, setSearchQuery, openModal } = useApp();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
   return (
@@ -29,7 +29,7 @@ export const TopHeader: React.FC = () => {
       </div>
 
       {/* Center Search Bar (Apple Glass Capsule) */}
-      <div className="hidden md:flex items-center max-w-md w-full">
+      <div className="hidden md:flex items-center flex-1 min-w-0 max-w-md mx-2">
         <div className="relative w-full">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -42,41 +42,15 @@ export const TopHeader: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Controls: Role Simulator, Language Switcher & Account Dropdown */}
-      <div className="flex items-center gap-2">
-        {/* Language Switcher Capsule */}
-        <div className="flex items-center apple-glass-pill p-1 rounded-2xl text-xs border border-slate-300/80 dark:border-slate-700 shadow-xs">
-          <button
-            onClick={() => setLanguage('vi')}
-            className={`px-2.5 py-1 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
-              language === 'vi'
-                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
-                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
-            }`}
-            title="Tiếng Việt"
-          >
-            <span className="text-xs">🇻🇳</span>
-            <span className="text-[11px] tracking-wide">VI</span>
-          </button>
-          <button
-            onClick={() => setLanguage('en')}
-            className={`px-2.5 py-1 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
-              language === 'en'
-                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
-                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
-            }`}
-            title="English"
-          >
-            <span className="text-xs">🇬🇧</span>
-            <span className="text-[11px] tracking-wide">EN</span>
-          </button>
-        </div>
+      {/* Right Controls: Role Simulator, Settings & Account Dropdown */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+
 
         {/* Role Simulator Switcher (Apple Glass Capsule) */}
-        <div className="hidden lg:flex items-center apple-glass-pill p-1 rounded-2xl text-xs border border-slate-300/80 dark:border-slate-700 shadow-xs">
+        <div className="hidden lg:flex items-center apple-glass-pill p-1 rounded-2xl text-xs border border-slate-300/80 dark:border-slate-700 shadow-xs flex-shrink-0">
           <button
             onClick={() => setRole('FREE')}
-            className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
+            className={`min-w-[68px] text-center px-2.5 py-1 rounded-xl transition-all cursor-pointer ${
               currentRole === 'FREE'
                 ? 'font-extrabold text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 shadow-sm border border-black/10 dark:border-white/10'
                 : 'font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10'
@@ -86,24 +60,24 @@ export const TopHeader: React.FC = () => {
           </button>
           <button
             onClick={() => setRole('TRIAL')}
-            className={`px-3 py-1 rounded-xl transition-all flex items-center gap-1 cursor-pointer ${
+            className={`min-w-[80px] text-center px-2.5 py-1 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
               currentRole === 'TRIAL'
                 ? 'font-extrabold text-emerald-950 dark:text-emerald-200 bg-emerald-100 dark:bg-emerald-950/90 border border-emerald-500/40 shadow-sm'
                 : 'font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-900 dark:hover:text-emerald-200'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <span>{t('common.trial')}</span>
           </button>
           <button
             onClick={() => setRole('PREMIUM')}
-            className={`px-3 py-1 rounded-xl transition-all flex items-center gap-1 cursor-pointer ${
+            className={`min-w-[76px] text-center px-2.5 py-1 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
               currentRole === 'PREMIUM'
                 ? 'font-extrabold text-amber-950 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/90 border border-amber-500/40 shadow-sm'
                 : 'font-bold text-amber-700 dark:text-amber-400 hover:bg-amber-500/15 hover:text-amber-950 dark:hover:text-amber-200'
             }`}
           >
-            <Crown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <Crown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
             <span>{t('common.vip')}</span>
           </button>
         </div>
@@ -111,10 +85,10 @@ export const TopHeader: React.FC = () => {
         {/* Quick Create Action */}
         <button
           onClick={() => openModal('create')}
-          className="hidden sm:flex items-center gap-1.5 apple-btn-primary font-bold px-3.5 py-2 rounded-2xl text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+          className="hidden sm:flex items-center justify-center gap-1.5 apple-btn-primary font-bold min-w-[88px] px-3 py-2 rounded-2xl text-xs shadow-md shadow-blue-500/20 transition-all flex-shrink-0 cursor-pointer"
         >
-          <Plus className="w-3.5 h-3.5" />
-          <span>{t('header.quickCreate')}</span>
+          <Plus className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="truncate">{t('header.quickCreate')}</span>
         </button>
 
         {/* Settings Quick Icon */}

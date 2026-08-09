@@ -10,8 +10,6 @@ import {
   Flame,
   MapPin,
   CheckCircle2,
-  Palette,
-  ChevronRight,
 } from 'lucide-react';
 
 export const LeftSidebar: React.FC = () => {
@@ -62,58 +60,44 @@ export const LeftSidebar: React.FC = () => {
           {t('sidebar.displayCategories')}
         </span>
         <div className="space-y-2">
-          <label className="flex items-center gap-2.5 app-text-primary cursor-pointer font-medium hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/5 rounded-xl transition-all">
+          <label className="flex items-center gap-2.5 app-text-primary cursor-pointer font-medium hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/5 rounded-xl transition-all p-1">
             <input
               type="checkbox"
               checked={categoryFilters.routine}
               onChange={(e) => setCategoryFilters((prev) => ({ ...prev, routine: e.target.checked }))}
-              className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500"
+              className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500 flex-shrink-0"
             />
-            <span className="flex items-center gap-2">
-              <Flame className="w-3.5 h-3.5 text-amber-500" />
-              <span>{t('sidebar.routineCategory')}</span>
+            <span className="flex items-center gap-2 min-w-0 flex-1">
+              <Flame className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+              <span className="truncate" title={t('sidebar.routineCategory')}>{t('sidebar.routineCategory')}</span>
             </span>
           </label>
 
-          <label className="flex items-center gap-2.5 app-text-primary cursor-pointer font-medium hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/5 rounded-xl transition-all">
+          <label className="flex items-center gap-2.5 app-text-primary cursor-pointer font-medium hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/5 rounded-xl transition-all p-1">
             <input
               type="checkbox"
               checked={categoryFilters.event}
               onChange={(e) => setCategoryFilters((prev) => ({ ...prev, event: e.target.checked }))}
-              className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500"
+              className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 flex-shrink-0"
             />
-            <span className="flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5 text-emerald-500" />
-              <span>{t('sidebar.eventCategory')}</span>
+            <span className="flex items-center gap-2 min-w-0 flex-1">
+              <MapPin className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+              <span className="truncate" title={t('sidebar.eventCategory')}>{t('sidebar.eventCategory')}</span>
             </span>
           </label>
 
-          <label className="flex items-center gap-2.5 app-text-primary cursor-pointer font-medium hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/5 rounded-xl transition-all">
+          <label className="flex items-center gap-2.5 app-text-primary cursor-pointer font-medium hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/5 rounded-xl transition-all p-1">
             <input
               type="checkbox"
               checked={categoryFilters.task}
               onChange={(e) => setCategoryFilters((prev) => ({ ...prev, task: e.target.checked }))}
-              className="w-4 h-4 rounded text-blue-500 focus:ring-blue-500"
+              className="w-4 h-4 rounded text-blue-500 focus:ring-blue-500 flex-shrink-0"
             />
-            <span className="flex items-center gap-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
-              <span>{t('sidebar.taskCategory')}</span>
+            <span className="flex items-center gap-2 min-w-0 flex-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+              <span className="truncate" title={t('sidebar.taskCategory')}>{t('sidebar.taskCategory')}</span>
             </span>
           </label>
-        </div>
-
-        {/* Shortcut to Settings Theme Store */}
-        <div className="pt-4 border-t app-border">
-          <button
-            onClick={() => openModal('settings')}
-            className="w-full apple-glass-pill hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 app-text-primary p-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-between cursor-pointer"
-          >
-            <span className="flex items-center gap-2">
-              <Palette className="w-4 h-4 text-blue-600 dark:text-sky-400" />
-              <span>{t('modals.settings.tabAppearance')}</span>
-            </span>
-            <ChevronRight className="w-3.5 h-3.5 app-text-muted" />
-          </button>
         </div>
       </div>
 

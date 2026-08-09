@@ -58,7 +58,7 @@ export const MiniCalendarPicker: React.FC = () => {
           <select
             value={selectedMonth}
             onChange={(e) => selectDate(selectedDay, Number(e.target.value), selectedYear)}
-            className="apple-glass-pill text-xs font-bold app-text-primary px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none"
+            className="apple-glass-pill text-xs font-bold app-text-primary w-[76px] px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none text-center flex-shrink-0"
           >
             {monthNames.map((name, idx) => (
               <option key={idx} value={idx} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
@@ -70,7 +70,7 @@ export const MiniCalendarPicker: React.FC = () => {
           <select
             value={selectedYear}
             onChange={(e) => selectDate(selectedDay, selectedMonth, Number(e.target.value))}
-            className="apple-glass-pill text-xs font-bold app-text-primary px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none font-mono"
+            className="apple-glass-pill text-xs font-bold app-text-primary w-[58px] px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none font-mono text-center flex-shrink-0"
           >
             {yearsList.map((y) => (
               <option key={y} value={y} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
@@ -80,17 +80,17 @@ export const MiniCalendarPicker: React.FC = () => {
           </select>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={prevMonth}
-            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer"
+            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer flex-shrink-0"
             title={t('calendar.prevMonth')}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={nextMonth}
-            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer"
+            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer flex-shrink-0"
             title={t('calendar.nextMonth')}
           >
             <ChevronRight className="w-4 h-4" />
