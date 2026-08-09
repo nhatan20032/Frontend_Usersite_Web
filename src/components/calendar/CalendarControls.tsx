@@ -36,24 +36,25 @@ export const CalendarControls: React.FC = () => {
   return (
     <div id="calendarHeader" className="h-16 px-4 sm:px-6 border-b app-border flex items-center justify-between gap-4 flex-shrink-0 apple-glass-surface">
       <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
-        <button
-          onClick={selectToday}
-          className="apple-glass-pill font-bold min-w-[76px] text-center px-3 py-1.5 rounded-2xl text-xs hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 hover:border-blue-500/30 transition-all shadow-xs cursor-pointer text-slate-800 dark:text-slate-200 flex-shrink-0"
-        >
-          {t('calendar.todayBtn')}
-        </button>
-
-        <div className="flex items-center gap-1 flex-shrink-0">
+        {/* Apple Segmented Control (Date Navigation Capsule) */}
+        <div className="flex items-center apple-glass-pill p-1 rounded-2xl text-xs font-semibold border border-slate-300/80 dark:border-slate-700 shadow-xs flex-shrink-0">
+          <button
+            onClick={selectToday}
+            className="h-8 min-w-[72px] sm:min-w-[80px] px-3 rounded-xl font-extrabold text-blue-600 dark:text-sky-400 hover:bg-blue-500/15 hover:text-blue-700 dark:hover:text-sky-300 active:bg-blue-500/25 transition-all cursor-pointer flex items-center justify-center"
+          >
+            {t('calendar.todayBtn')}
+          </button>
+          <div className="w-[1px] h-4 bg-slate-300/80 dark:bg-slate-700 mx-0.5 flex-shrink-0" />
           <button
             onClick={prevMonth}
-            className="p-1.5 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-2xl transition-all cursor-pointer flex-shrink-0"
+            className="h-8 w-8 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 active:bg-blue-500/20 transition-all cursor-pointer flex items-center justify-center flex-shrink-0"
             title={t('calendar.prevMonth')}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={nextMonth}
-            className="p-1.5 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-2xl transition-all cursor-pointer flex-shrink-0"
+            className="h-8 w-8 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 active:bg-blue-500/20 transition-all cursor-pointer flex items-center justify-center flex-shrink-0"
             title={t('calendar.nextMonth')}
           >
             <ChevronRight className="w-4 h-4" />
@@ -65,7 +66,7 @@ export const CalendarControls: React.FC = () => {
           <select
             value={selectedMonth}
             onChange={(e) => selectDate(selectedDay, Number(e.target.value), selectedYear)}
-            className="apple-glass-pill font-bold text-xs sm:text-sm app-text-primary w-[108px] sm:w-[122px] px-2 py-1 rounded-xl cursor-pointer hover:bg-blue-500/10 hover:border-blue-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-center flex-shrink-0"
+            className="apple-glass-pill h-10 font-bold text-xs sm:text-sm app-text-primary w-[112px] sm:w-[124px] px-2.5 rounded-2xl border border-slate-300/80 dark:border-slate-700 shadow-xs cursor-pointer hover:bg-blue-500/10 hover:border-blue-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-center flex-shrink-0"
           >
             {monthNames.map((name, idx) => (
               <option key={idx} value={idx} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-sans">
@@ -77,7 +78,7 @@ export const CalendarControls: React.FC = () => {
           <select
             value={selectedYear}
             onChange={(e) => selectDate(selectedDay, selectedMonth, Number(e.target.value))}
-            className="apple-glass-pill font-bold text-xs sm:text-sm app-text-primary w-[78px] sm:w-[86px] px-2 py-1 rounded-xl cursor-pointer hover:bg-blue-500/10 hover:border-blue-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-mono text-center flex-shrink-0"
+            className="apple-glass-pill h-10 font-bold text-xs sm:text-sm app-text-primary w-[80px] sm:w-[88px] px-2 rounded-2xl border border-slate-300/80 dark:border-slate-700 shadow-xs cursor-pointer hover:bg-blue-500/10 hover:border-blue-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-mono text-center flex-shrink-0"
           >
             {yearsList.map((y) => (
               <option key={y} value={y} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-sans">
@@ -92,7 +93,7 @@ export const CalendarControls: React.FC = () => {
       <div className="flex items-center apple-glass-pill p-1 rounded-2xl text-xs font-semibold border border-slate-300/80 dark:border-slate-700 shadow-xs flex-shrink-0">
         <button
           onClick={() => setCalendarView('month')}
-          className={`min-w-[68px] sm:min-w-[80px] text-center px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+          className={`h-8 min-w-[68px] sm:min-w-[80px] text-center px-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
             calendarView === 'month'
               ? 'font-extrabold bg-white dark:bg-slate-800 text-blue-600 dark:text-sky-400 shadow-sm border border-black/10 dark:border-white/10'
               : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
@@ -102,7 +103,7 @@ export const CalendarControls: React.FC = () => {
         </button>
         <button
           onClick={() => setCalendarView('week')}
-          className={`min-w-[76px] sm:min-w-[88px] text-center px-2.5 py-1.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
+          className={`h-8 min-w-[76px] sm:min-w-[88px] text-center px-2.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
             calendarView === 'week'
               ? 'font-extrabold bg-white dark:bg-slate-800 text-blue-600 dark:text-sky-400 shadow-sm border border-black/10 dark:border-white/10'
               : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
@@ -115,7 +116,7 @@ export const CalendarControls: React.FC = () => {
         </button>
         <button
           onClick={() => setCalendarView('agenda')}
-          className={`min-w-[68px] sm:min-w-[80px] text-center px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+          className={`h-8 min-w-[68px] sm:min-w-[80px] text-center px-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
             calendarView === 'agenda'
               ? 'font-extrabold bg-white dark:bg-slate-800 text-blue-600 dark:text-sky-400 shadow-sm border border-black/10 dark:border-white/10'
               : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
