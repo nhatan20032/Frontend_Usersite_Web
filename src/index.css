@@ -6,46 +6,48 @@
 
 /* 1. DEFAULT LIGHT (Apple Studio Canvas + Frosted Crystal) */
 :root {
-  --bg-base: #f5f5f7;
-  --glass-surface: rgba(255, 255, 255, 0.65);
-  --glass-surface-subtle: rgba(245, 245, 247, 0.55);
-  --glass-card: rgba(255, 255, 255, 0.72);
-  --glass-modal: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.85);
-  --glass-border-subtle: rgba(0, 0, 0, 0.06);
-  --glass-input-bg: rgba(0, 0, 0, 0.035);
-  --glass-input-border: rgba(0, 0, 0, 0.08);
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-muted: #86868b;
+  --bg-base: #f5f6f9;
+  --glass-surface: rgba(255, 255, 255, 0.88);
+  --glass-surface-subtle: rgba(241, 245, 249, 0.94);
+  --glass-card: rgba(255, 255, 255, 0.92);
+  --glass-modal: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(15, 23, 42, 0.12);
+  --glass-border-subtle: rgba(15, 23, 42, 0.07);
+  --glass-input-bg: rgba(0, 0, 0, 0.04);
+  --glass-input-border: rgba(15, 23, 42, 0.14);
+  --text-primary: #090d16;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   --apple-blue: #0071e3;
   --apple-blue-hover: #0077ed;
-  --apple-blue-subtle: rgba(0, 113, 227, 0.08);
-  --shadow-ambient: 0 12px 36px -8px rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
-  --shadow-modal: 0 30px 70px -15px rgba(0, 0, 0, 0.12), 0 10px 25px -5px rgba(0, 0, 0, 0.04);
-  --specular-top: inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+  --apple-blue-subtle: rgba(0, 113, 227, 0.12);
+  --shadow-ambient: 0 10px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 10px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+  --shadow-modal: 0 25px 60px -10px rgba(15, 23, 42, 0.28), 0 12px 24px -5px rgba(15, 23, 42, 0.14);
+  --shadow-pill: 0 2px 8px -1px rgba(15, 23, 42, 0.08), 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --specular-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 /* 2. DARK OBSIDIAN (Deep OLED + Frosted Smoky Glass) */
 body.theme-dark {
-  --bg-base: #000000;
-  --glass-surface: rgba(18, 22, 32, 0.65);
-  --glass-surface-subtle: rgba(26, 31, 44, 0.5);
-  --glass-card: rgba(22, 28, 40, 0.72);
-  --glass-modal: rgba(20, 26, 38, 0.88);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-border-subtle: rgba(255, 255, 255, 0.07);
-  --glass-input-bg: rgba(255, 255, 255, 0.06);
-  --glass-input-border: rgba(255, 255, 255, 0.12);
-  --text-primary: #f5f5f7;
-  --text-secondary: #a1a1a6;
-  --text-muted: #6e6e73;
-  --apple-blue: #2997ff;
-  --apple-blue-hover: #0077ed;
-  --apple-blue-subtle: rgba(41, 151, 255, 0.12);
-  --shadow-ambient: 0 16px 40px -10px rgba(0, 0, 0, 0.6);
-  --shadow-modal: 0 35px 80px -15px rgba(0, 0, 0, 0.85);
-  --specular-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+  --bg-base: #020617;
+  --glass-surface: rgba(15, 23, 42, 0.85);
+  --glass-surface-subtle: rgba(30, 41, 59, 0.8);
+  --glass-card: rgba(15, 23, 42, 0.9);
+  --glass-modal: rgba(15, 23, 42, 0.96);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-border-subtle: rgba(255, 255, 255, 0.10);
+  --glass-input-bg: rgba(255, 255, 255, 0.08);
+  --glass-input-border: rgba(255, 255, 255, 0.18);
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --apple-blue: #38bdf8;
+  --apple-blue-hover: #0ea5e9;
+  --apple-blue-subtle: rgba(56, 189, 248, 0.15);
+  --shadow-ambient: 0 16px 40px -8px rgba(0, 0, 0, 0.7), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --shadow-modal: 0 35px 80px -15px rgba(0, 0, 0, 0.9);
+  --shadow-pill: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  --specular-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 /* 3. TẾT CỔ TRUYỀN 2026 */
@@ -91,11 +93,18 @@ body.theme-sakura {
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   transition: background 0.3s ease, color 0.3s ease;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+}
+
+code, kbd, samp, pre, .font-mono {
+  font-family: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* Dynamic Iridescent Meshes */
@@ -153,7 +162,7 @@ body.theme-dark .ambient-glow-2 {
   backdrop-filter: blur(36px) saturate(190%);
   -webkit-backdrop-filter: blur(36px) saturate(190%);
   border-color: var(--glass-border);
-  box-shadow: var(--specular-top);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
 }
 
 .apple-glass-card {
@@ -161,13 +170,13 @@ body.theme-dark .ambient-glow-2 {
   backdrop-filter: blur(32px) saturate(190%);
   -webkit-backdrop-filter: blur(32px) saturate(190%);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--specular-top), var(--shadow-ambient);
+  box-shadow: var(--shadow-ambient), var(--specular-top);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .apple-glass-card:hover {
-  box-shadow: var(--specular-top), 0 16px 44px -8px rgba(0, 0, 0, 0.08);
-  border-color: var(--glass-border);
+  box-shadow: 0 18px 44px -8px rgba(15, 23, 42, 0.13), 0 6px 16px -3px rgba(15, 23, 42, 0.07), var(--specular-top);
+  border-color: rgba(15, 23, 42, 0.2);
 }
 
 .apple-glass-pill {
@@ -175,7 +184,7 @@ body.theme-dark .ambient-glow-2 {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--specular-top);
+  box-shadow: var(--shadow-pill), var(--specular-top);
 }
 
 .apple-glass-modal {
@@ -183,7 +192,7 @@ body.theme-dark .ambient-glow-2 {
   backdrop-filter: blur(50px) saturate(200%);
   -webkit-backdrop-filter: blur(50px) saturate(200%);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--specular-top), var(--shadow-modal);
+  box-shadow: var(--shadow-modal), var(--specular-top);
 }
 
 .apple-input {
@@ -191,26 +200,28 @@ body.theme-dark .ambient-glow-2 {
   border: 1px solid var(--glass-input-border);
   color: var(--text-primary);
   border-radius: 14px;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 .apple-input:focus {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.98);
   outline: none;
   border-color: var(--apple-blue);
-  box-shadow: 0 0 0 4px var(--apple-blue-subtle);
+  box-shadow: 0 0 0 4px var(--apple-blue-subtle), 0 2px 8px rgba(0, 113, 227, 0.15);
 }
 body.theme-dark .apple-input:focus {
-  background: rgba(30, 36, 50, 0.9);
+  background: rgba(30, 41, 59, 0.98);
 }
 
 .apple-btn-primary {
   background: var(--apple-blue);
   color: #ffffff;
+  font-weight: 700;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .apple-btn-primary:hover {
-  opacity: 0.92;
-  box-shadow: 0 6px 20px -3px rgba(0, 113, 227, 0.35);
+  opacity: 0.94;
+  box-shadow: 0 8px 24px -3px rgba(0, 113, 227, 0.42);
 }
 .apple-btn-primary:active {
   transform: scale(0.98);

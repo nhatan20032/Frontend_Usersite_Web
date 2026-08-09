@@ -1,4 +1,5 @@
 export type AccountRole = 'FREE' | 'TRIAL' | 'PREMIUM';
+export type Language = 'vi' | 'en';
 
 export interface User {
   isLoggedIn: boolean;

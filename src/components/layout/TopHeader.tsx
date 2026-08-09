@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { UserProfileDropdown } from './UserProfileDropdown';
 import { Calendar, Search, Sparkles, Crown, Plus, Settings } from 'lucide-react';
 
 export const TopHeader: React.FC = () => {
   const { currentUser, currentRole, setRole } = useAuth();
   const { searchQuery, setSearchQuery, openModal } = useApp();
+  const { language, setLanguage, t } = useLanguage();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
   return (
@@ -34,47 +36,75 @@ export const TopHeader: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm kiếm sự kiện, thói quen, công việc..."
+            placeholder={t('header.searchPlaceholder')}
             className="w-full apple-input pl-10 pr-4 py-2 text-xs placeholder-slate-400 dark:placeholder-slate-500 font-sans"
           />
         </div>
       </div>
 
-      {/* Right Controls: Role Simulator & Account Dropdown */}
+      {/* Right Controls: Role Simulator, Language Switcher & Account Dropdown */}
       <div className="flex items-center gap-2">
+        {/* Language Switcher Capsule */}
+        <div className="flex items-center apple-glass-pill p-1 rounded-2xl text-xs border border-slate-300/80 dark:border-slate-700 shadow-xs">
+          <button
+            onClick={() => setLanguage('vi')}
+            className={`px-2.5 py-1 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              language === 'vi'
+                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
+                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
+            }`}
+            title="Tiếng Việt"
+          >
+            <span className="text-xs">🇻🇳</span>
+            <span className="text-[11px] tracking-wide">VI</span>
+          </button>
+          <button
+            onClick={() => setLanguage('en')}
+            className={`px-2.5 py-1 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              language === 'en'
+                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
+                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
+            }`}
+            title="English"
+          >
+            <span className="text-xs">🇬🇧</span>
+            <span className="text-[11px] tracking-wide">EN</span>
+          </button>
+        </div>
+
         {/* Role Simulator Switcher (Apple Glass Capsule) */}
-        <div className="flex items-center apple-glass-pill p-1 rounded-2xl text-xs">
+        <div className="hidden lg:flex items-center apple-glass-pill p-1 rounded-2xl text-xs border border-slate-300/80 dark:border-slate-700 shadow-xs">
           <button
             onClick={() => setRole('FREE')}
             className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
               currentRole === 'FREE'
-                ? 'font-bold text-slate-900 dark:text-slate-100 bg-white/90 dark:bg-white/20 shadow-xs'
-                : 'font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900'
+                ? 'font-extrabold text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 shadow-sm border border-black/10 dark:border-white/10'
+                : 'font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10'
             }`}
           >
-            Free
+            {t('common.free')}
           </button>
           <button
             onClick={() => setRole('TRIAL')}
             className={`px-3 py-1 rounded-xl transition-all flex items-center gap-1 cursor-pointer ${
               currentRole === 'TRIAL'
-                ? 'font-bold text-slate-900 dark:text-slate-100 bg-white/90 dark:bg-white/20 shadow-xs'
-                : 'font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-600'
+                ? 'font-extrabold text-emerald-950 dark:text-emerald-200 bg-emerald-100 dark:bg-emerald-950/90 border border-emerald-500/40 shadow-sm'
+                : 'font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-900 dark:hover:text-emerald-200'
             }`}
           >
-            <Sparkles className="w-3 h-3 text-emerald-500" />
-            <span>Trial</span>
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>{t('common.trial')}</span>
           </button>
           <button
             onClick={() => setRole('PREMIUM')}
             className={`px-3 py-1 rounded-xl transition-all flex items-center gap-1 cursor-pointer ${
               currentRole === 'PREMIUM'
-                ? 'font-bold text-slate-900 dark:text-slate-100 bg-white/90 dark:bg-white/20 shadow-xs'
-                : 'font-semibold text-slate-500 dark:text-slate-400 hover:text-amber-600'
+                ? 'font-extrabold text-amber-950 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/90 border border-amber-500/40 shadow-sm'
+                : 'font-bold text-amber-700 dark:text-amber-400 hover:bg-amber-500/15 hover:text-amber-950 dark:hover:text-amber-200'
             }`}
           >
-            <Crown className="w-3 h-3 text-amber-500" />
-            <span>VIP</span>
+            <Crown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>{t('common.vip')}</span>
           </button>
         </div>
 
@@ -84,14 +114,14 @@ export const TopHeader: React.FC = () => {
           className="hidden sm:flex items-center gap-1.5 apple-btn-primary font-bold px-3.5 py-2 rounded-2xl text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Tạo mới</span>
+          <span>{t('header.quickCreate')}</span>
         </button>
 
         {/* Settings Quick Icon */}
         <button
           onClick={() => openModal('settings')}
-          className="p-2.5 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 rounded-2xl transition-all cursor-pointer"
-          title="Cài đặt & Giao diện"
+          className="p-2.5 text-slate-700 hover:text-blue-600 dark:text-slate-300 dark:hover:text-sky-400 hover:bg-blue-500/10 rounded-2xl transition-all cursor-pointer"
+          title={t('header.settingsTooltip')}
         >
           <Settings className="w-4 h-4" />
         </button>
@@ -111,3 +141,4 @@ export const TopHeader: React.FC = () => {
     </header>
   );
 };
+

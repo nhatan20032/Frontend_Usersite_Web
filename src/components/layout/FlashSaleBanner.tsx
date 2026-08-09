@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { Clock, Sparkles, Crown, Check } from 'lucide-react';
 
 export const FlashSaleBanner: React.FC = () => {
   const { currentRole, activateFreeTrial } = useAuth();
   const { openModal } = useApp();
+  const { language, t } = useLanguage();
 
   const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({
     hours: 8,
@@ -39,12 +41,16 @@ export const FlashSaleBanner: React.FC = () => {
           Flash Sale 2026
         </span>
         <span className="app-text-secondary text-[11px] font-medium">
-          Gói Premium 1 năm ưu đãi <b>40%</b> còn <span className="font-bold text-blue-600 dark:text-sky-400">179.000đ</span>
+          {language === 'vi' ? (
+            <>Gói Premium 1 năm ưu đãi <b>40%</b> còn <span className="font-bold text-blue-600 dark:text-sky-400">179.000đ</span></>
+          ) : (
+            <>1-Year Premium offer <b>40% OFF</b> at <span className="font-bold text-blue-600 dark:text-sky-400">$19.99</span></>
+          )}
         </span>
         <span className="app-text-muted hidden sm:inline">&bull;</span>
         <div className="hidden sm:flex items-center gap-1.5 font-medium text-[11px] app-text-secondary apple-glass-pill px-2.5 py-0.5 rounded-full">
           <Clock className="w-3 h-3 text-amber-500" />
-          <span>Còn lại:</span>
+          <span>{language === 'vi' ? 'Còn lại:' : 'Ends in:'}</span>
           <span className="font-bold text-blue-600 dark:text-sky-400">{format2(timeLeft.hours)}</span>h :
           <span className="font-bold text-blue-600 dark:text-sky-400">{format2(timeLeft.minutes)}</span>m :
           <span className="font-bold text-blue-600 dark:text-sky-400">{format2(timeLeft.seconds)}</span>s
@@ -55,7 +61,7 @@ export const FlashSaleBanner: React.FC = () => {
         {currentRole === 'TRIAL' ? (
           <div className="apple-glass-pill text-emerald-700 dark:text-emerald-300 font-semibold px-3 py-1 rounded-xl text-xs flex items-center gap-1.5">
             <Check className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Đang dùng thử (7 ngày)</span>
+            <span>{language === 'vi' ? 'Đang dùng thử (7 ngày)' : 'Active Trial (7 Days)'}</span>
           </div>
         ) : (
           <button
@@ -63,7 +69,7 @@ export const FlashSaleBanner: React.FC = () => {
             className="apple-glass-pill hover:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold px-3 py-1 rounded-xl text-xs transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Dùng thử 7 ngày</span>
+            <span>{language === 'vi' ? 'Dùng thử 7 ngày' : '7-Day Free Trial'}</span>
           </button>
         )}
 
@@ -72,7 +78,7 @@ export const FlashSaleBanner: React.FC = () => {
           className="apple-btn-primary font-bold px-3 py-1 rounded-xl text-xs flex items-center gap-1 cursor-pointer"
         >
           <Crown className="w-3.5 h-3.5" />
-          <span>Nâng cấp VIP</span>
+          <span>{t('sidebar.upgradeBtn')}</span>
         </button>
       </div>
     </div>

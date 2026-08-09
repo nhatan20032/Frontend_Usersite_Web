@@ -1,8 +1,10 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const MonthGridView: React.FC = () => {
   const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate } = useApp();
+  const { language, t } = useLanguage();
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
   const firstDayIndex = new Date(selectedYear, selectedMonth, 1).getDay(); // 0 = Sunday
@@ -22,18 +24,24 @@ export const MonthGridView: React.FC = () => {
   const nextMonthIndex = selectedMonth === 11 ? 0 : selectedMonth + 1;
   const nextYear = selectedMonth === 11 ? selectedYear + 1 : selectedYear;
 
+  const weekdayHeaders = [
+    t('calendar.sun'),
+    t('calendar.mon'),
+    t('calendar.tue'),
+    t('calendar.wed'),
+    t('calendar.thu'),
+    t('calendar.fri'),
+    t('calendar.sat'),
+  ];
+
   return (
     <div className="space-y-4">
       <div className="apple-glass-card rounded-3xl p-5 space-y-3">
         {/* Day of Week Headers */}
         <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold app-text-secondary border-b app-border pb-2.5">
-          <span>Chủ nhật</span>
-          <span>Thứ hai</span>
-          <span>Thứ ba</span>
-          <span>Thứ tư</span>
-          <span>Thứ năm</span>
-          <span>Thứ sáu</span>
-          <span>Thứ bảy</span>
+          {weekdayHeaders.map((name, i) => (
+            <span key={i}>{name}</span>
+          ))}
         </div>
 
         {/* Dynamic Month Grid */}
@@ -97,7 +105,7 @@ export const MonthGridView: React.FC = () => {
                   ))}
                   {dayEvents.length > 2 && (
                     <div className="text-[9px] text-slate-400 dark:text-slate-400 font-bold px-1">
-                      +{dayEvents.length - 2} khác
+                      +{dayEvents.length - 2} {language === 'vi' ? 'khác' : 'more'}
                     </div>
                   )}
                 </div>

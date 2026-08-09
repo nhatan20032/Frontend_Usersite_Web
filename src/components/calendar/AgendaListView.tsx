@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   CalendarCheck2,
   Calendar as CalendarIcon,
@@ -12,10 +13,16 @@ import {
   Clock,
 } from 'lucide-react';
 
-const monthNames = [
+const monthNamesVi = [
   'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
   'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
   'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
+];
+
+const monthNamesEn = [
+  'January', 'February', 'March', 'April',
+  'May', 'June', 'July', 'August',
+  'September', 'October', 'November', 'December',
 ];
 
 export const AgendaListView: React.FC = () => {
@@ -31,6 +38,9 @@ export const AgendaListView: React.FC = () => {
     openModal,
     triggerPremiumFeature,
   } = useApp();
+  const { language, t } = useLanguage();
+
+  const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
 
   const filtered = eventsData.filter((e) => {
     if (e.year !== selectedYear || e.month !== selectedMonth || e.day !== selectedDay) return false;
@@ -46,11 +56,13 @@ export const AgendaListView: React.FC = () => {
         <h3 className="font-bold text-sm app-text-primary flex items-center gap-2">
           <CalendarCheck2 className="w-4 h-4 text-blue-600 dark:text-sky-400" />
           <span>
-            {`Lịch trình ngày ${selectedDay} ${monthNames[selectedMonth]} năm ${selectedYear}`}
+            {language === 'vi'
+              ? `Lịch trình ngày ${selectedDay} ${monthNames[selectedMonth]} năm ${selectedYear}`
+              : `Schedule for ${monthNames[selectedMonth]} ${selectedDay}, ${selectedYear}`}
           </span>
         </h3>
         <span className="text-xs app-text-muted hidden sm:inline">
-          Nhấn vào mục để xem chi tiết hoặc điểm danh
+          {language === 'vi' ? 'Nhấn vào mục để xem chi tiết hoặc điểm danh' : 'Click an item for details or check-in'}
         </span>
       </div>
 
@@ -59,13 +71,13 @@ export const AgendaListView: React.FC = () => {
           <div className="apple-glass-card p-8 text-center rounded-3xl space-y-2">
             <CalendarIcon className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto" />
             <p className="text-xs app-text-secondary font-medium">
-              Không có lịch trình nào vào ngày này theo bộ lọc hiện tại.
+              {t('calendar.emptyDayEvents')}
             </p>
             <button
               onClick={() => openModal('create')}
               className="text-blue-600 dark:text-sky-400 font-bold text-xs hover:underline cursor-pointer"
             >
-              + Bấm vào đây để tạo mới
+              + {t('sidebar.addSchedule')}
             </button>
           </div>
         ) : (
@@ -77,19 +89,19 @@ export const AgendaListView: React.FC = () => {
             if (ev.priority === 'high') {
               priorityBadge = (
                 <span className="bg-rose-500/15 text-rose-800 dark:text-rose-300 border border-rose-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-                  ƯU TIÊN CAO
+                  {t('common.high').toUpperCase()}
                 </span>
               );
             } else if (ev.priority === 'medium') {
               priorityBadge = (
                 <span className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-                  TRUNG BÌNH
+                  {t('common.medium').toUpperCase()}
                 </span>
               );
             } else {
               priorityBadge = (
                 <span className="apple-glass-pill text-slate-600 dark:text-slate-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-                  THẤP
+                  {t('common.low').toUpperCase()}
                 </span>
               );
             }
@@ -103,11 +115,11 @@ export const AgendaListView: React.FC = () => {
                 >
                   <div className="space-y-1.5 text-xs flex-1">
                     <div className="flex flex-wrap items-center gap-2 font-bold app-text-primary">
-                      <span className="text-amber-600 dark:text-amber-400">{ev.time}</span>
+                      <span className="text-amber-600 dark:text-amber-400 font-mono">{ev.time}</span>
                       <span className="text-sm">{ev.title}</span>
-                      <span className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+                      <span className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 font-mono">
                         <Flame className="w-3.5 h-3.5 text-amber-500" />
-                        <span>{ev.streak} ngày liên tục</span>
+                        <span>{ev.streak} {t('common.days')}</span>
                       </span>
                       {priorityBadge}
                       {ev.isPremium && (
@@ -117,7 +129,7 @@ export const AgendaListView: React.FC = () => {
                       )}
                     </div>
                     <p className="app-text-muted text-[11px]">
-                      {ev.frequency || 'Rèn luyện thói quen kỷ luật mỗi ngày.'}
+                      {ev.frequency || (language === 'vi' ? 'Rèn luyện thói quen kỷ luật mỗi ngày.' : 'Daily discipline routine building.')}
                     </p>
                   </div>
 
@@ -130,7 +142,7 @@ export const AgendaListView: React.FC = () => {
                       className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-2xl text-xs font-bold shadow-xs transition-all flex items-center gap-1 cursor-pointer"
                     >
                       <Crown className="w-3.5 h-3.5" />
-                      <span>Mở khóa</span>
+                      <span>{language === 'vi' ? 'Mở khóa' : 'Unlock'}</span>
                     </button>
                   ) : (
                     <button
@@ -145,7 +157,7 @@ export const AgendaListView: React.FC = () => {
                       } px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center gap-1.5 cursor-pointer`}
                     >
                       <Check className="w-3.5 h-3.5" />
-                      <span>{ev.completed ? 'Đã hoàn thành' : 'Điểm danh'}</span>
+                      <span>{ev.completed ? t('modals.detail.checkedInBadge') : t('modals.detail.checkInBtn')}</span>
                     </button>
                   )}
                 </div>
@@ -161,12 +173,12 @@ export const AgendaListView: React.FC = () => {
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2 font-bold app-text-primary">
-                      <span className="text-emerald-600 dark:text-emerald-400">{ev.time}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-mono">{ev.time}</span>
                       <span className="text-sm">{ev.title}</span>
                       {priorityBadge}
                     </div>
                     <span className="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-emerald-500" /> Bản đồ AI
+                      <MapPin className="w-3 h-3 text-emerald-500" /> {language === 'vi' ? 'Bản đồ AI' : 'AI Map'}
                     </span>
                   </div>
 
@@ -178,11 +190,11 @@ export const AgendaListView: React.FC = () => {
                     <div className="flex items-center justify-between pt-1.5 border-t app-border text-[11px]">
                       <span className="flex items-center gap-1">
                         <Navigation className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400" />
-                        <span>Thời gian di chuyển: <b>{ev.travelTime}</b></span>
+                        <span>{t('modals.detail.travelTime')} <b>{ev.travelTime}</b></span>
                       </span>
                       <span className="text-amber-600 dark:text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-400/20 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        <span>Nhắc xuất phát: {ev.alertTime}</span>
+                        <span>{t('modals.detail.reminder')} {ev.alertTime}</span>
                       </span>
                     </div>
                   </div>

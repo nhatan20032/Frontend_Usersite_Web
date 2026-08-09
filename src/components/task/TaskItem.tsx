@@ -1,5 +1,6 @@
 import React from 'react';
 import type { TaskItem as TaskItemType } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 import { SubtaskList } from './SubtaskList';
 import { Clock, Bell, Trash2 } from 'lucide-react';
 
@@ -16,6 +17,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
   onToggleSubtask,
   onDeleteTask,
 }) => {
+  const { language, t } = useLanguage();
   const subtaskCount = task.subtasks?.length || 0;
   const subtaskDone = task.subtasks?.filter((s) => s.completed).length || 0;
   const progressPercent = subtaskCount > 0 ? Math.round((subtaskDone / subtaskCount) * 100) : 0;
@@ -41,17 +43,17 @@ export const TaskItem: React.FC<TaskItemProps> = ({
             </h4>
             {task.priority === 'high' && (
               <span className="text-[9px] bg-rose-500/15 text-rose-800 dark:text-rose-300 border border-rose-400/30 font-bold px-2 py-0.5 rounded-full">
-                GẤP
+                {language === 'vi' ? 'GẤP' : 'URGENT'}
               </span>
             )}
             {task.priority === 'medium' && (
               <span className="text-[9px] bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 font-bold px-2 py-0.5 rounded-full">
-                TB
+                {language === 'vi' ? 'TB' : 'MED'}
               </span>
             )}
           </div>
 
-          <div className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
+          <div className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1 font-mono">
             <Clock className="w-3 h-3" />
             <span>{task.dueDate}</span>
           </div>
@@ -59,8 +61,8 @@ export const TaskItem: React.FC<TaskItemProps> = ({
           {subtaskCount > 0 && (
             <div className="space-y-1 pt-1">
               <div className="flex justify-between text-[10px] app-text-muted">
-                <span>Tiến độ:</span>
-                <span className="font-bold text-blue-600 dark:text-sky-400">
+                <span>{language === 'vi' ? 'Tiến độ:' : 'Progress:'}</span>
+                <span className="font-bold text-blue-600 dark:text-sky-400 font-mono">
                   {subtaskDone}/${subtaskCount} ({progressPercent}%)
                 </span>
               </div>
@@ -87,7 +89,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
         <button
           onClick={() => onDeleteTask(task.id)}
           className="app-text-muted hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-          title="Xóa task"
+          title={t('common.delete')}
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>

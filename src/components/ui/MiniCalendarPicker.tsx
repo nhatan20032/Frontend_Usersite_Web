@@ -1,17 +1,27 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const monthNames = [
+const monthNamesVi = [
   'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
   'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
   'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
+];
+
+const monthNamesEn = [
+  'Jan', 'Feb', 'Mar', 'Apr',
+  'May', 'Jun', 'Jul', 'Aug',
+  'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
 const yearsList = Array.from({ length: 16 }, (_, i) => 2020 + i);
 
 export const MiniCalendarPicker: React.FC = () => {
   const { selectedDay, selectedMonth, selectedYear, selectDate, prevMonth, nextMonth } = useApp();
+  const { language, t } = useLanguage();
+
+  const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
   const firstDayIndex = new Date(selectedYear, selectedMonth, 1).getDay();
@@ -31,6 +41,16 @@ export const MiniCalendarPicker: React.FC = () => {
   const nextMonthIndex = selectedMonth === 11 ? 0 : selectedMonth + 1;
   const nextYear = selectedMonth === 11 ? selectedYear + 1 : selectedYear;
 
+  const miniWeekDays = [
+    t('calendar.sunShort'),
+    t('calendar.monShort'),
+    t('calendar.tueShort'),
+    t('calendar.wedShort'),
+    t('calendar.thuShort'),
+    t('calendar.friShort'),
+    t('calendar.satShort'),
+  ];
+
   return (
     <div className="space-y-2.5 border-b app-border pb-4 flex-shrink-0">
       <div className="flex items-center justify-between font-bold text-xs app-text-primary">
@@ -38,7 +58,7 @@ export const MiniCalendarPicker: React.FC = () => {
           <select
             value={selectedMonth}
             onChange={(e) => selectDate(selectedDay, Number(e.target.value), selectedYear)}
-            className="apple-glass-pill text-xs font-bold app-text-primary px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+            className="apple-glass-pill text-xs font-bold app-text-primary px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none"
           >
             {monthNames.map((name, idx) => (
               <option key={idx} value={idx} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
@@ -50,7 +70,7 @@ export const MiniCalendarPicker: React.FC = () => {
           <select
             value={selectedYear}
             onChange={(e) => selectDate(selectedDay, selectedMonth, Number(e.target.value))}
-            className="apple-glass-pill text-xs font-bold app-text-primary px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+            className="apple-glass-pill text-xs font-bold app-text-primary px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none font-mono"
           >
             {yearsList.map((y) => (
               <option key={y} value={y} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
@@ -60,18 +80,18 @@ export const MiniCalendarPicker: React.FC = () => {
           </select>
         </div>
 
-        <div className="flex items-center gap-1 app-text-secondary">
+        <div className="flex items-center gap-1">
           <button
             onClick={prevMonth}
-            className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl cursor-pointer"
-            title="Tháng trước"
+            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer"
+            title={t('calendar.prevMonth')}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={nextMonth}
-            className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl cursor-pointer"
-            title="Tháng sau"
+            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer"
+            title={t('calendar.nextMonth')}
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -79,7 +99,9 @@ export const MiniCalendarPicker: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold app-text-muted">
-        <span>CN</span><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span>
+        {miniWeekDays.map((d, i) => (
+          <span key={i}>{d}</span>
+        ))}
       </div>
 
       <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold">
@@ -104,7 +126,7 @@ export const MiniCalendarPicker: React.FC = () => {
               className={`p-1 rounded-xl cursor-pointer transition-all ${
                 isSelected
                   ? 'bg-blue-600 text-white font-bold'
-                  : 'hover:bg-black/5 dark:hover:bg-white/10 app-text-primary'
+                  : 'hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 app-text-primary'
               }`}
             >
               {d}

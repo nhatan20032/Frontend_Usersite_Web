@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { Check } from 'lucide-react';
 
 const hours = [
@@ -15,11 +16,22 @@ const hours = [
 
 export const WeekTimelineView: React.FC = () => {
   const { eventsData, selectedDay, selectedMonth, selectedYear, openModal, selectDate } = useApp();
+  const { language, t } = useLanguage();
 
   const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
   const dayOfWeek = selectedDate.getDay(); // 0 is Sunday
   const startOfWeek = new Date(selectedDate);
   startOfWeek.setDate(selectedDate.getDate() - dayOfWeek);
+
+  const shortNames = [
+    t('calendar.sunShort'),
+    t('calendar.monShort'),
+    t('calendar.tueShort'),
+    t('calendar.wedShort'),
+    t('calendar.thuShort'),
+    t('calendar.friShort'),
+    t('calendar.satShort'),
+  ];
 
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(startOfWeek);
@@ -29,7 +41,7 @@ export const WeekTimelineView: React.FC = () => {
       day: d.getDate(),
       month: d.getMonth(),
       year: d.getFullYear(),
-      dayName: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][d.getDay()],
+      dayName: shortNames[d.getDay()],
     };
   });
 
@@ -41,16 +53,18 @@ export const WeekTimelineView: React.FC = () => {
       <div className="apple-glass-card rounded-3xl p-5 space-y-3">
         <div className="flex items-center justify-between border-b app-border pb-3 text-xs">
           <span className="font-bold app-text-primary">
-            {`Khung giờ lịch trình tuần (${startDateStr} - ${endDateStr})`}
+            {language === 'vi'
+              ? `Khung giờ lịch trình tuần (${startDateStr} - ${endDateStr})`
+              : `Weekly Schedule Timeline (${startDateStr} - ${endDateStr})`}
           </span>
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-            <Check className="w-3.5 h-3.5" /> Mở khóa bởi Premium
+            <Check className="w-3.5 h-3.5" /> {language === 'vi' ? 'Mở khóa bởi VIP' : 'Unlocked by VIP'}
           </span>
         </div>
 
         {/* Week Day Column Headers */}
         <div className="grid grid-cols-8 gap-2 pb-2 border-b app-border text-center text-xs font-bold">
-          <span className="text-[11px] app-text-muted">Giờ</span>
+          <span className="text-[11px] app-text-muted">{language === 'vi' ? 'Giờ' : 'Time'}</span>
           {weekDays.map((wd) => {
             const isSelected =
               wd.day === selectedDay && wd.month === selectedMonth && wd.year === selectedYear;
@@ -65,7 +79,7 @@ export const WeekTimelineView: React.FC = () => {
                 }`}
               >
                 <div>{wd.dayName}</div>
-                <div className="text-[11px]">{wd.day}</div>
+                <div className="text-[11px] font-mono">{wd.day}</div>
               </div>
             );
           })}

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { User, Palette, Smartphone, Crown, LogOut } from 'lucide-react';
 
 interface UserProfileDropdownProps {
@@ -11,6 +12,7 @@ interface UserProfileDropdownProps {
 export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen, onClose }) => {
   const { currentUser, currentRole, logout } = useAuth();
   const { openModal } = useApp();
+  const { t } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,10 +51,10 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
           openModal('settings');
           onClose();
         }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-2 transition-colors"
+        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 flex items-center gap-2 transition-colors cursor-pointer"
       >
         <User className="w-4 h-4 text-slate-400" />
-        <span>Hồ sơ cá nhân</span>
+        <span>{t('modals.settings.tabProfile')}</span>
       </button>
 
       <button
@@ -60,10 +62,10 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
           openModal('settings');
           onClose();
         }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-2 transition-colors"
+        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 flex items-center gap-2 transition-colors cursor-pointer"
       >
         <Palette className="w-4 h-4 text-slate-400" />
-        <span>Kho giao diện (Themes)</span>
+        <span>{t('modals.settings.tabAppearance')}</span>
       </button>
 
       <button
@@ -71,10 +73,10 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
           openModal('settings');
           onClose();
         }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-black/5 dark:hover:bg-white/10 flex items-center gap-2 transition-colors"
+        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 flex items-center gap-2 transition-colors cursor-pointer"
       >
         <Smartphone className="w-4 h-4 text-slate-400" />
-        <span>Thiết bị đồng bộ</span>
+        <span>{t('modals.settings.tabDevices')}</span>
       </button>
 
       <button
@@ -82,10 +84,10 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
           openModal('checkout');
           onClose();
         }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 flex items-center gap-2 transition-colors"
+        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-500/15 hover:text-amber-800 dark:hover:text-amber-200 flex items-center gap-2 transition-colors cursor-pointer"
       >
         <Crown className="w-4 h-4 text-amber-500" />
-        <span>Nâng cấp gói Premium</span>
+        <span>{t('sidebar.upgradeBtn')}</span>
       </button>
 
       <div className="border-t app-border pt-1">
@@ -94,10 +96,10 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
             onClose();
             logout();
           }}
-          className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 transition-colors"
+          className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/15 hover:text-rose-800 dark:hover:text-rose-200 flex items-center gap-2 transition-colors cursor-pointer"
         >
           <LogOut className="w-4 h-4 text-rose-500" />
-          <span>Đăng xuất tài khoản</span>
+          <span>{t('header.logout')}</span>
         </button>
       </div>
     </div>
