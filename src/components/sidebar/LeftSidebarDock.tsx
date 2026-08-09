@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { PanelLeftOpen } from 'lucide-react';
+import { PanelLeftOpen, CalendarDays } from 'lucide-react';
 
 export const LeftSidebarDock: React.FC = () => {
   const { isLeftSidebarOpen, toggleLeftSidebar } = useApp();
@@ -8,17 +8,29 @@ export const LeftSidebarDock: React.FC = () => {
   if (isLeftSidebarOpen) return null;
 
   return (
-    <div className="flex-shrink-0 h-full border-r app-border apple-glass-surface flex flex-col items-center justify-start py-4 px-1.5 z-20 transition-all">
+    <div className="w-12 flex-shrink-0 h-full border-r app-border apple-glass-surface flex flex-col items-center justify-start py-4 px-1.5 z-20 transition-all select-none">
       <button
         onClick={toggleLeftSidebar}
-        className="p-2.5 apple-glass-pill hover:bg-blue-600 hover:text-white app-text-primary rounded-2xl shadow-md transition-all flex flex-col items-center gap-2.5 group cursor-pointer"
+        className="w-full py-3 px-1 rounded-2xl apple-glass-pill hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 active:scale-95 flex flex-col items-center gap-3 group cursor-pointer relative"
         title="Mở rộng Sidebar Trái"
       >
-        <PanelLeftOpen className="w-4 h-4 text-blue-600 dark:text-sky-400 group-hover:text-white transition-colors" />
-        <span className="text-[10px] font-bold tracking-widest [writing-mode:vertical-lr] rotate-180 uppercase py-2">
-          Lịch & Bộ lọc
-        </span>
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-sky-400 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-md group-hover:shadow-blue-500/25 transition-all duration-300">
+          <PanelLeftOpen className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" />
+        </div>
+
+        <div className="flex flex-col items-center gap-2 py-1">
+          <span className="text-[10px] font-bold tracking-[0.22em] [writing-mode:vertical-rl] uppercase app-text-secondary group-hover:app-text-primary transition-colors">
+            Lịch & Bộ lọc
+          </span>
+        </div>
+
+        {/* Floating Tooltip */}
+        <div className="absolute left-full ml-3.5 top-2 px-3 py-1.5 rounded-xl apple-glass-modal shadow-xl text-xs font-semibold whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 translate-x-1 group-hover:translate-x-0 z-50 flex items-center gap-2">
+          <CalendarDays className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400" />
+          <span className="app-text-primary">Mở rộng Lịch & Bộ lọc</span>
+        </div>
       </button>
     </div>
   );
 };
+
