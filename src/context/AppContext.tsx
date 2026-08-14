@@ -318,21 +318,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const toggleCheckInRoutine = (id: number) => {
+    const target = eventsData.find((e) => e.id === id);
+    if (!target) return;
+    const nextCompleted = !target.completed;
+    const nextStreak = nextCompleted ? (target.streak || 0) + 1 : Math.max(1, (target.streak || 1) - 1);
     setEventsData((prev) =>
-      prev.map((e) => {
-        if (e.id === id) {
-          const nextCompleted = !e.completed;
-          const nextStreak = nextCompleted ? (e.streak || 0) + 1 : Math.max(1, (e.streak || 1) - 1);
-          if (nextCompleted) {
-            showToast('Điểm danh thành công', `Chuỗi thói quen [${e.title}] đạt ${nextStreak} ngày liên tục.`, 'success');
-          } else {
-            showToast('Hủy điểm danh', `Đã hoàn tác trạng thái [${e.title}].`, 'info');
-          }
-          return { ...e, completed: nextCompleted, streak: nextStreak };
-        }
-        return e;
-      })
+      prev.map((e) => (e.id === id ? { ...e, completed: nextCompleted, streak: nextStreak } : e))
     );
+    if (nextCompleted) {
+      showToast('Điểm danh thành công', `Chuỗi thói quen [${target.title}] đạt ${nextStreak} ngày liên tục.`, 'success');
+    } else {
+      showToast('Hủy điểm danh', `Đã hoàn tác trạng thái [${target.title}].`, 'info');
+    }
   };
 
   const addTask = (title: string, priority: Priority = 'medium') => {
@@ -355,16 +352,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const toggleTask = (id: number) => {
+    const target = tasksData.find((t) => t.id === id);
+    if (!target) return;
+    const next = !target.completed;
     setTasksData((prev) =>
-      prev.map((t) => {
-        if (t.id === id) {
-          const next = !t.completed;
-          showToast(next ? 'Đã hoàn thành công việc' : 'Mở lại công việc', `[${t.title}]`, 'info');
-          return { ...t, completed: next };
-        }
-        return t;
-      })
+      prev.map((t) => (t.id === id ? { ...t, completed: next } : t))
     );
+    showToast(next ? 'Đã hoàn thành công việc' : 'Mở lại công việc', `[${target.title}]`, 'info');
   };
 
   const toggleSubtask = (taskId: number, subtaskId: number) => {
