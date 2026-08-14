@@ -20,12 +20,16 @@ export const CreateEventModal: React.FC = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const freqText =
-      frequency === 'daily'
-        ? (language === 'vi' ? 'Hàng ngày' : 'Daily')
-        : frequency === 'weekly'
-        ? (language === 'vi' ? 'Hàng tuần' : 'Weekly')
-        : (language === 'vi' ? 'Cứ 3 ngày 1 lần' : 'Every 3 days');
+    let freqText = 'Một lần';
+    if (frequency === 'daily') {
+      freqText = language === 'vi' ? 'Hàng ngày' : 'Daily';
+    } else if (frequency === 'weekdays' || frequency === 'weekly') {
+      freqText = language === 'vi' ? 'Hàng tuần (Thứ 2 - Thứ 6)' : 'Weekdays (Mon - Fri)';
+    } else if (frequency === 'interval') {
+      freqText = language === 'vi' ? 'Cứ 3 ngày 1 lần' : 'Every 3 days';
+    } else if (frequency === 'monthly') {
+      freqText = language === 'vi' ? 'Hàng tháng' : 'Monthly';
+    }
 
     const success = addEvent({
       type: type === 'task' ? 'routine' : type,

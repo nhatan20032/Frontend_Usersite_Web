@@ -23,7 +23,11 @@ interface AppContextType {
   searchQuery: string;
   activeEventId: number | null;
   addEvent: (event: Omit<CalendarEvent, 'id'>) => boolean;
-  deleteEvent: (id: number) => void;
+  deleteEvent: (id: number, deleteAllSeries?: boolean) => void;
+  activeRecurringEvent: CalendarEvent | null;
+  recurringActionType: 'delete' | 'edit';
+  openRecurringModal: (event: CalendarEvent, action?: 'delete' | 'edit') => void;
+  closeRecurringModal: () => void;
   toggleCheckInRoutine: (id: number) => void;
   setCalendarView: (view: CalendarViewMode) => void;
   selectDate: (day: number, month?: number, year?: number) => void;
@@ -45,6 +49,11 @@ interface AppContextType {
   isRightSidebarOpen: boolean;
   toggleLeftSidebar: () => void;
   toggleRightSidebar: () => void;
+
+  // Day Inspector
+  isDayInspectorOpen: boolean;
+  openDayInspector: (day?: number) => void;
+  closeDayInspector: () => void;
 
   // Theme
   currentTheme: ThemeName;
@@ -290,31 +299,140 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const [isDayInspectorOpen, setIsDayInspectorOpen] = useState<boolean>(false);
+
+  const openDayInspector = (day?: number) => {
+    if (day !== undefined) setSelectedDay(day);
+    setIsDayInspectorOpen(true);
+  };
+
+  const closeDayInspector = () => {
+    setIsDayInspectorOpen(false);
+  };
+
+  const [activeRecurringEvent, setActiveRecurringEvent] = useState<CalendarEvent | null>(null);
+  const [recurringActionType, setRecurringActionType] = useState<'delete' | 'edit'>('delete');
+
+  const openRecurringModal = (event: CalendarEvent, action: 'delete' | 'edit' = 'delete') => {
+    setActiveRecurringEvent(event);
+    setRecurringActionType(action);
+    openModal('recurring-action');
+  };
+
+  const closeRecurringModal = () => {
+    setActiveRecurringEvent(null);
+    closeModal();
+  };
+
   const addEvent = (newEvent: Omit<CalendarEvent, 'id'>): boolean => {
     if (newEvent.type === 'routine') {
       const routineCount = eventsData.filter((e) => e.type === 'routine').length;
-      if (currentRole === 'FREE' && routineCount >= 5) {
-        triggerPremiumFeature('Tạo hơn 5 thói quen lặp lại');
+      if (currentRole === 'FREE' && routineCount >= 10) {
+        triggerPremiumFeature('Tạo hơn 10 thói quen lặp lại');
         return false;
       }
     }
 
-    const eventWithId: CalendarEvent = {
-      ...newEvent,
-      id: Date.now(),
-      year: newEvent.year || selectedYear,
-      month: newEvent.month !== undefined ? newEvent.month : selectedMonth,
-      day: newEvent.day || selectedDay,
-    };
+    const year = newEvent.year || selectedYear;
+    const month = newEvent.month !== undefined ? newEvent.month : selectedMonth;
+    const baseDay = newEvent.day || selectedDay;
+    const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
 
-    setEventsData((prev) => [eventWithId, ...prev]);
-    showToast('Khởi tạo thành công', `Đã lưu [${newEvent.title}] vào lịch trình.`, 'success');
+    const newEventsToAdd: CalendarEvent[] = [];
+    const freq = (newEvent.frequency || '').toLowerCase();
+    const generatedSeriesId = 'series_' + Date.now();
+
+    // Recurrence Engine: Generate for matching days in month
+    if (freq.includes('hàng ngày') || freq.includes('daily')) {
+      for (let d = baseDay; d <= daysInCurrentMonth; d++) {
+        newEventsToAdd.push({
+          ...newEvent,
+          id: Date.now() + d * 10,
+          seriesId: generatedSeriesId,
+          year,
+          month,
+          day: d,
+        });
+      }
+    } else if (freq.includes('thứ 2') || freq.includes('weekday') || freq.includes('mon - fri') || freq.includes('tuần (thứ 2')) {
+      for (let d = 1; d <= daysInCurrentMonth; d++) {
+        const dayOfWeek = new Date(year, month, d).getDay();
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Mon to Fri
+          newEventsToAdd.push({
+            ...newEvent,
+            id: Date.now() + d * 10,
+            seriesId: generatedSeriesId,
+            year,
+            month,
+            day: d,
+          });
+        }
+      }
+    } else if (freq.includes('hàng tuần') || freq.includes('weekly')) {
+      const targetDayOfWeek = new Date(year, month, baseDay).getDay();
+      for (let d = 1; d <= daysInCurrentMonth; d++) {
+        if (new Date(year, month, d).getDay() === targetDayOfWeek) {
+          newEventsToAdd.push({
+            ...newEvent,
+            id: Date.now() + d * 10,
+            seriesId: generatedSeriesId,
+            year,
+            month,
+            day: d,
+          });
+        }
+      }
+    } else if (freq.includes('3 ngày') || freq.includes('3 days') || freq.includes('interval')) {
+      for (let d = baseDay; d <= daysInCurrentMonth; d += 3) {
+        newEventsToAdd.push({
+          ...newEvent,
+          id: Date.now() + d * 10,
+          seriesId: generatedSeriesId,
+          year,
+          month,
+          day: d,
+        });
+      }
+    } else {
+      newEventsToAdd.push({
+        ...newEvent,
+        id: Date.now(),
+        year,
+        month,
+        day: baseDay,
+      });
+    }
+
+    setEventsData((prev) => [...newEventsToAdd, ...prev]);
+    showToast(
+      'Khởi tạo thành công',
+      newEventsToAdd.length > 1
+        ? `Đã tạo chuỗi lặp [${newEvent.title}] cho ${newEventsToAdd.length} ngày trong tháng!`
+        : `Đã lưu [${newEvent.title}] vào lịch trình.`,
+      'success'
+    );
     return true;
   };
 
-  const deleteEvent = (id: number) => {
-    setEventsData((prev) => prev.filter((e) => e.id !== id));
-    showToast('Đã xóa', 'Mục đã được xóa khỏi lịch.', 'info');
+  const deleteEvent = (id: number, deleteAllSeries: boolean = false) => {
+    const target = eventsData.find((e) => e.id === id);
+    if (!target) return;
+
+    if (deleteAllSeries) {
+      const targetSeriesId = target.seriesId;
+      const targetTitle = target.title.trim();
+      setEventsData((prev) =>
+        prev.filter((e) => {
+          if (targetSeriesId && e.seriesId === targetSeriesId) return false;
+          if (e.title.trim() === targetTitle && e.type === target.type) return false;
+          return true;
+        })
+      );
+      showToast('Đã xóa toàn bộ chuỗi', `Đã dọn dẹp toàn bộ chuỗi [${target.title}] khỏi lịch.`, 'info');
+    } else {
+      setEventsData((prev) => prev.filter((e) => e.id !== id));
+      showToast('Đã xóa sự kiện', `Đã xóa [${target.title}] cho ngày này.`, 'info');
+    }
   };
 
   const toggleCheckInRoutine = (id: number) => {
@@ -428,11 +546,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isRightSidebarOpen,
         toggleLeftSidebar,
         toggleRightSidebar,
+        isDayInspectorOpen,
+        openDayInspector,
+        closeDayInspector,
         currentTheme,
         setTheme: setCurrentTheme,
         activeModal,
         openModal,
         closeModal,
+        activeRecurringEvent,
+        recurringActionType,
+        openRecurringModal,
+        closeRecurringModal,
         triggerPremiumFeature,
         toasts,
         showToast,

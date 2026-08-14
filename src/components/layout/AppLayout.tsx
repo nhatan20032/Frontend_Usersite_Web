@@ -9,7 +9,7 @@ import { RightSidebarDock } from '../sidebar/RightSidebarDock';
 import { CalendarControls } from '../calendar/CalendarControls';
 import { MonthGridView } from '../calendar/MonthGridView';
 import { WeekTimelineView } from '../calendar/WeekTimelineView';
-import { AgendaListView } from '../calendar/AgendaListView';
+import { DayInspectorDrawer } from '../calendar/DayInspectorDrawer';
 import { ProductivityKPI } from '../calendar/ProductivityKPI';
 import { ModalManager } from '../modals/ModalManager';
 import { ToastContainer } from '../ui/ToastContainer';
@@ -46,7 +46,6 @@ export const AppLayout: React.FC = () => {
           <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6">
             {calendarView === 'month' && <MonthGridView />}
             {calendarView === 'week' && <WeekTimelineView />}
-            {(calendarView === 'month' || calendarView === 'agenda') && <AgendaListView />}
             <ProductivityKPI />
           </div>
         </main>
@@ -58,10 +57,13 @@ export const AppLayout: React.FC = () => {
         <RightSidebarDock />
       </div>
 
-      {/* 4. MODALS & POPUPS */}
+      {/* 4. SLIDE-OVER DAY INSPECTOR DRAWER */}
+      <DayInspectorDrawer />
+
+      {/* 5. MODALS & POPUPS */}
       <ModalManager />
 
-      {/* 5. TOAST NOTIFICATIONS */}
+      {/* 6. TOAST NOTIFICATIONS */}
       <ToastContainer />
     </div>
   );

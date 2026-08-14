@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export const MonthGridView: React.FC = () => {
-  const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate } = useApp();
+  const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate, openDayInspector } = useApp();
   const { language, t } = useLanguage();
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
@@ -45,13 +45,17 @@ export const MonthGridView: React.FC = () => {
         </div>
 
         {/* Dynamic Month Grid */}
-        <div className="grid grid-cols-7 gap-2 min-h-[350px]">
+        <div className="grid grid-cols-7 gap-2 min-h-[420px]">
           {/* Leading padding days from previous month */}
           {leadingPadding.map((pad) => (
             <div
               key={`grid-pad-prev-${pad}`}
-              onClick={() => selectDate(pad, prevMonthIndex, prevYear)}
-              className="p-2.5 rounded-2xl apple-glass-pill opacity-40 text-slate-400 dark:text-slate-600 text-xs min-h-[70px] cursor-pointer hover:opacity-75 transition-opacity"
+              onClick={() => {
+                selectDate(pad, prevMonthIndex, prevYear);
+                openDayInspector(pad);
+              }}
+              title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
+              className="p-2.5 rounded-2xl apple-glass-pill opacity-40 text-slate-400 dark:text-slate-600 text-xs min-h-[85px] cursor-pointer hover:opacity-75 transition-opacity select-none"
             >
               {pad}
             </div>
@@ -67,11 +71,15 @@ export const MonthGridView: React.FC = () => {
             return (
               <div
                 key={d}
-                onClick={() => selectDate(d, selectedMonth, selectedYear)}
-                className={`p-2.5 rounded-2xl transition-all cursor-pointer min-h-[70px] flex flex-col justify-between ${
+                onClick={() => {
+                  selectDate(d, selectedMonth, selectedYear);
+                  openDayInspector(d);
+                }}
+                title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
+                className={`p-2.5 rounded-2xl transition-all cursor-pointer min-h-[85px] flex flex-col justify-between select-none ${
                   isSelected
-                    ? 'border-2 border-blue-500 bg-blue-500/10 shadow-sm'
-                    : 'border app-border apple-glass-card hover:border-slate-400 dark:hover:border-slate-500'
+                    ? 'border-2 border-blue-500 bg-blue-500/10 shadow-sm ring-2 ring-blue-500/20'
+                    : 'border app-border apple-glass-card hover:border-slate-400 dark:hover:border-slate-500 hover:shadow-xs'
                 }`}
               >
                 <div
@@ -117,8 +125,12 @@ export const MonthGridView: React.FC = () => {
           {trailingPadding.map((pad) => (
             <div
               key={`grid-pad-next-${pad}`}
-              onClick={() => selectDate(pad, nextMonthIndex, nextYear)}
-              className="p-2.5 rounded-2xl apple-glass-pill opacity-40 text-slate-400 dark:text-slate-600 text-xs min-h-[70px] cursor-pointer hover:opacity-75 transition-opacity"
+              onClick={() => {
+                selectDate(pad, nextMonthIndex, nextYear);
+                openDayInspector(pad);
+              }}
+              title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
+              className="p-2.5 rounded-2xl apple-glass-pill opacity-40 text-slate-400 dark:text-slate-600 text-xs min-h-[85px] cursor-pointer hover:opacity-75 transition-opacity select-none"
             >
               {pad}
             </div>

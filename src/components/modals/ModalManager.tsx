@@ -4,6 +4,7 @@ import { EventDetailModal } from './EventDetailModal';
 import { CheckoutModal } from './CheckoutModal';
 import { LimitModal } from './LimitModal';
 import { SettingsModal } from './SettingsModal';
+import { RecurringActionModal } from './RecurringActionModal';
 
 export const ModalManager: React.FC = () => {
   return (
@@ -13,6 +14,7 @@ export const ModalManager: React.FC = () => {
       <CheckoutModal />
       <LimitModal />
       <SettingsModal />
+      <RecurringActionModal />
     </>
   );
 };

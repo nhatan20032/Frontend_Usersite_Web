@@ -114,16 +114,6 @@ export const CalendarControls: React.FC = () => {
             VIP
           </span>
         </button>
-        <button
-          onClick={() => setCalendarView('agenda')}
-          className={`h-8 min-w-[68px] sm:min-w-[80px] text-center px-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center ${
-            calendarView === 'agenda'
-              ? 'font-extrabold bg-white dark:bg-slate-800 text-blue-600 dark:text-sky-400 shadow-sm border border-black/10 dark:border-white/10'
-              : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-blue-500/10 font-bold'
-          }`}
-        >
-          {t('calendar.viewAgenda')}
-        </button>
       </div>
     </div>
   );
