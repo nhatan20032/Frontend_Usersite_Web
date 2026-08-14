@@ -26,7 +26,7 @@ const monthNamesEn = [
 ];
 
 export const AgendaListView: React.FC = () => {
-  const { currentRole } = useAuth();
+  const { isPremium } = useAuth();
   const {
     eventsData,
     selectedDay,
@@ -133,7 +133,7 @@ export const AgendaListView: React.FC = () => {
                     </p>
                   </div>
 
-                  {ev.isPremium && currentRole === 'FREE' ? (
+                  {ev.isPremium && !isPremium ? (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -157,7 +157,7 @@ export const AgendaListView: React.FC = () => {
                       } px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 min-w-[124px] flex-shrink-0 cursor-pointer`}
                     >
                       <Check className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="truncate">{ev.completed ? t('modals.detail.checkedInBadge') : t('modals.detail.checkInBtn')}</span>
+                      <span className="truncate">{ev.completed ? (language === 'vi' ? 'Đã điểm danh' : 'Checked In') : (language === 'vi' ? 'Điểm danh' : 'Check In')}</span>
                     </button>
                   )}
                 </div>

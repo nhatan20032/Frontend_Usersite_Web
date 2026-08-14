@@ -18,8 +18,8 @@ import {
 } from 'lucide-react';
 
 export const SettingsModal: React.FC = () => {
-  const { currentUser, currentRole, updateProfile } = useAuth();
-  const { activeModal, closeModal, currentTheme, setTheme, showToast, openModal } = useApp();
+  const { currentUser, currentRole, isPremium, updateProfile } = useAuth();
+  const { activeModal, closeModal, currentTheme, setTheme, showToast, openModal, triggerPremiumFeature } = useApp();
   const { language, setLanguage, t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'language' | 'notifications' | 'devices' | 'billing'>('profile');
@@ -218,30 +218,44 @@ export const SettingsModal: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 {themes.map((th) => {
                   const isCurrent = currentTheme === th.id;
+                  const isVipTheme = th.id !== 'default' && th.id !== 'dark';
+                  const isLocked = isVipTheme && !isPremium;
+
                   return (
                     <div
                       key={th.id}
                       onClick={() => {
+                        if (isLocked) {
+                          triggerPremiumFeature(`Giao diện ${th.name}`);
+                          return;
+                        }
                         setTheme(th.id);
                         showToast(t('toasts.themeChangedTitle'), t('toasts.themeChangedDesc'), 'success');
                       }}
                       className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 relative ${
                         isCurrent
                           ? 'border-2 border-blue-500 bg-blue-500/10 shadow-sm'
+                          : isLocked
+                          ? 'apple-glass-pill opacity-75 hover:opacity-100 hover:border-amber-500/50'
                           : 'apple-glass-pill hover:border-slate-400'
                       }`}
                     >
                       <div
-                        className={`w-10 h-10 rounded-xl bg-gradient-to-br ${th.previewClass} border shadow-xs flex items-center justify-center flex-shrink-0`}
+                        className={`w-10 h-10 rounded-xl bg-gradient-to-br ${th.previewClass} border shadow-xs flex items-center justify-center flex-shrink-0 relative`}
                       >
                         {isCurrent && <Check className="w-4 h-4 text-blue-600 dark:text-sky-400" />}
+                        {isLocked && !isCurrent && <Crown className="w-4 h-4 text-amber-500" />}
                       </div>
                       <div className="space-y-0.5 flex-1">
                         <div className="font-bold app-text-primary flex items-center justify-between">
                           <span>{th.name}</span>
-                          {th.id !== 'default' && (
-                            <span className="text-[9px] bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold px-1.5 py-0.5 rounded-full">
-                              VIP
+                          {isVipTheme && (
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                              isLocked
+                                ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                                : 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                            }`}>
+                              {isLocked ? 'VIP 🔒' : 'VIP ✓'}
                             </span>
                           )}
                         </div>

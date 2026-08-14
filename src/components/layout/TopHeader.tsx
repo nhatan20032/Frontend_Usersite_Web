@@ -3,12 +3,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { UserProfileDropdown } from './UserProfileDropdown';
-import { Calendar, Search, Plus, Settings } from 'lucide-react';
+import { Calendar, Search, Plus, Settings, Crown, Sparkles } from 'lucide-react';
 
 export const TopHeader: React.FC = () => {
-  const { currentUser, currentRole } = useAuth();
+  const { currentUser, subscriptionTier, isPremium } = useAuth();
   const { searchQuery, setSearchQuery, openModal } = useApp();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
   return (
@@ -21,9 +21,18 @@ export const TopHeader: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-base tracking-tight app-text-primary">RoutinePulse</span>
-            <span className="apple-glass-pill text-slate-600 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
-              {currentRole}
-            </span>
+            
+            {/* Distinct Tier Badge */}
+            {isPremium ? (
+              <span className="bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 border border-yellow-300/40">
+                <Crown className="w-3 h-3 fill-slate-950 text-slate-950" />
+                {subscriptionTier === 'VIP' ? 'VIP 👑' : 'PRO ⭐'}
+              </span>
+            ) : (
+              <span className="apple-glass-pill text-slate-600 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-300 dark:border-slate-700">
+                FREE
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -42,9 +51,18 @@ export const TopHeader: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Controls: Quick Create, Settings & Account Dropdown */}
+      {/* Right Controls: Quick Create, Upgrade button, Settings & Account Dropdown */}
       <div className="flex items-center gap-2 flex-shrink-0">
-
+        {/* Prominent Upgrade Button for Free Users */}
+        {!isPremium && (
+          <button
+            onClick={() => openModal('checkout')}
+            className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold px-3 py-2 rounded-2xl text-xs shadow-md shadow-amber-500/20 transition-all transform hover:scale-105 cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 animate-spin-slow" />
+            <span>{language === 'vi' ? 'Nâng cấp PRO' : 'Upgrade PRO'}</span>
+          </button>
+        )}
 
         {/* Quick Create Action */}
         <button
@@ -68,7 +86,11 @@ export const TopHeader: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen((prev) => !prev)}
-            className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-md shadow-blue-500/20 border border-white/40 hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+            className={`w-9 h-9 rounded-2xl font-bold flex items-center justify-center text-xs shadow-md transition-all cursor-pointer border ${
+              isPremium
+                ? 'bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 border-amber-300/80 ring-2 ring-amber-400/50'
+                : 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white border-white/40 hover:ring-2 hover:ring-blue-500'
+            }`}
           >
             <span>{currentUser?.avatarInitial || 'AN'}</span>
           </button>
@@ -79,4 +101,3 @@ export const TopHeader: React.FC = () => {
     </header>
   );
 };
-

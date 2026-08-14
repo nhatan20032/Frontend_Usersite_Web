@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { User, Palette, Smartphone, Crown, LogOut, Globe } from 'lucide-react';
+import { User, Palette, Smartphone, Crown, LogOut, Globe, Sparkles } from 'lucide-react';
 
 interface UserProfileDropdownProps {
   isOpen: boolean;
@@ -10,8 +10,8 @@ interface UserProfileDropdownProps {
 }
 
 export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen, onClose }) => {
-  const { currentUser, currentRole, logout } = useAuth();
-  const { openModal } = useApp();
+  const { currentUser, subscriptionTier, isPremium, upgradeToTier, setRole, logout } = useAuth();
+  const { openModal, showToast } = useApp();
   const { language, setLanguage, t } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -31,21 +31,61 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
 
   if (!isOpen) return null;
 
+  const handleToggleDemoTier = () => {
+    if (isPremium) {
+      setRole('FREE_USER');
+      upgradeToTier('FREE', 'Gói Miễn Phí');
+      showToast('Chuyển sang tài khoản FREE', 'Đang giả lập trải nghiệm Người dùng Miễn phí.', 'info');
+    } else {
+      setRole('PREMIUM_USER');
+      upgradeToTier('PRO', 'Gói Chuyên Nghiệp (PRO)');
+      showToast('Kích hoạt tài khoản PRO', 'Mở khóa toàn bộ đặc quyền Premium Pro!', 'success');
+    }
+  };
+
   return (
     <div
       ref={dropdownRef}
-      className="absolute right-0 mt-2 w-64 apple-glass-modal rounded-3xl p-2.5 space-y-1 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150"
+      className="absolute right-0 mt-2 w-72 apple-glass-modal rounded-3xl p-2.5 space-y-1 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 border app-border"
     >
-      <div className="p-2.5 border-b app-border space-y-0.5">
+      {/* Account Info Header */}
+      <div className="p-3 border-b app-border space-y-1 rounded-2xl bg-black/5 dark:bg-white/5">
         <div className="flex items-center justify-between">
           <span className="font-bold text-xs app-text-primary">{currentUser?.name || 'Nguyễn Văn An'}</span>
-          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-100/80 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
-            {currentRole}
-          </span>
+          {isPremium ? (
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 flex items-center gap-1 shadow-xs">
+              <Crown className="w-2.5 h-2.5 fill-slate-950" />
+              {subscriptionTier}
+            </span>
+          ) : (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+              FREE
+            </span>
+          )}
         </div>
         <p className="text-[11px] app-text-muted truncate">{currentUser?.email || 'an.nguyen@routinepulse.com'}</p>
+        <div className="text-[10px] text-slate-500 pt-0.5">
+          {isPremium
+            ? `⭐ ${currentUser?.planName || 'Gói Pro'} (Đang kích hoạt)`
+            : '🔒 Gói Miễn phí (Giới hạn 10 task, 5 routines)'}
+        </div>
       </div>
 
+      {/* Quick Demo Switcher between FREE & PRO */}
+      <div className="p-1.5 border-b app-border">
+        <button
+          onClick={handleToggleDemoTier}
+          className="w-full p-2 rounded-xl text-[11px] font-bold flex items-center justify-between bg-blue-500/10 text-blue-600 dark:text-sky-400 hover:bg-blue-500/20 transition-all cursor-pointer"
+        >
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{isPremium ? 'Chuyển về Test FREE' : 'Kích hoạt Test PRO'}</span>
+          </div>
+          <span className="text-[9px] bg-blue-500 text-white px-1.5 py-0.5 rounded-md">Demo Mode</span>
+        </button>
+      </div>
+
+      {/* Settings Navigation */}
       <button
         onClick={() => {
           openModal('settings');
@@ -90,10 +130,9 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
             onClick={() => setLanguage('vi')}
             className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
               language === 'vi'
-                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
-                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 font-bold'
+                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm'
+                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 font-bold'
             }`}
-            title="Tiếng Việt"
           >
             <span>🇻🇳</span>
             <span>VI</span>
@@ -102,10 +141,9 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
             onClick={() => setLanguage('en')}
             className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
               language === 'en'
-                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm border border-black/10 dark:border-white/10'
-                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 font-bold'
+                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm'
+                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 font-bold'
             }`}
-            title="English"
           >
             <span>🇬🇧</span>
             <span>EN</span>
@@ -113,24 +151,33 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
         </div>
       </div>
 
-      <button
-        onClick={() => {
-          openModal('checkout');
-          onClose();
-        }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-500/15 hover:text-amber-800 dark:hover:text-amber-200 flex items-center gap-2 transition-colors cursor-pointer"
-      >
-        <Crown className="w-4 h-4 text-amber-500" />
-        <span>{t('sidebar.upgradeBtn')}</span>
-      </button>
+      {/* Upgrade CTA */}
+      {!isPremium ? (
+        <button
+          onClick={() => {
+            openModal('checkout');
+            onClose();
+          }}
+          className="w-full text-left p-2.5 rounded-2xl text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 flex items-center gap-2 transition-colors cursor-pointer"
+        >
+          <Crown className="w-4 h-4 text-amber-500" />
+          <span>{t('sidebar.upgradeBtn')}</span>
+        </button>
+      ) : (
+        <div className="p-2 text-center text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center justify-center gap-1">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Tài khoản PRO đã mở khóa toàn bộ</span>
+        </div>
+      )}
 
+      {/* Logout */}
       <div className="border-t app-border pt-1">
         <button
           onClick={() => {
             onClose();
             logout();
           }}
-          className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/15 hover:text-rose-800 dark:hover:text-rose-200 flex items-center gap-2 transition-colors cursor-pointer"
+          className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/15 flex items-center gap-2 transition-colors cursor-pointer"
         >
           <LogOut className="w-4 h-4 text-rose-500" />
           <span>{t('header.logout')}</span>

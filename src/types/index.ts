@@ -1,13 +1,30 @@
-export type AccountRole = 'FREE' | 'TRIAL' | 'PREMIUM';
+export type SubscriptionTier = 'FREE' | 'BASIC' | 'PRO' | 'VIP';
+export type AccountRole = 'FREE' | 'TRIAL' | 'PREMIUM' | 'FREE_USER' | 'PREMIUM_USER' | 'SUPER_ADMIN';
 export type Language = 'vi' | 'en';
 
 export interface User {
+  id?: string;
   isLoggedIn: boolean;
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
   role: AccountRole;
+  subscriptionTier: SubscriptionTier;
+  isPremium: boolean;
+  planName?: string;
+  planExpiresAt?: string;
+  features?: string[];
   avatarInitial: string;
+}
+
+export interface SubscriptionPlanDto {
+  id: string;
+  name: string;
+  durationMonths: number;
+  originalPrice: number;
+  featuresJson?: string;
+  isPopular: boolean;
+  isActive: boolean;
 }
 
 export type ThemeName = 'default' | 'dark' | 'tet' | 'christmas' | 'sakura';
@@ -29,6 +46,7 @@ export interface CalendarEvent {
   completed?: boolean;
   isPremium?: boolean;
   frequency?: string;
+  seriesId?: string;
   location?: string;
   travelTime?: string;
   alertTime?: string;
@@ -60,7 +78,7 @@ export interface ToastNotification {
   duration?: number;
 }
 
-export type ActiveModalType = 'create' | 'detail' | 'checkout' | 'limit' | 'settings' | null;
+export type ActiveModalType = 'create' | 'detail' | 'checkout' | 'limit' | 'settings' | 'upgrade' | 'recurring-action' | null;
 
 export interface CategoryFilters {
   routine: boolean;

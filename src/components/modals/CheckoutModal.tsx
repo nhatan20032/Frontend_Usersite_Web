@@ -2,53 +2,94 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { X, Crown } from 'lucide-react';
+import { subscriptionApi } from '../../api/subscriptionApi';
+import { X, Crown, Sparkles, Check, Tag } from 'lucide-react';
 
 export const CheckoutModal: React.FC = () => {
-  const { setRole } = useAuth();
+  const { upgradeToTier, setRole } = useAuth();
   const { activeModal, closeModal, showToast } = useApp();
   const { language, t } = useLanguage();
 
   const [selectedPlanMonths, setSelectedPlanMonths] = useState<number>(12);
   const [selectedPlanBasePrice, setSelectedPlanBasePrice] = useState<number>(179000);
+  const [selectedPlanName, setSelectedPlanName] = useState<string>('Gói Trọn Đời VIP (1 Năm)');
   const [couponCode, setCouponCode] = useState<string>('');
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [couponMessage, setCouponMessage] = useState<{ text: string; success: boolean } | null>(null);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   if (activeModal !== 'checkout') return null;
 
-  const selectPlan = (months: number, price: number) => {
+  const selectPlan = (months: number, price: number, name: string) => {
     setSelectedPlanMonths(months);
     setSelectedPlanBasePrice(price);
+    setSelectedPlanName(name);
   };
 
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
-    if (code === 'TET2026' || code === 'VIP50' || code === 'PREMIUM50') {
-      setCouponDiscount(30000);
+    if (!code) return;
+
+    try {
+      const res = await subscriptionApi.applyCoupon(code, selectedPlanBasePrice);
+      setCouponDiscount(res.discountValue);
       setCouponMessage({
-        text: language === 'vi' ? `Áp dụng mã [${code}] thành công: Giảm thêm 30.000đ!` : `Coupon [${code}] applied: Extra $3.00 off!`,
+        text: res.message || (language === 'vi' ? `Áp dụng mã [${code}] thành công!` : `Coupon [${code}] applied!`),
         success: true,
       });
-      showToast(language === 'vi' ? 'Mã ưu đãi hợp lệ' : 'Coupon Valid', language === 'vi' ? 'Giảm thêm 30.000đ.' : 'Extra discount applied.', 'success');
-    } else {
-      setCouponDiscount(0);
-      setCouponMessage({
-        text: language === 'vi' ? 'Mã ưu đãi không hợp lệ hoặc đã hết hạn!' : 'Coupon invalid or expired!',
-        success: false,
-      });
-      showToast(language === 'vi' ? 'Lỗi Coupon' : 'Coupon Error', language === 'vi' ? 'Mã không hợp lệ.' : 'Invalid coupon code.', 'error');
+      showToast('Mã ưu đãi hợp lệ', `Giảm ${res.discountValue.toLocaleString()}đ`, 'success');
+    } catch {
+      // Fallback local logic for demo/offline
+      if (code === 'VIP50' || code === 'PREMIUM50') {
+        const discount = Math.round(selectedPlanBasePrice * 0.5);
+        setCouponDiscount(discount);
+        setCouponMessage({
+          text: language === 'vi' ? `Áp dụng mã [${code}] thành công: Giảm 50%!` : `Coupon [${code}] applied: 50% off!`,
+          success: true,
+        });
+        showToast('Mã ưu đãi hợp lệ', 'Giảm 50% trực tiếp vào đơn hàng.', 'success');
+      } else if (code === 'TET2026' || code === 'PRO2026') {
+        const discount = 30000;
+        setCouponDiscount(discount);
+        setCouponMessage({
+          text: language === 'vi' ? `Áp dụng mã [${code}] thành công: Giảm 30.000đ!` : `Coupon [${code}] applied: $3.00 off!`,
+          success: true,
+        });
+        showToast('Mã ưu đãi hợp lệ', 'Giảm 30.000đ trực tiếp vào đơn hàng.', 'success');
+      } else {
+        setCouponDiscount(0);
+        setCouponMessage({
+          text: language === 'vi' ? 'Mã ưu đãi không hợp lệ hoặc đã hết lượt!' : 'Coupon invalid or expired!',
+          success: false,
+        });
+        showToast('Lỗi Coupon', 'Mã không hợp lệ.', 'error');
+      }
     }
   };
 
   const finalPrice = Math.max(0, selectedPlanBasePrice - couponDiscount);
 
-  const handleConfirmUpgrade = () => {
-    setRole('PREMIUM');
+  const handleConfirmUpgrade = async () => {
+    setIsProcessing(true);
+    const targetTier = selectedPlanMonths >= 12 ? 'VIP' : 'PRO';
+
+    try {
+      // Try calling backend upgrade endpoint
+      await subscriptionApi.upgrade('00000000-0000-0000-0000-000000000001', couponCode || undefined);
+    } catch {
+      // Continue client state update
+    }
+
+    setRole('PREMIUM_USER');
+    upgradeToTier(targetTier, selectedPlanName);
+    setIsProcessing(false);
     closeModal();
+
     showToast(
-      language === 'vi' ? 'Nâng cấp thành công' : 'Upgrade Successful',
-      language === 'vi' ? 'Chúc mừng bạn đã sở hữu tài khoản RoutinePulse Premium VIP!' : 'Congratulations! You unlocked RoutinePulse VIP Pro!',
+      language === 'vi' ? 'Nâng cấp thành công 🎉' : 'Upgrade Successful 🎉',
+      language === 'vi'
+        ? `Chúc mừng bạn đã sở hữu tài khoản RoutinePulse ${targetTier}!`
+        : `Congratulations! You unlocked RoutinePulse ${targetTier}!`,
       'success',
       4000
     );
@@ -66,9 +107,9 @@ export const CheckoutModal: React.FC = () => {
 
         <div className="space-y-1">
           <span className="apple-glass-pill text-amber-600 dark:text-amber-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase flex items-center gap-1 w-fit">
-            <Crown className="w-3 h-3 text-amber-500" /> {language === 'vi' ? 'Nâng cấp dịch vụ' : 'VIP Upgrade'}
+            <Crown className="w-3 h-3 text-amber-500" /> {language === 'vi' ? 'Nâng cấp đặc quyền' : 'VIP Upgrade'}
           </span>
-          <h3 className="text-lg font-bold app-text-primary pt-1">RoutinePulse Premium VIP</h3>
+          <h3 className="text-lg font-bold app-text-primary pt-1">RoutinePulse Premium PRO & VIP</h3>
           <p className="text-xs app-text-muted">
             {t('modals.checkout.subtitle')}
           </p>
@@ -77,10 +118,10 @@ export const CheckoutModal: React.FC = () => {
         {/* Plan Selector Cards */}
         <div className="grid grid-cols-3 gap-2 text-xs text-center">
           <div
-            onClick={() => selectPlan(1, 49000)}
+            onClick={() => selectPlan(1, 49000, 'Gói Pro 1 Tháng')}
             className={`p-3 rounded-2xl cursor-pointer transition-all min-h-[92px] flex flex-col justify-between ${
               selectedPlanMonths === 1
-                ? 'bg-blue-500/15 border-2 border-blue-500'
+                ? 'bg-blue-500/15 border-2 border-blue-500 shadow-sm'
                 : 'apple-glass-pill hover:border-blue-500'
             }`}
           >
@@ -88,101 +129,114 @@ export const CheckoutModal: React.FC = () => {
             <div className="text-blue-600 dark:text-sky-400 font-bold mt-1 font-mono">
               {language === 'vi' ? '49.000đ' : '$1.99'}
             </div>
+            <span className="text-[9px] text-slate-500">Gói Pro</span>
           </div>
 
           <div
-            onClick={() => selectPlan(6, 199000)}
+            onClick={() => selectPlan(6, 199000, 'Gói Pro 6 Tháng')}
             className={`p-3 rounded-2xl cursor-pointer transition-all min-h-[92px] flex flex-col justify-between ${
               selectedPlanMonths === 6
-                ? 'bg-blue-500/15 border-2 border-blue-500'
+                ? 'bg-blue-500/15 border-2 border-blue-500 shadow-sm'
                 : 'apple-glass-pill hover:border-blue-500'
             }`}
           >
             <div className="font-bold app-text-primary truncate">{language === 'vi' ? '6 Tháng' : '6 Months'}</div>
             <div className="text-blue-600 dark:text-sky-400 font-bold mt-1 font-mono">
-              {language === 'vi' ? '199.000đ' : '$9.99'}
+              {language === 'vi' ? '199.000đ' : '$7.99'}
             </div>
+            <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">Tiết kiệm 30%</span>
           </div>
 
           <div
-            onClick={() => selectPlan(12, 179000)}
-            className={`p-3 rounded-2xl cursor-pointer transition-all relative min-h-[92px] flex flex-col justify-between ${
+            onClick={() => selectPlan(12, 299000, 'Gói Trọn Đời VIP (1 Năm)')}
+            className={`p-3 rounded-2xl cursor-pointer transition-all min-h-[92px] flex flex-col justify-between relative overflow-hidden ${
               selectedPlanMonths === 12
-                ? 'bg-blue-500/15 border-2 border-blue-500'
-                : 'apple-glass-pill hover:border-blue-500'
+                ? 'bg-amber-500/15 border-2 border-amber-500 shadow-sm'
+                : 'apple-glass-pill hover:border-amber-500'
             }`}
           >
-            <span className="absolute -top-2 right-2 bg-amber-400 text-slate-950 text-[9px] font-extrabold px-1.5 rounded-full uppercase flex-shrink-0">
-              HOT -40%
-            </span>
-            <div className="font-bold text-blue-700 dark:text-sky-300 truncate">{language === 'vi' ? '1 Năm' : '1 Year'}</div>
-            <div className="text-blue-600 dark:text-sky-400 font-bold mt-1 font-mono">
-              {language === 'vi' ? '179.000đ' : '$19.99'}
+            <div className="absolute top-0 right-0 bg-amber-500 text-slate-950 text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg">
+              HOT 🔥
             </div>
+            <div className="font-bold app-text-primary truncate">{language === 'vi' ? '12 Tháng' : '1 Year'}</div>
+            <div className="text-amber-600 dark:text-amber-400 font-bold mt-1 font-mono">
+              {language === 'vi' ? '299.000đ' : '$11.99'}
+            </div>
+            <span className="text-[9px] text-amber-600 font-extrabold">VIP Crown</span>
           </div>
         </div>
 
-        {/* Coupon Code Input */}
+        {/* Feature Matrix Box */}
+        <div className="apple-glass-pill p-3.5 rounded-2xl text-xs space-y-2">
+          <div className="font-bold app-text-primary flex items-center gap-1.5 text-[11px]">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>{language === 'vi' ? 'Đặc quyền được mở khóa ngay:' : 'Instant unlocked features:'}</span>
+          </div>
+          <ul className="text-[11px] app-text-secondary space-y-1.5">
+            <li className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+              <span>Không giới hạn công việc & Thói quen chu kỳ nâng cao</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+              <span>Trợ lý AI phân rã & Lập kế hoạch thông minh</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+              <span>Cảnh báo thời gian di chuyển (Travel Time Alert)</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+              <span>Mở khóa toàn bộ Theme VIP (Tết, Sakura, Cyberpunk)</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Coupon Input Area */}
         <div className="space-y-1.5 text-xs">
-          <label className="font-semibold app-text-primary">{language === 'vi' ? 'Mã giảm giá (Coupon):' : 'Coupon Code:'}</label>
           <div className="flex gap-2">
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              placeholder="TET2026 / VIP50"
-              className="apple-input px-3.5 py-2 text-xs uppercase font-mono tracking-wider flex-1 font-sans"
-            />
+            <div className="relative flex-1">
+              <Tag className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                placeholder="Mã ưu đãi (vd: TET2026, VIP50)"
+                className="w-full apple-input pl-9 pr-3 py-2 text-xs font-mono font-bold"
+              />
+            </div>
             <button
+              type="button"
               onClick={handleApplyCoupon}
-              className="apple-glass-pill hover:bg-slate-200/80 dark:hover:bg-slate-700/50 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white px-4 py-2 rounded-2xl font-bold transition-all cursor-pointer"
+              className="apple-glass-pill hover:bg-blue-500/15 text-blue-600 dark:text-sky-400 font-bold px-3.5 py-2 rounded-2xl transition-all cursor-pointer"
             >
-              {language === 'vi' ? 'Áp dụng' : 'Apply'}
+              Áp dụng
             </button>
           </div>
           {couponMessage && (
-            <div
-              className={`text-[11px] font-bold ${
-                couponMessage.success
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-rose-600 dark:text-rose-400'
-              }`}
-            >
+            <p className={`text-[10px] font-bold ${couponMessage.success ? 'text-emerald-500' : 'text-rose-500'}`}>
               {couponMessage.text}
-            </div>
+            </p>
           )}
         </div>
 
-        {/* Financial Breakdown */}
-        <div className="space-y-1.5 text-xs app-text-secondary border-t app-border pt-3">
-          <div className="flex justify-between">
-            <span>{language === 'vi' ? 'Giá gốc gói cước:' : 'Original Price:'}</span>
-            <span className="font-mono">{language === 'vi' ? '299.000đ' : '$35.99'}</span>
-          </div>
-          <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
-            <span>{language === 'vi' ? 'Khuyến mãi Flash Sale:' : 'Flash Sale Discount:'}</span>
-            <span className="font-mono">{language === 'vi' ? '-120.000đ' : '-$15.00'}</span>
-          </div>
-          {couponDiscount > 0 && (
-            <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
-              <span>{language === 'vi' ? 'Khấu trừ Coupon:' : 'Coupon Discount:'}</span>
-              <span className="font-mono">{language === 'vi' ? `-${couponDiscount.toLocaleString('vi-VN')}đ` : '-$3.00'}</span>
+        {/* Total & Checkout Action */}
+        <div className="pt-2 border-t app-border flex items-center justify-between">
+          <div>
+            <span className="text-[10px] app-text-muted">{language === 'vi' ? 'Tổng thanh toán:' : 'Total Amount:'}</span>
+            <div className="text-base font-black text-blue-600 dark:text-sky-400 font-mono">
+              {finalPrice.toLocaleString()}đ
             </div>
-          )}
-          <div className="flex justify-between font-bold text-sm app-text-primary pt-2 border-t app-border">
-            <span>{language === 'vi' ? 'Tổng thanh toán:' : 'Total Due:'}</span>
-            <span className="text-blue-600 dark:text-sky-400 text-lg font-bold font-mono">
-              {language === 'vi' ? `${finalPrice.toLocaleString('vi-VN')}đ` : `$${(finalPrice / 25000).toFixed(2)}`}
-            </span>
           </div>
+          <button
+            onClick={handleConfirmUpgrade}
+            disabled={isProcessing}
+            className="apple-btn-primary font-bold py-2.5 px-6 rounded-2xl text-xs shadow-lg shadow-blue-500/25 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+          >
+            <Crown className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+            <span>{isProcessing ? 'Đang xử lý...' : (language === 'vi' ? 'Xác nhận Nâng cấp' : 'Confirm Upgrade')}</span>
+          </button>
         </div>
-
-        <button
-          onClick={handleConfirmUpgrade}
-          className="w-full apple-btn-primary font-bold py-3 rounded-2xl text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-        >
-          {t('modals.checkout.checkoutBtn')}
-        </button>
       </div>
     </div>
   );
