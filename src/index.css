@@ -1,103 +1,40 @@
 @import "tailwindcss";
 
-/* ========================================== */
-/* AUTHENTIC APPLE LIQUID GLASS DESIGN SYSTEM */
-/* ========================================== */
+/* ================================================== */
+/* GOOGLE CALENDAR DARK MODE - MATERIAL 3 DESIGN SYSTEM */
+/* ================================================== */
 
-/* 1. DEFAULT LIGHT (Apple Studio Canvas + Frosted Crystal) */
 :root {
-  --bg-base: #f5f6f9;
-  --glass-surface: rgba(255, 255, 255, 0.88);
-  --glass-surface-subtle: rgba(241, 245, 249, 0.94);
-  --glass-card: rgba(255, 255, 255, 0.92);
-  --glass-modal: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(15, 23, 42, 0.12);
-  --glass-border-subtle: rgba(15, 23, 42, 0.07);
-  --glass-input-bg: rgba(0, 0, 0, 0.04);
-  --glass-input-border: rgba(15, 23, 42, 0.14);
-  --text-primary: #090d16;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --apple-blue: #0071e3;
-  --apple-blue-hover: #0077ed;
-  --apple-blue-subtle: rgba(0, 113, 227, 0.12);
-  --shadow-ambient: 0 10px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 10px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.04);
-  --shadow-modal: 0 25px 60px -10px rgba(15, 23, 42, 0.28), 0 12px 24px -5px rgba(15, 23, 42, 0.14);
-  --shadow-pill: 0 2px 8px -1px rgba(15, 23, 42, 0.08), 0 1px 2px 0 rgba(15, 23, 42, 0.04);
-  --specular-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  --bg-base: #121314;
+  --surface-canvas: #121314;
+  --surface-container: #1f2021;
+  --surface-container-low: #1b1c1d;
+  --surface-container-high: #28292a;
+  --surface-container-highest: #333538;
+  --border-grid: #2a2b2d;
+  --border-subtle: #333538;
+  --text-primary: #e3e2e3;
+  --text-secondary: #9aa0a6;
+  --text-muted: #70757a;
+  --google-blue: #8ab4f8;
+  --google-blue-hover: #aecbfa;
+  --google-blue-primary: #1a73e8;
+  --google-green: #81c995;
+  --google-green-strong: #1e8e3e;
+  --google-amber: #fdd663;
+  --google-rose: #f28b82;
+  --shadow-ambient: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
+  --shadow-modal: 0 20px 48px -4px rgba(0, 0, 0, 0.7);
+  --shadow-pill: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* 2. DARK OBSIDIAN (Deep OLED + Frosted Smoky Glass) */
-body.theme-dark {
-  --bg-base: #020617;
-  --glass-surface: rgba(15, 23, 42, 0.85);
-  --glass-surface-subtle: rgba(30, 41, 59, 0.8);
-  --glass-card: rgba(15, 23, 42, 0.9);
-  --glass-modal: rgba(15, 23, 42, 0.96);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-border-subtle: rgba(255, 255, 255, 0.10);
-  --glass-input-bg: rgba(255, 255, 255, 0.08);
-  --glass-input-border: rgba(255, 255, 255, 0.18);
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --apple-blue: #38bdf8;
-  --apple-blue-hover: #0ea5e9;
-  --apple-blue-subtle: rgba(56, 189, 248, 0.15);
-  --shadow-ambient: 0 16px 40px -8px rgba(0, 0, 0, 0.7), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
-  --shadow-modal: 0 35px 80px -15px rgba(0, 0, 0, 0.9);
-  --shadow-pill: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
-  --specular-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-/* 3. TẾT CỔ TRUYỀN 2026 */
-body.theme-tet {
-  --bg-base: #fff5f5;
-  --glass-surface: rgba(255, 255, 255, 0.75);
-  --glass-card: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(254, 202, 202, 0.9);
-  --text-primary: #450a0a;
-  --text-secondary: #7f1d1d;
-  --apple-blue: #dc2626;
-  --apple-blue-hover: #b91c1c;
-  --apple-blue-subtle: rgba(220, 38, 38, 0.08);
-}
-
-/* 4. GIÁNG SINH TUYẾT */
-body.theme-christmas {
-  --bg-base: #f0fdf4;
-  --glass-surface: rgba(255, 255, 255, 0.75);
-  --glass-card: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(187, 247, 208, 0.9);
-  --text-primary: #022c22;
-  --text-secondary: #064e3b;
-  --apple-blue: #059669;
-  --apple-blue-hover: #047857;
-  --apple-blue-subtle: rgba(5, 150, 105, 0.08);
-}
-
-/* 5. ANIME SAKURA */
-body.theme-sakura {
-  --bg-base: #fdf2f8;
-  --glass-surface: rgba(255, 255, 255, 0.75);
-  --glass-card: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(251, 207, 232, 0.9);
-  --text-primary: #500724;
-  --text-secondary: #831843;
-  --apple-blue: #db2777;
-  --apple-blue-hover: #be185d;
-  --apple-blue-subtle: rgba(219, 39, 119, 0.08);
-}
-
-/* Base Body Canvas & Ambient Iridescent Glows */
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Geist', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background 0.3s ease, color 0.3s ease;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -107,43 +44,9 @@ code, kbd, samp, pre, .font-mono {
   font-family: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* Dynamic Iridescent Meshes */
-.ambient-glow-1 {
-  position: fixed;
-  top: -150px;
-  left: 15%;
-  width: 550px;
-  height: 550px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(199, 210, 254, 0.4) 0%, rgba(224, 231, 255, 0.15) 60%, transparent 80%);
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.ambient-glow-2 {
-  position: fixed;
-  bottom: -150px;
-  right: 10%;
-  width: 600px;
-  height: 600px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(224, 242, 254, 0.45) 0%, rgba(240, 249, 255, 0.15) 60%, transparent 80%);
-  filter: blur(90px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-body.theme-dark .ambient-glow-1 {
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(37, 99, 235, 0.05) 60%, transparent 80%);
-}
-body.theme-dark .ambient-glow-2 {
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.05) 60%, transparent 80%);
-}
-
 /* Smooth Collapsible Sidebars */
 .sidebar-transition {
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s ease, opacity 0.2s ease;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), padding 0.25s ease, opacity 0.2s ease;
   will-change: width, padding, opacity;
 }
 .sidebar-collapsed {
@@ -156,91 +59,108 @@ body.theme-dark .ambient-glow-2 {
   pointer-events: none !important;
 }
 
-/* Liquid Glass Elements */
-.apple-glass-surface {
-  background: var(--glass-surface);
-  backdrop-filter: blur(36px) saturate(190%);
-  -webkit-backdrop-filter: blur(36px) saturate(190%);
-  border-color: var(--glass-border);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+/* Dark Material Surfaces & Components */
+.gcal-surface {
+  background-color: #121314;
+  border-color: #2a2b2d;
 }
 
-.apple-glass-card {
-  background: var(--glass-card);
-  backdrop-filter: blur(32px) saturate(190%);
-  -webkit-backdrop-filter: blur(32px) saturate(190%);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-ambient), var(--specular-top);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.gcal-container {
+  background-color: #1f2021;
+  border-color: #2a2b2d;
 }
 
-.apple-glass-card:hover {
-  box-shadow: 0 18px 44px -8px rgba(15, 23, 42, 0.13), 0 6px 16px -3px rgba(15, 23, 42, 0.07), var(--specular-top);
-  border-color: rgba(15, 23, 42, 0.2);
+.gcal-container-high {
+  background-color: #28292a;
+  border-color: #333538;
 }
 
-.apple-glass-pill {
-  background: var(--glass-surface-subtle);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-pill), var(--specular-top);
+.gcal-border {
+  border-color: #2a2b2d;
 }
 
-.apple-glass-modal {
-  background: var(--glass-modal);
-  backdrop-filter: blur(50px) saturate(200%);
-  -webkit-backdrop-filter: blur(50px) saturate(200%);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-modal), var(--specular-top);
+.gcal-text-primary {
+  color: #e3e2e3;
 }
 
-.apple-input {
-  background: var(--glass-input-bg);
-  border: 1px solid var(--glass-input-border);
-  color: var(--text-primary);
-  border-radius: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+.gcal-text-secondary {
+  color: #9aa0a6;
 }
-.apple-input:focus {
-  background: rgba(255, 255, 255, 0.98);
+
+.gcal-text-muted {
+  color: #70757a;
+}
+
+/* Inputs & Buttons */
+.gcal-input {
+  background-color: #1f2021;
+  border: 1px solid #333538;
+  color: #e3e2e3;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+.gcal-input:focus {
+  background-color: #28292a;
   outline: none;
-  border-color: var(--apple-blue);
-  box-shadow: 0 0 0 4px var(--apple-blue-subtle), 0 2px 8px rgba(0, 113, 227, 0.15);
-}
-body.theme-dark .apple-input:focus {
-  background: rgba(30, 41, 59, 0.98);
+  border-color: #8ab4f8;
+  box-shadow: 0 0 0 1px #8ab4f8;
 }
 
-.apple-btn-primary {
-  background: var(--apple-blue);
+.gcal-btn-primary {
+  background-color: #1a73e8;
   color: #ffffff;
-  font-weight: 700;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 600;
+  transition: all 0.15s ease;
 }
-.apple-btn-primary:hover {
-  opacity: 0.94;
-  box-shadow: 0 8px 24px -3px rgba(0, 113, 227, 0.42);
+.gcal-btn-primary:hover {
+  background-color: #1b66ca;
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
 }
-.apple-btn-primary:active {
+.gcal-btn-primary:active {
   transform: scale(0.98);
 }
 
-.app-text-primary { color: var(--text-primary); }
-.app-text-secondary { color: var(--text-secondary); }
-.app-text-muted { color: var(--text-muted); }
-.app-border { border-color: var(--glass-border); }
+.gcal-btn-pill {
+  background-color: #28292a;
+  color: #e3e2e3;
+  border: 1px solid #333538;
+  border-radius: 9999px;
+  transition: all 0.15s ease;
+}
+.gcal-btn-pill:hover {
+  background-color: #333538;
+  color: #ffffff;
+}
 
-/* Layout Stability Helpers */
-.layout-anchor-header { min-height: 4rem; }
-.segmented-tab-fixed { min-width: 5rem; text-align: center; }
-.kpi-card-stable { min-height: 9rem; display: flex; flex-direction: column; justify-content: space-between; }
+/* Backward-compatible aliases for existing components & modals */
+.app-border { border-color: #2a2b2d; }
+.app-text-primary { color: #e3e2e3; }
+.app-text-secondary { color: #9aa0a6; }
+.app-text-muted { color: #70757a; }
+.apple-glass-surface { background-color: #121314; border-color: #2a2b2d; }
+.apple-glass-card { background-color: #1f2021; border-color: #2a2b2d; }
+.apple-glass-pill { background-color: #28292a; border-color: #333538; color: #e3e2e3; }
+.apple-glass-modal { background-color: #1f2021; border-color: #333538; color: #e3e2e3; }
+.apple-btn-primary { background-color: #1a73e8; color: #ffffff; font-weight: 600; }
+.apple-btn-primary:hover { background-color: #1b66ca; }
+.apple-input { background-color: #1f2021; border: 1px solid #333538; color: #e3e2e3; border-radius: 8px; }
+.apple-input:focus { border-color: #8ab4f8; outline: none; background-color: #28292a; }
 
 /* Scrollbars */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 9999px; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333538;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4d51;
+}
 
 /* Toast Animations */
 @keyframes toastSlideUp {
@@ -253,25 +173,3 @@ body.theme-dark .apple-input:focus {
 }
 .toast-enter { animation: toastSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .toast-exit { animation: toastFadeDown 0.2s ease-in forwards; }
-
-/* Auth Liquid Portal tokens */
-.liquid-portal-card {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-modal);
-  backdrop-filter: blur(40px);
-}
-.liquid-glass-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), 0 20px 40px -15px rgba(0, 0, 0, 0.3);
-}
-.liquid-glass-pill {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-}

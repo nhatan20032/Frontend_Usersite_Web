@@ -18,15 +18,11 @@ export const AppLayout: React.FC = () => {
   const { calendarView } = useApp();
 
   return (
-    <div className="min-h-screen h-screen font-sans antialiased flex flex-col overflow-hidden selection:bg-blue-600 selection:text-white relative">
-      {/* Ambient Iridescent Meshes */}
-      <div className="ambient-glow-1" />
-      <div className="ambient-glow-2" />
-
+    <div className="min-h-screen h-screen font-sans antialiased flex flex-col overflow-hidden bg-[#121314] text-[#E3E2E3] selection:bg-[#1a73e8] selection:text-white relative">
       {/* 1. TOP FLASH SALE FROSTED RIBBON */}
       <FlashSaleBanner />
 
-      {/* 2. TOP APP BAR (APPLE LIQUID HEADER) */}
+      {/* 2. TOP APP BAR (GOOGLE CALENDAR DARK HEADER) */}
       <TopHeader />
 
       {/* 3. MAIN WORKSPACE (3-COLUMN LIQUID LAYOUT) */}

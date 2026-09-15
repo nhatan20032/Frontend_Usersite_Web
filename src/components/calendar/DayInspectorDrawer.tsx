@@ -79,20 +79,20 @@ export const DayInspectorDrawer: React.FC = () => {
       <div className="flex-1" onClick={closeDayInspector} />
 
       {/* Drawer Container */}
-      <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-l app-border shadow-2xl h-full flex flex-col p-6 space-y-5 animate-in slide-in-from-right duration-300 z-50">
+      <div className="w-full max-w-md bg-[#1F2021] border-l border-[#2A2B2D] shadow-2xl h-full flex flex-col p-6 space-y-5 animate-in slide-in-from-right duration-300 z-50 select-none">
         {/* Header */}
-        <div className="flex items-start justify-between border-b app-border pb-4">
+        <div className="flex items-start justify-between border-b border-[#2A2B2D] pb-4">
           <div className="space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-sky-400 flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8AB4F8] flex items-center gap-1.5">
               <CalendarCheck2 className="w-3.5 h-3.5" />
               <span>{weekdayName}</span>
             </span>
-            <h3 className="text-xl font-extrabold app-text-primary">
+            <h3 className="text-xl font-bold text-[#E3E2E3]">
               {language === 'vi'
                 ? `Ngày ${selectedDay} ${monthNames[selectedMonth]}, ${selectedYear}`
                 : `${monthNames[selectedMonth]} ${selectedDay}, ${selectedYear}`}
             </h3>
-            <p className="text-xs app-text-muted">
+            <p className="text-xs text-[#9AA0A6]">
               {dayEvents.length > 0
                 ? `${dayEvents.length} lịch trình & thói quen trong ngày`
                 : 'Chưa có lịch trình cho ngày này'}
@@ -101,7 +101,7 @@ export const DayInspectorDrawer: React.FC = () => {
 
           <button
             onClick={closeDayInspector}
-            className="p-2 rounded-2xl text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-all cursor-pointer"
+            className="p-2 rounded-full text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#28292A] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

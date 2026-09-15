@@ -15,8 +15,6 @@ const monthNamesEn = [
   'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
-const yearsList = Array.from({ length: 16 }, (_, i) => 2020 + i);
-
 export const MiniCalendarPicker: React.FC = () => {
   const { selectedDay, selectedMonth, selectedYear, selectDate, prevMonth, nextMonth } = useApp();
   const { language, t } = useLanguage();
@@ -52,65 +50,46 @@ export const MiniCalendarPicker: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-2.5 border-b app-border pb-4 flex-shrink-0">
-      <div className="flex items-center justify-between font-bold text-xs app-text-primary">
-        <div className="flex items-center gap-1">
-          <select
-            value={selectedMonth}
-            onChange={(e) => selectDate(selectedDay, Number(e.target.value), selectedYear)}
-            className="apple-glass-pill text-xs font-bold app-text-primary w-[76px] px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none text-center flex-shrink-0"
-          >
-            {monthNames.map((name, idx) => (
-              <option key={idx} value={idx} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-                {name}
-              </option>
-            ))}
-          </select>
+    <div className="space-y-2 border-b border-[#2A2B2D] pb-3 flex-shrink-0 select-none">
+      {/* Month & Year Header with Chevrons */}
+      <div className="flex items-center justify-between font-medium text-xs text-[#E3E2E3] px-1">
+        <span className="font-semibold text-xs text-[#E3E2E3]">
+          {language === 'vi' ? `${monthNames[selectedMonth]} năm ${selectedYear}` : `${monthNames[selectedMonth]} ${selectedYear}`}
+        </span>
 
-          <select
-            value={selectedYear}
-            onChange={(e) => selectDate(selectedDay, selectedMonth, Number(e.target.value))}
-            className="apple-glass-pill text-xs font-bold app-text-primary w-[58px] px-1.5 py-0.5 rounded-lg cursor-pointer hover:bg-blue-500/10 focus:outline-none font-mono text-center flex-shrink-0"
-          >
-            {yearsList.map((y) => (
-              <option key={y} value={y} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-                {y}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-0.5 flex-shrink-0">
           <button
             onClick={prevMonth}
-            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer flex-shrink-0"
+            className="p-1 hover:bg-[#28292A] text-[#9AA0A6] hover:text-[#E3E2E3] rounded-full transition-colors cursor-pointer flex-shrink-0"
             title={t('calendar.prevMonth')}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={nextMonth}
-            className="p-1 hover:bg-blue-500/10 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 rounded-xl transition-all cursor-pointer flex-shrink-0"
+            className="p-1 hover:bg-[#28292A] text-[#9AA0A6] hover:text-[#E3E2E3] rounded-full transition-colors cursor-pointer flex-shrink-0"
             title={t('calendar.nextMonth')}
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold app-text-muted">
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-medium text-[#70757A]">
         {miniWeekDays.map((d, i) => (
           <span key={i}>{d}</span>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold">
+      {/* Day grid */}
+      <div className="grid grid-cols-7 gap-1 text-center text-xs font-normal">
         {/* Leading padding for previous month */}
         {leadingPadding.map((pad) => (
           <button
             key={`mini-pad-prev-${pad}`}
             onClick={() => selectDate(pad, prevMonthIndex, prevYear)}
-            className="p-1 opacity-40 text-slate-400 dark:text-slate-600 hover:opacity-75 cursor-pointer"
+            className="w-6 h-6 mx-auto flex items-center justify-center rounded-full text-[#4A4D51] hover:bg-[#1F2021] cursor-pointer text-[11px]"
           >
             {pad}
           </button>
@@ -123,10 +102,10 @@ export const MiniCalendarPicker: React.FC = () => {
             <button
               key={d}
               onClick={() => selectDate(d, selectedMonth, selectedYear)}
-              className={`p-1 rounded-xl cursor-pointer transition-all ${
+              className={`w-6 h-6 mx-auto flex items-center justify-center rounded-full cursor-pointer transition-colors text-[11px] ${
                 isSelected
-                  ? 'bg-blue-600 text-white font-bold'
-                  : 'hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 app-text-primary'
+                  ? 'bg-[#1A73E8] text-white font-bold'
+                  : 'hover:bg-[#28292A] text-[#E3E2E3]'
               }`}
             >
               {d}
@@ -139,7 +118,7 @@ export const MiniCalendarPicker: React.FC = () => {
           <button
             key={`mini-pad-next-${pad}`}
             onClick={() => selectDate(pad, nextMonthIndex, nextYear)}
-            className="p-1 opacity-40 text-slate-400 dark:text-slate-600 hover:opacity-75 cursor-pointer"
+            className="w-6 h-6 mx-auto flex items-center justify-center rounded-full text-[#4A4D51] hover:bg-[#1F2021] cursor-pointer text-[11px]"
           >
             {pad}
           </button>

@@ -35,17 +35,21 @@ export const MonthGridView: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="apple-glass-card rounded-3xl p-5 space-y-3">
+    <div className="w-full select-none">
+      {/* Google Calendar Dark Main Grid Container */}
+      <div className="bg-[#121314] border border-[#2A2B2D] rounded-xl overflow-hidden shadow-md">
         {/* Day of Week Headers */}
-        <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold app-text-secondary border-b app-border pb-2.5">
+        <div className="grid grid-cols-7 border-b border-[#2A2B2D] text-center text-[11px] font-medium text-[#9AA0A6] uppercase tracking-wider bg-[#121314]">
           {weekdayHeaders.map((name, i) => (
-            <span key={i} className="truncate px-0.5" title={name}>{name}</span>
+            <div key={i} className="py-2.5 px-1 truncate border-r border-[#2A2B2D] last:border-r-0">
+              {name}
+            </div>
           ))}
         </div>
 
         {/* Dynamic Month Grid */}
-        <div className="grid grid-cols-7 gap-2 min-h-[420px]">
+        <div className="grid grid-cols-7 divide-y divide-[#2A2B2D]">
+          {/* Combine all cell slices into 7-col rows */}
           {/* Leading padding days from previous month */}
           {leadingPadding.map((pad) => (
             <div
@@ -55,9 +59,9 @@ export const MonthGridView: React.FC = () => {
                 openDayInspector(pad);
               }}
               title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
-              className="p-2.5 rounded-2xl apple-glass-pill opacity-40 text-slate-400 dark:text-slate-600 text-xs min-h-[85px] cursor-pointer hover:opacity-75 transition-opacity select-none"
+              className="p-1.5 min-h-[96px] sm:min-h-[112px] border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start"
             >
-              {pad}
+              <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
             </div>
           ))}
 
@@ -66,7 +70,7 @@ export const MonthGridView: React.FC = () => {
             const dayEvents = eventsData.filter(
               (e) => e.year === selectedYear && e.month === selectedMonth && e.day === d
             );
-            const isSelected = d === selectedDay;
+            const isToday = d === selectedDay;
 
             return (
               <div
@@ -76,43 +80,45 @@ export const MonthGridView: React.FC = () => {
                   openDayInspector(d);
                 }}
                 title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
-                className={`p-2.5 rounded-2xl transition-all cursor-pointer min-h-[85px] flex flex-col justify-between select-none ${
-                  isSelected
-                    ? 'border-2 border-blue-500 bg-blue-500/10 shadow-sm ring-2 ring-blue-500/20'
-                    : 'border app-border apple-glass-card hover:border-slate-400 dark:hover:border-slate-500 hover:shadow-xs'
+                className={`p-1.5 min-h-[96px] sm:min-h-[112px] border-r border-[#2A2B2D] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-between ${
+                  isToday ? 'bg-[#1A73E8]/5' : 'hover:bg-[#1C1D1F]'
                 }`}
               >
-                <div
-                  className={`flex items-center justify-between text-xs font-bold ${
-                    isSelected ? 'text-blue-600 dark:text-sky-400' : 'app-text-primary'
-                  }`}
-                >
-                  <span>{d}</span>
-                  {isSelected && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-sky-400" />
+                {/* Day Header: Date Number with Google Blue Circle if Today */}
+                <div className="flex items-center justify-start mb-1">
+                  {isToday ? (
+                    <span className="w-6 h-6 rounded-full bg-[#1A73E8] text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                      {d}
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-[#E3E2E3] px-1 hover:text-white">
+                      {d}
+                    </span>
                   )}
                 </div>
 
-                <div className="space-y-1 mt-1">
-                  {dayEvents.slice(0, 2).map((ev) => (
-                    <div
-                      key={ev.id}
-                      className={`text-[10px] truncate px-2 py-0.5 rounded-full font-semibold flex items-center gap-1 ${
-                        ev.type === 'routine'
-                          ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30'
-                          : 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-400/30'
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          ev.type === 'routine' ? 'bg-amber-500' : 'bg-emerald-500'
+                {/* Event Chips List */}
+                <div className="space-y-1 flex-1 flex flex-col justify-start overflow-hidden">
+                  {dayEvents.slice(0, 2).map((ev) => {
+                    const isGreen = ev.type === 'event' || ev.title.includes('Họp') || ev.title.includes('Khám');
+                    return (
+                      <div
+                        key={ev.id}
+                        className={`text-[10px] truncate px-2 py-0.5 rounded font-medium flex items-center gap-1 transition-opacity hover:opacity-90 ${
+                          isGreen
+                            ? 'bg-[#1E8E3E] text-[#E6F4EA]'
+                            : 'bg-[#174EA6] text-[#D2E3FC]'
                         }`}
-                      />
-                      <span>{ev.title}</span>
-                    </div>
-                  ))}
+                        title={`${ev.time ? ev.time + ' ' : ''}${ev.title}`}
+                      >
+                        {ev.time && <span className="font-semibold text-[9px] opacity-90">{ev.time.split(' ')[0]}</span>}
+                        <span className="truncate">{ev.title}</span>
+                      </div>
+                    );
+                  })}
+
                   {dayEvents.length > 2 && (
-                    <div className="text-[9px] text-slate-400 dark:text-slate-400 font-bold px-1">
+                    <div className="text-[10px] text-[#9AA0A6] hover:text-[#8AB4F8] font-medium px-1 pt-0.5">
                       +{dayEvents.length - 2} {language === 'vi' ? 'khác' : 'more'}
                     </div>
                   )}
@@ -130,9 +136,9 @@ export const MonthGridView: React.FC = () => {
                 openDayInspector(pad);
               }}
               title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
-              className="p-2.5 rounded-2xl apple-glass-pill opacity-40 text-slate-400 dark:text-slate-600 text-xs min-h-[85px] cursor-pointer hover:opacity-75 transition-opacity select-none"
+              className="p-1.5 min-h-[96px] sm:min-h-[112px] border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start"
             >
-              {pad}
+              <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
             </div>
           ))}
         </div>
