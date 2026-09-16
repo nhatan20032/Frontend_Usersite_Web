@@ -101,3 +101,22 @@ export interface CategoryFilters {
   event: boolean;
   task: boolean;
 }
+
+export type RightSidebarTab = 'tasks' | 'notes-routine' | 'contacts';
+
+export interface NoteChecklistItem {
+  id: string;
+  text: string;
+  completed: boolean;
+}
+
+export interface KeepNote {
+  id: string;
+  title: string;
+  content?: string;
+  isPinned?: boolean;
+  color?: 'amber' | 'blue' | 'green' | 'purple';
+  tags?: string[];
+  checklist?: NoteChecklistItem[];
+  updatedAt: string;
+}

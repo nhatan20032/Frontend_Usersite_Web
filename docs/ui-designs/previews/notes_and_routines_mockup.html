@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lịch - RoutinePulse Workspace</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-surface": "#e3e2e3",
+            "inverse-on-surface": "#303031",
+            "surface-container-low": "#1b1c1d",
+            "secondary-container": "#01552c",
+            "tertiary-fixed-dim": "#e8c352",
+            "on-background": "#e3e2e3",
+            "primary-fixed": "#d5e3ff",
+            "tertiary-fixed": "#ffe08a",
+            "outline": "#8d919b",
+            "on-secondary-fixed-variant": "#00522a",
+            "on-primary-fixed-variant": "#114784",
+            "on-tertiary-container": "#554300",
+            "inverse-primary": "#315f9d",
+            "surface-container-lowest": "#0d0e0f",
+            "surface-container": "#1f2021",
+            "surface-tint": "#a8c8ff",
+            "error": "#ffb4ab",
+            "secondary": "#8ed7a1",
+            "tertiary": "#f1ca59",
+            "on-primary": "#003061",
+            "secondary-fixed-dim": "#8ed7a1",
+            "outline-variant": "#424750",
+            "surface-container-high": "#292a2b",
+            "on-secondary-fixed": "#00210e",
+            "surface-container-highest": "#343536",
+            "on-tertiary-fixed": "#241a00",
+            "surface-variant": "#343536",
+            "surface-dim": "#121314",
+            "on-surface": "#e3e2e3",
+            "primary-container": "#8ab4f8",
+            "on-error-container": "#ffdad6",
+            "on-error": "#690005",
+            "secondary-fixed": "#a9f3bc",
+            "primary-fixed-dim": "#a8c8ff",
+            "background": "#121314",
+            "surface-bright": "#38393a",
+            "on-secondary": "#00391b",
+            "tertiary-container": "#d3af40",
+            "surface": "#121314",
+            "primary": "#b5cfff",
+            "on-tertiary-fixed-variant": "#574400",
+            "on-surface-variant": "#c3c6d1",
+            "on-tertiary": "#3d2f00",
+            "on-primary-fixed": "#001b3c",
+            "error-container": "#93000a",
+            "on-primary-container": "#0d4582",
+            "on-secondary-container": "#80c894"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-2xl": "2rem",
+            "space-2xs": "0.125rem",
+            "margin-mobile": "0.75rem",
+            "gutter": "1rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xl": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1rem",
+            "margin-desktop": "1.5rem",
+            "gutter-sm": "0.5rem",
+            "margin": "1rem",
+            "space-md": "0.75rem"
+          },
+          "fontFamily": {
+            "title-md": ["Geist"],
+            "label-sm": ["Geist"],
+            "headline-sm": ["Geist"],
+            "body-sm": ["Geist"],
+            "title-sm": ["Geist"],
+            "body-md": ["Geist"],
+            "body-lg": ["Geist"],
+            "headline-lg": ["Geist"],
+            "title-lg": ["Geist"],
+            "label-md": ["Geist"],
+            "display-lg-mobile": ["Geist"],
+            "label-lg": ["Geist"],
+            "headline-md": ["Geist"],
+            "display-lg": ["Geist"]
+          },
+          "fontSize": {
+            "title-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "500" }],
+            "body-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "title-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "title-lg": ["16px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "500" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Geist', sans-serif;
+      user-select: none;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #343536;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #424750;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased h-screen overflow-hidden flex flex-col">
+<!-- Top Navigation Header (from Shared Components JSON) -->
+<header class="bg-surface-container-low dark:bg-surface-container-low border-b border-outline-variant dark:border-outline-variant flex justify-between items-center w-full px-4 h-16 shrink-0 z-30">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-highest dark:hover:bg-surface-container-highest text-on-surface-variant transition-colors" title="Trình đơn chính">
+<span class="material-symbols-outlined text-[22px]">menu</span>
+</button>
+<!-- App Brand / Identity -->
+<div class="flex items-center gap-2 mr-4">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center border border-outline-variant/30 text-primary-container font-headline-sm text-headline-sm font-semibold">
+          31
+        </div>
+<span class="text-headline-sm font-headline-sm font-medium text-on-surface dark:text-on-surface">Lịch</span>
+</div>
+<!-- Navigation links cluster from JSON -->
+<div class="flex items-center gap-2">
+<button class="px-4 py-1.5 rounded-full border border-outline-variant hover:bg-surface-container-highest text-on-surface font-title-md text-title-md transition-colors duration-150">
+          Hôm nay
+        </button>
+<div class="flex items-center">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-highest text-on-surface-variant transition-colors" title="Tháng trước">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-highest text-on-surface-variant transition-colors" title="Tháng sau">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+<span class="text-on-surface dark:text-on-surface font-title-md text-title-md ml-1">
+          Tháng 9, 2026
+        </span>
+</div>
+</div>
+<!-- Search & Right Controls -->
+<div class="flex items-center gap-3">
+<!-- Search Bar -->
+<div class="hidden md:flex items-center bg-surface-container-high rounded-full px-3.5 py-1.5 w-72 border border-outline-variant/30 focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-2">search</span>
+<input class="bg-transparent border-none text-on-surface placeholder-on-surface-variant/70 text-body-md font-body-md focus:outline-none focus:ring-0 p-0 w-full" placeholder="Tìm kiếm" type="text"/>
+</div>
+<!-- View Selector (Tháng) -->
+<div class="flex items-center bg-surface-container-high border border-outline-variant/40 rounded-full px-3 py-1 text-on-surface hover:bg-surface-container-highest transition-colors cursor-pointer gap-1.5">
+<span class="text-label-md font-label-md">Tháng</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_drop_down</span>
+</div>
+<!-- Trailing Action Buttons -->
+<button class="px-3.5 py-1 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-md text-label-md transition-colors border border-primary/20">
+        Nâng cấp
+      </button>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-highest hover:text-on-surface transition-colors" title="Trợ giúp">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-highest hover:text-on-surface transition-colors" title="Cài đặt">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-highest hover:text-on-surface transition-colors" title="Các ứng dụng của Google">
+<span class="material-symbols-outlined text-[20px]">apps</span>
+</button>
+</div>
+<!-- Profile Avatar -->
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container font-title-sm text-title-sm flex items-center justify-center cursor-pointer ml-1" title="Ảnh đại diện tài khoản Google">
+        V
+      </div>
+</div>
+</header>
+<!-- Main Viewport Workspace (Left Mini Rail, Center Calendar, Right Routine Keep, Far Right Dock) -->
+<main class="flex flex-1 w-full overflow-hidden relative">
+<!-- 1. LEFT RAIL (Calendar Layers & Mini Calendar) -->
+<aside class="hidden lg:flex w-60 shrink-0 bg-surface dark:bg-surface border-r border-outline-variant dark:border-outline-variant flex-col p-3 gap-y-4 overflow-y-auto custom-scrollbar">
+<!-- Create FAB -->
+<div class="pt-1 pb-1">
+<button class="flex items-center gap-2.5 px-5 py-3 rounded-full bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/40 text-on-surface transition-all shadow-md">
+<span class="material-symbols-outlined text-primary-container text-[20px]">add</span>
+<span class="text-label-lg font-label-lg font-medium">+ Tạo</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px] ml-1">arrow_drop_down</span>
+</button>
+</div>
+<!-- Mini Calendar Matrix -->
+<div class="bg-surface-container-low/50 p-2.5 rounded-xl border border-outline-variant/30">
+<div class="flex items-center justify-between mb-2 px-1">
+<span class="text-title-sm font-title-sm text-on-surface">Tháng 9, 2026</span>
+<div class="flex gap-1">
+<button class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">chevron_left</span>
+</button>
+<button class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-label-sm font-label-sm text-outline mb-1">
+<span>H</span><span>B</span><span>T</span><span>N</span><span>S</span><span>B</span><span>C</span>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-body-sm font-body-sm text-on-surface">
+<span class="text-outline/40">31</span><span>1</span><span class="text-secondary font-medium">2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+<span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span>
+<span class="w-6 h-6 mx-auto rounded-full bg-primary-container text-on-primary-container font-semibold flex items-center justify-center">14</span>
+<span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span>
+<span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span>
+<span>28</span><span>29</span><span>30</span><span class="text-outline/40">1</span><span class="text-outline/40">2</span><span class="text-outline/40">3</span><span class="text-outline/40">4</span>
+</div>
+</div>
+<!-- Calendar Layers list -->
+<div class="space-y-3">
+<div class="flex items-center justify-between px-1 text-on-surface-variant">
+<span class="text-title-sm font-title-sm uppercase tracking-wider text-[10px]">Lịch của tôi</span>
+<span class="material-symbols-outlined text-[16px]">expand_less</span>
+</div>
+<div class="space-y-1">
+<!-- Calendar 1: Cá nhân (Active) -->
+<label class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer group text-primary dark:text-primary font-medium">
+<input checked="" class="w-4 h-4 rounded bg-transparent border-primary text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="text-body-md font-body-md truncate text-on-surface">Lịch cá nhân &amp; Routine</span>
+</label>
+<!-- Calendar 2: Công việc -->
+<label class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer group text-on-surface-variant">
+<input checked="" class="w-4 h-4 rounded bg-transparent border-tertiary text-tertiary focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="text-body-md font-body-md truncate">Công việc &amp; Họp</span>
+</label>
+<!-- Calendar 3: Ngày lễ ở VN -->
+<label class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer group text-on-surface-variant">
+<input checked="" class="w-4 h-4 rounded bg-transparent border-secondary text-secondary focus:ring-0 cursor-pointer" type="checkbox"/>
+<span class="text-body-md font-body-md truncate">Ngày lễ ở Việt Nam</span>
+</label>
+</div>
+</div>
+<!-- Secondary Links -->
+<div class="mt-auto pt-3 border-t border-outline-variant/30 text-on-surface-variant flex flex-col gap-1 text-body-sm font-body-sm">
+<a class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-container" href="#">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+<span>Cài đặt lịch</span>
+</a>
+<a class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-container" href="#">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+<span>Thùng rác</span>
+</a>
+</div>
+</aside>
+<!-- 2. CENTER: MONTHLY CALENDAR GRID -->
+<section class="flex-1 flex flex-col bg-surface overflow-hidden border-r border-outline-variant/40 min-w-0">
+<!-- Weekday Headers -->
+<div class="grid grid-cols-7 border-b border-outline-variant/40 bg-surface-container-low/40 shrink-0 text-center py-2 text-label-md font-label-md text-on-surface-variant">
+<div>T2</div>
+<div>T3</div>
+<div>T4</div>
+<div>T5</div>
+<div>T6</div>
+<div>T7</div>
+<div>CN</div>
+</div>
+<!-- 5-Week Month Grid -->
+<div class="flex-1 grid grid-cols-7 grid-rows-5 divide-x divide-y divide-outline-variant/30 overflow-y-auto bg-surface-dim custom-scrollbar">
+<!-- ROW 1 (Aug 31 - Sep 6) -->
+<div class="p-1.5 bg-surface-container-lowest/40 opacity-50 flex flex-col min-h-[96px]">
+<span class="text-label-sm font-label-sm text-outline self-end">31</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">1</span>
+</div>
+<!-- Sep 2: Holiday Quốc khánh -->
+<div class="p-1.5 flex flex-col min-h-[96px] bg-secondary-container/10 hover:bg-secondary-container/20 transition-colors">
+<span class="text-label-sm font-label-sm text-secondary font-bold self-end">2</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-secondary-container/50 border-l-2 border-secondary text-secondary text-body-sm font-body-sm truncate" title="Nghỉ Lễ Quốc khánh">
+            Quốc khánh
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">3</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">4</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-primary/10 border-l-2 border-primary-container text-primary text-body-sm font-body-sm truncate">
+            14:00 Họp sprint Q3
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">5</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">6</span>
+</div>
+<!-- ROW 2 (Sep 7 - Sep 13) -->
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">7</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-primary/10 border-l-2 border-primary-container text-primary text-body-sm font-body-sm truncate">
+            09:00 Sync tuần mới
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">8</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">9</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-tertiary/10 border-l-2 border-tertiary text-tertiary-fixed-dim text-body-sm font-body-sm truncate">
+            15:30 Client Review
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">10</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-primary/10 border-l-2 border-primary-container text-primary text-body-sm font-body-sm truncate">
+            10:00 Họp giao ban
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">11</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-surface-container-highest border-l-2 border-outline text-on-surface text-body-sm font-body-sm truncate">
+            16:00 Retrospective
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">12</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">13</span>
+</div>
+<!-- ROW 3 (Sep 14 [TODAY] - Sep 20) -->
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-high/40 ring-1 ring-inset ring-primary-container/40">
+<div class="flex items-center justify-between">
+<span class="text-[9px] px-1 rounded bg-primary-container/20 text-primary uppercase font-bold tracking-wider">Hôm nay</span>
+<span class="w-5 h-5 rounded-full bg-primary-container text-on-primary-container text-label-sm font-label-sm font-bold flex items-center justify-center">14</span>
+</div>
+<div class="mt-1 space-y-1">
+<div class="px-1.5 py-0.5 rounded bg-primary/15 border-l-2 border-primary-container text-primary text-body-sm font-body-sm truncate">
+              08:30 Deep Work
+            </div>
+<div class="px-1.5 py-0.5 rounded bg-tertiary/15 border-l-2 border-tertiary text-tertiary-fixed-dim text-body-sm font-body-sm truncate">
+              14:00 Họp kế hoạch
+            </div>
+</div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">15</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">16</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-primary/10 border-l-2 border-primary-container text-primary text-body-sm font-body-sm truncate">
+            11:00 Demo MVP
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">17</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">18</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">19</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">20</span>
+</div>
+<!-- ROW 4 (Sep 21 - Sep 27) -->
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">21</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">22</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-tertiary/10 border-l-2 border-tertiary text-tertiary-fixed-dim text-body-sm font-body-sm truncate">
+            09:30 Thiết kế UI v2
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">23</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">24</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">25</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-secondary-container/30 border-l-2 border-secondary text-secondary text-body-sm font-body-sm truncate">
+            17:00 Team Bonding
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">26</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/20">
+<span class="text-label-sm font-label-sm text-outline self-end">27</span>
+</div>
+<!-- ROW 5 (Sep 28 - Oct 4) -->
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">28</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">29</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] hover:bg-surface-container-lowest/30 transition-colors">
+<span class="text-label-sm font-label-sm text-on-surface-variant self-end">30</span>
+<div class="mt-1 px-1.5 py-0.5 rounded bg-primary/10 border-l-2 border-primary-container text-primary text-body-sm font-body-sm truncate">
+            Tổng kết tháng 9
+          </div>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/40 opacity-50">
+<span class="text-label-sm font-label-sm text-outline self-end">1</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/40 opacity-50">
+<span class="text-label-sm font-label-sm text-outline self-end">2</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/40 opacity-50">
+<span class="text-label-sm font-label-sm text-outline self-end">3</span>
+</div>
+<div class="p-1.5 flex flex-col min-h-[96px] bg-surface-container-lowest/40 opacity-50">
+<span class="text-label-sm font-label-sm text-outline self-end">4</span>
+</div>
+</div>
+</section>
+<!-- 3. RIGHT COMPANION SIDEBAR PANEL (360px - The Core Focus) -->
+<aside class="w-[360px] h-full shrink-0 bg-[#121314] border-l border-[#2A2B2D] flex flex-col justify-between p-3.5 gap-3.5 z-10 overflow-hidden shadow-2xl">
+<!-- Panel Header -->
+<div class="flex items-center justify-between pb-1 border-b border-[#2A2B2D]/60 shrink-0">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-[rgba(227,116,0,0.15)] flex items-center justify-center text-tertiary">
+<!-- Amber Lightbulb SVG Icon -->
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 17h4v1h-4v-1zm1-15c0-.55.45-1 1-1s1 .45 1 1v1h-2V4zm-3.5 8.76l-.8-.6c-1.07-.8-1.7-2.07-1.7-3.41 0-2.48 2.02-4.5 4.5-4.5.52 0 1.02.09 1.5.26V6.1c-.48-.06-.98-.1-1.5-.1-3.31 0-6 2.69-6 6 0 1.79.84 3.49 2.27 4.56l.73.55 1-.85z"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-title-md font-title-md text-on-surface font-semibold tracking-tight">Ghi chú &amp; Routine</h2>
+<p class="text-[11px] text-on-surface-variant font-body-sm">Kỷ luật &amp; Ghi chép nhanh</p>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Thêm mới">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Đóng bảng">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Quick Composer Bar (36px) -->
+<div class="shrink-0">
+<div class="h-9 bg-surface-container rounded-lg border border-[#2A2B2D] px-2.5 flex items-center justify-between gap-2 shadow-inner focus-within:border-tertiary/60 transition-colors">
+<input class="bg-transparent border-none text-on-surface text-[12px] placeholder-on-surface-variant/70 focus:outline-none focus:ring-0 p-0 w-full" placeholder="Thêm ghi chú hoặc thói quen..." type="text"/>
+<div class="flex items-center gap-1.5 shrink-0">
+<button class="w-3.5 h-3.5 rounded-full bg-tertiary/30 border border-tertiary hover:scale-110 transition-transform" title="Đổi màu thẻ"></button>
+<button class="w-6 h-6 rounded bg-tertiary-container text-on-tertiary flex items-center justify-center hover:bg-tertiary transition-colors" title="Lưu">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Scrollable Center Area: Routines & Keep Notes -->
+<div class="flex-1 overflow-y-auto space-y-4 pr-0.5 custom-scrollbar">
+<!-- SECTION 1: KỶ LUẬT HÔM NAY (ROUTINES) -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-label-sm text-outline uppercase tracking-wider">Kỷ luật hôm nay (Routines)</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] font-label-sm px-1.5 py-0.2 rounded bg-secondary-container/40 text-secondary border border-secondary/30 font-medium">3/4 Hoàn tất</span>
+<span class="text-[10px] font-label-sm px-1.5 py-0.2 rounded bg-[rgba(227,116,0,0.15)] text-tertiary border border-tertiary/30 font-medium">14 ngày streak</span>
+</div>
+</div>
+<!-- Routine Checklist Items -->
+<div class="space-y-1.5">
+<!-- Item 1: Chạy bộ (Checked) -->
+<div class="p-2 rounded-lg bg-surface-container-low border border-[#2A2B2D] flex items-center justify-between group hover:border-outline-variant transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<button class="w-4 h-4 rounded bg-secondary-container border border-secondary flex items-center justify-center shrink-0">
+<svg class="w-2.5 h-2.5 text-secondary-fixed" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</button>
+<div class="truncate">
+<div class="text-[12px] font-body-md text-on-surface-variant line-through truncate">Chạy bộ 30 phút buổi sáng</div>
+<div class="text-[10px] text-outline font-body-sm">06:00 - 06:30</div>
+</div>
+</div>
+<span class="text-[10px] font-label-sm px-1.5 py-0.5 rounded bg-secondary/10 text-secondary shrink-0">18 ngày</span>
+</div>
+<!-- Item 2: Đọc sách (Checked) -->
+<div class="p-2 rounded-lg bg-surface-container-low border border-[#2A2B2D] flex items-center justify-between group hover:border-outline-variant transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<button class="w-4 h-4 rounded bg-secondary-container border border-secondary flex items-center justify-center shrink-0">
+<svg class="w-2.5 h-2.5 text-secondary-fixed" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</button>
+<div class="truncate">
+<div class="text-[12px] font-body-md text-on-surface-variant line-through truncate">Đọc sách chuyên môn 20 trang</div>
+<div class="text-[10px] text-outline font-body-sm">07:00 - 07:30</div>
+</div>
+</div>
+<span class="text-[10px] font-label-sm px-1.5 py-0.5 rounded bg-secondary/10 text-secondary shrink-0">14 ngày</span>
+</div>
+<!-- Item 3: Deep Work (Checked) -->
+<div class="p-2 rounded-lg bg-surface-container-low border border-[#2A2B2D] flex items-center justify-between group hover:border-outline-variant transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<button class="w-4 h-4 rounded bg-secondary-container border border-secondary flex items-center justify-center shrink-0">
+<svg class="w-2.5 h-2.5 text-secondary-fixed" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</button>
+<div class="truncate">
+<div class="text-[12px] font-body-md text-on-surface-variant line-through truncate">Deep Work: Architecture Review</div>
+<div class="text-[10px] text-outline font-body-sm">08:30 - 11:30</div>
+</div>
+</div>
+<span class="text-[10px] font-label-sm px-1.5 py-0.5 rounded bg-secondary/10 text-secondary shrink-0">9 ngày</span>
+</div>
+<!-- Item 4: Uống nước (Unchecked) -->
+<div class="p-2 rounded-lg bg-surface-container border border-[#2A2B2D] flex items-center justify-between group hover:border-outline-variant transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<button class="w-4 h-4 rounded-full border border-outline hover:border-tertiary flex items-center justify-center shrink-0"></button>
+<div class="truncate">
+<div class="text-[12px] font-body-md text-on-surface font-medium truncate">Uống 2L nước &amp; giãn cơ</div>
+<div class="text-[10px] text-outline font-body-sm">Cả ngày</div>
+</div>
+</div>
+<span class="text-[10px] font-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant shrink-0">Chờ hoàn thành</span>
+</div>
+</div>
+</div>
+<!-- SECTION 2: FILTER TABS -->
+<div class="flex items-center gap-1.5 pt-1 border-t border-[#2A2B2D]/40">
+<button class="px-2.5 py-1 rounded-full bg-tertiary/20 text-tertiary border border-tertiary/30 text-[11px] font-label-md">Tất cả</button>
+<button class="px-2.5 py-1 rounded-full hover:bg-surface-container text-on-surface-variant text-[11px] font-label-md transition-colors">Đã ghim</button>
+<button class="px-2.5 py-1 rounded-full hover:bg-surface-container text-on-surface-variant text-[11px] font-label-md transition-colors">Ghi chú</button>
+</div>
+<!-- SECTION 3: DANH SÁCH GHI CHÚ (KEEP NOTES) -->
+<div class="space-y-2.5">
+<div class="text-[10px] font-label-sm text-outline uppercase tracking-wider">Danh sách ghi chú (Keep Notes)</div>
+<!-- Card 1: Pinned Card -->
+<div class="p-2.5 rounded-xl bg-[#1F2021] border border-[rgba(227,116,0,0.35)] relative space-y-1.5 shadow-sm">
+<div class="flex items-start justify-between">
+<h3 class="text-[12px] font-title-sm text-on-surface font-semibold">Kỷ luật &amp; Thói quen cốt lõi</h3>
+<!-- Pin SVG in amber -->
+<svg class="w-3.5 h-3.5 text-tertiary shrink-0" fill="currentColor" viewbox="0 0 24 24">
+<path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"></path>
+</svg>
+</div>
+<!-- Mini Checklist snippet -->
+<div class="space-y-1 text-[11px] text-on-surface-variant font-body-sm pl-0.5">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span>Ngủ trước 23:00, không màn hình xanh sau 22:30</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span>Review tiến độ lịch trình mỗi 17:30</span>
+</div>
+</div>
+<!-- Tags -->
+<div class="flex items-center gap-1.5 pt-1">
+<span class="text-[10px] text-tertiary-fixed-dim bg-tertiary/10 px-1.5 py-0.2 rounded font-label-sm">#KỷLuật</span>
+<span class="text-[10px] text-on-surface-variant bg-surface-container-highest px-1.5 py-0.2 rounded font-label-sm">#Mindset</span>
+</div>
+</div>
+<!-- Card 2: Work Note -->
+<div class="p-2.5 rounded-xl bg-[#1b1c1d] border border-[#2A2B2D] space-y-1.5 hover:border-outline-variant transition-colors">
+<div class="flex items-start justify-between">
+<h3 class="text-[12px] font-title-sm text-on-surface font-medium">Kế hoạch Release v2.4 RoutinePulse</h3>
+<span class="text-[10px] text-outline">10:30 Hôm nay</span>
+</div>
+<p class="text-[11px] text-on-surface-variant/80 font-body-sm leading-relaxed">
+              Tích hợp companion dock vào core engine; benchmark latency mini calendar; sync local state.
+            </p>
+<div class="flex items-center gap-1.5 pt-0.5">
+<span class="text-[10px] text-primary bg-primary/10 px-1.5 py-0.2 rounded font-label-sm">#DựÁnQ3</span>
+</div>
+</div>
+<!-- Card 3: Quote Note -->
+<div class="p-2.5 rounded-xl bg-[#1b1c1d] border border-[#2A2B2D] space-y-1.5 hover:border-outline-variant transition-colors">
+<h3 class="text-[12px] font-title-sm text-on-surface font-medium">Trích dẫn: Atomic Habits</h3>
+<p class="text-[11px] text-on-surface-variant font-body-sm italic leading-relaxed border-l-2 border-outline-variant/60 pl-2">
+              "Bạn không vươn lên tới tầm của mục tiêu, bạn tụt xuống mức độ của các hệ thống thói quen."
+            </p>
+<div class="flex items-center gap-1.5 pt-0.5">
+<span class="text-[10px] text-secondary bg-secondary/10 px-1.5 py-0.2 rounded font-label-sm">#Reading</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro Sync Status Footer -->
+<div class="pt-2 border-t border-[#2A2B2D]/80 flex items-center justify-between text-[10px] text-on-surface-variant shrink-0 font-body-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+<span>Đã lưu tự động</span>
+</div>
+<span class="text-outline">4 thói quen, 6 ghi chú</span>
+</div>
+</aside>
+<!-- 4. FAR-RIGHT GOOGLE COMPANION DOCK (56px) -->
+<aside class="w-[56px] h-full shrink-0 bg-[#171819] border-l border-[#2A2B2D] flex flex-col items-center py-4 gap-4 z-20">
+<!-- Keep / Routine Lightbulb (ACTIVE STATE) -->
+<div class="relative group flex items-center justify-center">
+<!-- Active indicator marker bar -->
+<span class="absolute -left-3 w-1 h-6 bg-tertiary rounded-r-full"></span>
+<button class="w-10 h-10 rounded-full bg-[rgba(227,116,0,0.2)] ring-1 ring-tertiary/50 text-[#FDD663] flex items-center justify-center transition-all shadow-sm" title="Google Keep &amp; Routines">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-1.3l-.85-.6A4.997 4.997 0 0 1 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"></path>
+</svg>
+</button>
+</div>
+<!-- Google Tasks Icon -->
+<button class="w-10 h-10 rounded-full hover:bg-surface-container text-[#8AB4F8] flex items-center justify-center transition-colors" title="Google Tasks">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5l-4-4 1.41-1.41L11 13.67l6.59-6.59L19 8.5l-8 8z"></path>
+</svg>
+</button>
+<!-- Google Contacts / Directory Icon -->
+<button class="w-10 h-10 rounded-full hover:bg-surface-container text-[#81C995] flex items-center justify-center transition-colors" title="Google Danh bạ">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path>
+</svg>
+</button>
+<!-- Google Maps / Location Icon -->
+<button class="w-10 h-10 rounded-full hover:bg-surface-container text-[#F28B82] flex items-center justify-center transition-colors" title="Google Maps">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+</svg>
+</button>
+<!-- Divider line -->
+<div class="w-7 h-[1px] bg-[#2A2B2D] my-1"></div>
+<!-- Add Add-on Icon (+) -->
+<button class="w-10 h-10 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Tải tiện ích bổ sung">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<!-- Bottom Collapse Chevron -->
+<div class="mt-auto">
+<button class="w-8 h-8 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Thu gọn bảng điều khiển bên">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</aside>
+</main>
+<script>
+    // Lightweight micro-interaction for routine checkbox toggle
+    document.querySelectorAll('.custom-scrollbar button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // Subtle click feedback
+        btn.classList.add('scale-95');
+        setTimeout(() => btn.classList.remove('scale-95'), 120);
+      });
+    });
+  </script>
+</body></html>

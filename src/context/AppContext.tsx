@@ -9,6 +9,8 @@ import type {
   ToastType,
   ActiveModalType,
   Priority,
+  RightSidebarTab,
+  KeepNote,
 } from '../types';
 import { useAuth } from './AuthContext';
 
@@ -49,6 +51,16 @@ interface AppContextType {
   isRightSidebarOpen: boolean;
   toggleLeftSidebar: () => void;
   toggleRightSidebar: () => void;
+  rightSidebarTab: RightSidebarTab;
+  setRightSidebarTab: (tab: RightSidebarTab) => void;
+  openRightSidebarTab: (tab: RightSidebarTab) => void;
+
+  // Keep Notes
+  notesData: KeepNote[];
+  addNote: (note: Omit<KeepNote, 'id' | 'updatedAt'>) => void;
+  toggleNotePin: (id: string) => void;
+  deleteNote: (id: string) => void;
+  toggleNoteChecklistItem: (noteId: string, itemId: string) => void;
 
   // Day Inspector
   isDayInspectorOpen: boolean;
@@ -189,6 +201,40 @@ const getInitialSampleTasks = (): TaskItem[] => [
   },
 ];
 
+const getInitialSampleNotes = (): KeepNote[] => [
+  {
+    id: 'note-1',
+    title: 'Kỷ luật & Thói quen cốt lõi',
+    content: 'Nguyên tắc bất di bất dịch:\n• Ngủ trước 23:00, không màn hình xanh sau 22:30\n• Review tiến độ qua checklist mỗi 17:30',
+    isPinned: true,
+    color: 'amber',
+    tags: ['KỷLuật', 'Mindset'],
+    checklist: [
+      { id: 'c1', text: 'Ngủ trước 23:00, không màn hình xanh sau 22:30', completed: true },
+      { id: 'c2', text: 'Review tiến độ qua checklist mỗi 17:30', completed: false },
+    ],
+    updatedAt: 'Hôm nay',
+  },
+  {
+    id: 'note-2',
+    title: 'Kế hoạch Release v2.4 RoutinePulse',
+    content: 'Tích hợp companion dock vào core-engine; benchmark latency mini calendar; sync local state.',
+    isPinned: false,
+    color: 'blue',
+    tags: ['DựÁnQ3'],
+    updatedAt: '10:30 Hôm nay',
+  },
+  {
+    id: 'note-3',
+    title: 'Trích dẫn: Atomic Habits',
+    content: '“Bạn không vươn lên tới tầm của mục tiêu; bạn tụt xuống mức độ của các hệ thống thói quen.”',
+    isPinned: false,
+    color: 'purple',
+    tags: ['Reading'],
+    updatedAt: 'Hôm qua',
+  },
+];
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -240,6 +286,67 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState<boolean>(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState<boolean>(true);
+  const [rightSidebarTab, setRightSidebarTab] = useState<RightSidebarTab>('tasks');
+
+  const [notesData, setNotesData] = useState<KeepNote[]>(() => {
+    const saved = localStorage.getItem('routinepulse_notes');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (err) {
+        console.error('Error parsing routinepulse_notes', err);
+      }
+    }
+    return getInitialSampleNotes();
+  });
+
+  useEffect(() => {
+    localStorage.setItem('routinepulse_notes', JSON.stringify(notesData));
+  }, [notesData]);
+
+  const openRightSidebarTab = (tab: RightSidebarTab) => {
+    if (isRightSidebarOpen && rightSidebarTab === tab) {
+      setIsRightSidebarOpen(false);
+    } else {
+      setRightSidebarTab(tab);
+      setIsRightSidebarOpen(true);
+    }
+  };
+
+  const addNote = (note: Omit<KeepNote, 'id' | 'updatedAt'>) => {
+    const newNote: KeepNote = {
+      ...note,
+      id: 'note-' + Date.now(),
+      updatedAt: 'Vừa xong',
+    };
+    setNotesData((prev) => [newNote, ...prev]);
+    showToast('Ghi chú mới', `Đã lưu "${newNote.title || 'Ghi chú không tiêu đề'}"`, 'success');
+  };
+
+  const toggleNotePin = (id: string) => {
+    setNotesData((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isPinned: !n.isPinned } : n))
+    );
+  };
+
+  const deleteNote = (id: string) => {
+    setNotesData((prev) => prev.filter((n) => n.id !== id));
+    showToast('Đã xóa', 'Ghi chú đã được xóa', 'info');
+  };
+
+  const toggleNoteChecklistItem = (noteId: string, itemId: string) => {
+    setNotesData((prev) =>
+      prev.map((n) => {
+        if (n.id !== noteId || !n.checklist) return n;
+        return {
+          ...n,
+          checklist: n.checklist.map((c) =>
+            c.id === itemId ? { ...c, completed: !c.completed } : c
+          ),
+        };
+      })
+    );
+  };
 
   const [activeModal, setActiveModal] = useState<ActiveModalType>(null);
   const [activeEventId, setActiveEventId] = useState<number | null>(null);
@@ -546,6 +653,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isRightSidebarOpen,
         toggleLeftSidebar,
         toggleRightSidebar,
+        rightSidebarTab,
+        setRightSidebarTab,
+        openRightSidebarTab,
+        notesData,
+        addNote,
+        toggleNotePin,
+        deleteNote,
+        toggleNoteChecklistItem,
         isDayInspectorOpen,
         openDayInspector,
         closeDayInspector,
