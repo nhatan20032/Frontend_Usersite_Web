@@ -9,8 +9,7 @@ import {
   ChevronRight,
   Search,
   Settings,
-  Sparkles,
-  Crown,
+  Calendar,
 } from 'lucide-react';
 
 const monthNamesVi = [
@@ -25,8 +24,10 @@ const monthNamesEn = [
   'September', 'October', 'November', 'December',
 ];
 
+const yearsList = Array.from({ length: 16 }, (_, i) => 2020 + i); // 2020 to 2035
+
 export const TopHeader: React.FC = () => {
-  const { currentUser, subscriptionTier, isPremium } = useAuth();
+  const { currentUser } = useAuth();
   const {
     searchQuery,
     setSearchQuery,
@@ -36,6 +37,7 @@ export const TopHeader: React.FC = () => {
     selectedMonth,
     selectedYear,
     selectToday,
+    selectDate,
     prevMonth,
     nextMonth,
     calendarView,
@@ -49,7 +51,7 @@ export const TopHeader: React.FC = () => {
   return (
     <header
       id="topHeader"
-      className="h-16 border-b border-[#2A2B2D] bg-[#121314] px-3 sm:px-5 flex items-center justify-between gap-2 sm:gap-4 flex-shrink-0 z-30 relative select-none"
+      className="h-14 border-b border-[#2A2B2D] bg-[#121314] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4 flex-shrink-0 z-30 relative select-none"
     >
       {/* 1. Left: Hamburger + Logo & Navigation Controls */}
       <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
@@ -62,28 +64,19 @@ export const TopHeader: React.FC = () => {
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Google Calendar Brand Logo */}
-        <div className="flex items-center gap-2 mr-1 sm:mr-3">
-          <div className="w-9 h-9 bg-[#1A73E8] text-white rounded-lg flex flex-col items-center justify-center shadow-md font-sans">
-            <span className="text-[9px] font-semibold leading-none text-white/80 uppercase">T9</span>
-            <span className="text-sm font-black leading-none">{selectedDay || 15}</span>
+        {/* Calendar Brand Logo */}
+        <div className="flex items-center gap-2.5 mr-1 sm:mr-2">
+          <div className="w-9 h-9 rounded-xl bg-[#1A73E8]/15 border border-[#1A73E8]/35 text-[#8AB4F8] flex items-center justify-center shadow-xs">
+            <Calendar className="w-5 h-5" />
           </div>
-          <div className="hidden xs:flex items-center gap-2">
-            <span className="font-semibold text-lg tracking-tight text-[#E3E2E3]">Lịch</span>
-            {isPremium ? (
-              <span className="bg-amber-500/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/40 flex items-center gap-1">
-                <Crown className="w-3 h-3 text-amber-300" />
-                {subscriptionTier === 'VIP' ? 'VIP' : 'PRO'}
-              </span>
-            ) : null}
-          </div>
+          <span className="hidden xs:inline font-semibold text-base tracking-tight text-[#E3E2E3]">Lịch</span>
         </div>
 
-        {/* Navigation: Hôm nay + Chevrons + Month Label */}
+        {/* Navigation: Hôm nay + Chevrons + Month/Year Selectors */}
         <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={selectToday}
-            className="px-3.5 py-1.5 text-xs font-semibold text-[#E3E2E3] border border-[#333538] hover:bg-[#28292A] rounded-md transition-colors cursor-pointer"
+            className="px-3 py-1 text-xs font-semibold text-[#E3E2E3] border border-[#333538] hover:bg-[#28292A] rounded-md transition-colors cursor-pointer"
           >
             {t('calendar.todayBtn') || 'Hôm nay'}
           </button>
@@ -105,11 +98,32 @@ export const TopHeader: React.FC = () => {
             </button>
           </div>
 
-          <span className="text-sm sm:text-base font-medium text-[#E3E2E3] ml-1 whitespace-nowrap">
-            {language === 'vi'
-              ? `${monthNames[selectedMonth]}, ${selectedYear}`
-              : `${monthNames[selectedMonth]} ${selectedYear}`}
-          </span>
+          {/* Quick Month & Year Selectors (Clean & Integrated) */}
+          <div className="flex items-center gap-0.5 ml-1">
+            <select
+              value={selectedMonth}
+              onChange={(e) => selectDate(selectedDay, Number(e.target.value), selectedYear)}
+              className="bg-transparent hover:bg-[#28292A] text-sm sm:text-base font-medium text-[#E3E2E3] py-0.5 px-1.5 rounded border border-transparent hover:border-[#333538] cursor-pointer focus:outline-none focus:border-[#8AB4F8] transition-colors"
+            >
+              {monthNames.map((name, idx) => (
+                <option key={idx} value={idx} className="bg-[#1F2021] text-[#E3E2E3]">
+                  {name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedYear}
+              onChange={(e) => selectDate(selectedDay, selectedMonth, Number(e.target.value))}
+              className="bg-transparent hover:bg-[#28292A] text-sm sm:text-base font-medium text-[#E3E2E3] py-0.5 px-1 rounded border border-transparent hover:border-[#333538] cursor-pointer focus:outline-none focus:border-[#8AB4F8] font-mono transition-colors"
+            >
+              {yearsList.map((y) => (
+                <option key={y} value={y} className="bg-[#1F2021] text-[#E3E2E3]">
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -127,7 +141,7 @@ export const TopHeader: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Right: View switcher, Upgrade, Settings, Profile */}
+      {/* 3. Right: View switcher, Settings, Profile */}
       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
         {/* View Switcher Dropdown / Toggle */}
         <div className="flex items-center bg-[#1F2021] border border-[#333538] rounded-md p-0.5 text-xs">
@@ -143,27 +157,15 @@ export const TopHeader: React.FC = () => {
           </button>
           <button
             onClick={() => setCalendarView('week')}
-            className={`px-2.5 py-1 rounded transition-colors cursor-pointer font-medium flex items-center gap-1 ${
+            className={`px-2.5 py-1 rounded transition-colors cursor-pointer font-medium ${
               calendarView === 'week'
                 ? 'bg-[#28292A] text-[#8AB4F8] shadow-xs'
                 : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
             }`}
           >
-            <span>{language === 'vi' ? 'Tuần' : 'Week'}</span>
-            <span className="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1 rounded-full">VIP</span>
+            {language === 'vi' ? 'Tuần' : 'Week'}
           </button>
         </div>
-
-        {/* Upgrade Button for Free Users */}
-        {!isPremium && (
-          <button
-            onClick={() => openModal('checkout')}
-            className="hidden sm:flex items-center gap-1.5 bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-medium px-3.5 py-1.5 rounded-full text-xs transition-colors cursor-pointer shadow-sm"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>{language === 'vi' ? 'Nâng cấp' : 'Upgrade'}</span>
-          </button>
-        )}
 
         {/* Settings Button */}
         <button

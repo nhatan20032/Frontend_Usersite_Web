@@ -74,7 +74,7 @@ export const DayInspectorDrawer: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-40 bg-slate-950/25 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-40 bg-slate-950/25 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
       {/* Click outside backdrop to close */}
       <div className="flex-1" onClick={closeDayInspector} />
 

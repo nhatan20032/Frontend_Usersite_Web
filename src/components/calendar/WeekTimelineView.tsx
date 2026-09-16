@@ -1,7 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { Check } from 'lucide-react';
 
 const hours = [
   '06:00 AM',
@@ -49,22 +48,22 @@ export const WeekTimelineView: React.FC = () => {
   const endDateStr = `${weekDays[6].day.toString().padStart(2, '0')}/${(weekDays[6].month + 1).toString().padStart(2, '0')}/${weekDays[6].year}`;
 
   return (
-    <div className="space-y-4">
-      <div className="apple-glass-card rounded-3xl p-5 space-y-3">
-        <div className="flex items-center justify-between border-b app-border pb-3 text-xs">
-          <span className="font-bold app-text-primary">
+    <div className="w-full h-full p-3 sm:p-4 overflow-y-auto bg-[#121314] select-none">
+      <div className="bg-[#1F2021] border border-[#2A2B2D] rounded-xl p-4 space-y-3">
+        <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-3 text-xs">
+          <span className="font-semibold text-[#E3E2E3]">
             {language === 'vi'
               ? `Khung giờ lịch trình tuần (${startDateStr} - ${endDateStr})`
               : `Weekly Schedule Timeline (${startDateStr} - ${endDateStr})`}
           </span>
-          <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-            <Check className="w-3.5 h-3.5" /> {language === 'vi' ? 'Mở khóa bởi VIP' : 'Unlocked by VIP'}
+          <span className="text-[#8AB4F8] font-medium text-xs">
+            {language === 'vi' ? 'Lịch làm việc chuẩn' : 'Standard Schedule'}
           </span>
         </div>
 
         {/* Week Day Column Headers */}
-        <div className="grid grid-cols-8 gap-2 pb-2 border-b app-border text-center text-xs font-bold">
-          <span className="text-[11px] app-text-muted">{language === 'vi' ? 'Giờ' : 'Time'}</span>
+        <div className="grid grid-cols-8 gap-2 pb-2 border-b border-[#2A2B2D] text-center text-xs font-semibold">
+          <span className="text-[11px] text-[#70757A]">{language === 'vi' ? 'Giờ' : 'Time'}</span>
           {weekDays.map((wd) => {
             const isSelected =
               wd.day === selectedDay && wd.month === selectedMonth && wd.year === selectedYear;
@@ -72,23 +71,23 @@ export const WeekTimelineView: React.FC = () => {
               <div
                 key={`hdr-${wd.day}-${wd.month}`}
                 onClick={() => selectDate(wd.day, wd.month, wd.year)}
-                className={`p-1 rounded-xl cursor-pointer transition-all ${
+                className={`py-1.5 px-1 rounded-lg cursor-pointer transition-all ${
                   isSelected
-                    ? 'bg-blue-500/15 text-blue-600 font-bold'
-                    : 'app-text-secondary hover:text-blue-600'
+                    ? 'bg-[#1A73E8]/20 text-[#8AB4F8] font-bold border border-[#1A73E8]/40'
+                    : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#28292A]'
                 }`}
               >
                 <div>{wd.dayName}</div>
-                <div className="text-[11px] font-mono">{wd.day}</div>
+                <div className="text-[11px] font-mono mt-0.5">{wd.day}</div>
               </div>
             );
           })}
         </div>
 
-        <div className="space-y-2 overflow-x-auto min-w-[580px]">
+        <div className="space-y-1.5 overflow-x-auto min-w-[580px]">
           {hours.map((h) => (
-            <div key={h} className="grid grid-cols-8 gap-2 border-b app-border py-2 text-xs items-center">
-              <div className="text-[11px] app-text-muted font-medium">{h}</div>
+            <div key={h} className="grid grid-cols-8 gap-2 border-b border-[#2A2B2D]/50 py-1.5 text-xs items-center">
+              <div className="text-[11px] text-[#70757A] font-medium font-mono">{h}</div>
               <div className="col-span-7 grid grid-cols-7 gap-1.5">
                 {weekDays.map((wd) => {
                   const ev = eventsData.find(
@@ -103,10 +102,10 @@ export const WeekTimelineView: React.FC = () => {
                       <div
                         key={`${h}-${wd.day}-${wd.month}`}
                         onClick={() => openModal('detail', ev.id)}
-                        className={`p-1.5 rounded-xl text-[10px] font-bold truncate cursor-pointer shadow-xs ${
+                        className={`p-1.5 rounded-md text-[10px] font-medium truncate cursor-pointer shadow-xs transition-opacity hover:opacity-90 ${
                           ev.type === 'routine'
-                            ? 'bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-400/40'
-                            : 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40'
+                            ? 'bg-[#E37400]/20 text-[#FDD663] border border-[#E37400]/40'
+                            : 'bg-[#1E8E3E]/20 text-[#81C995] border border-[#1E8E3E]/40'
                         }`}
                       >
                         {ev.title}
@@ -121,7 +120,7 @@ export const WeekTimelineView: React.FC = () => {
                         openModal('create');
                       }}
                       title={language === 'vi' ? `Nhấp để tạo sự kiện lúc ${h}` : `Click to create event at ${h}`}
-                      className="h-8 border border-dashed border-[#2A2B2D] rounded-lg cursor-pointer hover:bg-[#1E1F20] transition-colors"
+                      className="h-8 border border-dashed border-[#2A2B2D] rounded-md cursor-pointer hover:bg-[#28292A] transition-colors"
                     />
                   );
                 })}

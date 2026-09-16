@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { PanelRightOpen, CheckSquare } from 'lucide-react';
+import { PanelRightOpen, CheckSquare, Lightbulb, Users } from 'lucide-react';
 
 export const RightSidebarDock: React.FC = () => {
   const { isRightSidebarOpen, toggleRightSidebar, tasksData } = useApp();
@@ -12,7 +12,7 @@ export const RightSidebarDock: React.FC = () => {
   const pendingCount = tasksData.filter((t) => !t.completed).length;
 
   return (
-    <div className="w-14 flex-shrink-0 h-full border-l border-[#2A2B2D] bg-[#121314] flex flex-col items-center justify-start py-3 px-1.5 z-20 select-none space-y-4">
+    <div className="w-14 flex-shrink-0 h-full border-l border-[#2A2B2D] bg-[#171819] flex flex-col items-center justify-start py-3 px-1.5 z-20 select-none space-y-4">
       {/* 1. Google Tasks Companion App Icon */}
       <button
         onClick={toggleRightSidebar}
@@ -23,31 +23,31 @@ export const RightSidebarDock: React.FC = () => {
           <CheckSquare className="w-4 h-4" />
         </div>
         {pendingCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#F28B82] text-[#121314] text-[9px] font-extrabold flex items-center justify-center shadow-xs">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#EA4335] text-white text-[9px] font-bold flex items-center justify-center shadow-xs">
             {pendingCount > 99 ? '99+' : pendingCount}
           </span>
         )}
       </button>
 
-      {/* 2. Google Keep Note Placeholder Icon */}
+      {/* 2. Google Keep Notes Icon (Lucide Lightbulb) */}
       <button
         onClick={toggleRightSidebar}
-        className="w-10 h-10 rounded-full hover:bg-[#28292A] transition-all flex items-center justify-center cursor-pointer text-[#FDD663] opacity-75 hover:opacity-100"
+        className="w-10 h-10 rounded-full hover:bg-[#28292A] transition-all flex items-center justify-center cursor-pointer group"
         title="Ghi chú & Routine"
       >
-        <div className="w-7 h-7 rounded-full bg-[#FDD663]/15 flex items-center justify-center">
-          <span className="text-xs">💡</span>
+        <div className="w-7 h-7 rounded-full bg-[#FDD663]/15 flex items-center justify-center group-hover:scale-105 transition-transform">
+          <Lightbulb className="w-4 h-4 text-[#FDD663]" />
         </div>
       </button>
 
-      {/* 3. Google Contacts Placeholder Icon */}
+      {/* 3. Google Contacts Icon (Lucide Users) */}
       <button
         onClick={toggleRightSidebar}
-        className="w-10 h-10 rounded-full hover:bg-[#28292A] transition-all flex items-center justify-center cursor-pointer text-[#81C995] opacity-75 hover:opacity-100"
+        className="w-10 h-10 rounded-full hover:bg-[#28292A] transition-all flex items-center justify-center cursor-pointer group"
         title="Danh bạ & Nhóm"
       >
-        <div className="w-7 h-7 rounded-full bg-[#81C995]/15 flex items-center justify-center">
-          <span className="text-xs">👥</span>
+        <div className="w-7 h-7 rounded-full bg-[#81C995]/15 flex items-center justify-center group-hover:scale-105 transition-transform">
+          <Users className="w-4 h-4 text-[#81C995]" />
         </div>
       </button>
 
