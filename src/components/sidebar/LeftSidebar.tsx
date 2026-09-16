@@ -10,6 +10,32 @@ export const LeftSidebar: React.FC = () => {
   const { isLeftSidebarOpen, toggleLeftSidebar, categoryFilters, setCategoryFilters, openModal } = useApp();
   const { t, language } = useLanguage();
 
+  const [isCreateMenuOpen, setIsCreateMenuOpen] = React.useState(false);
+  const createMenuRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (createMenuRef.current && !createMenuRef.current.contains(event.target as Node)) {
+        setIsCreateMenuOpen(false);
+      }
+    };
+    if (isCreateMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCreateMenuOpen]);
+
+  const handleSelectCreateType = (type: 'event' | 'task' | 'appointment') => {
+    setIsCreateMenuOpen(false);
+    if (type === 'appointment') {
+      openModal('appointment-schedule');
+    } else {
+      openModal('create');
+    }
+  };
+
   return (
     <aside
       id="leftSidebar"
@@ -17,10 +43,10 @@ export const LeftSidebar: React.FC = () => {
         !isLeftSidebarOpen ? 'sidebar-collapsed' : ''
       }`}
     >
-      {/* 1. Google Style Create Pill Button & Collapse Button */}
-      <div className="pt-1 flex items-center justify-between gap-2">
+      {/* 1. Google Style Create Pill Button & Dropdown Menu */}
+      <div className="pt-1 flex items-center justify-between gap-2 relative" ref={createMenuRef}>
         <button
-          onClick={() => openModal('create')}
+          onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)}
           className="bg-[#28292A] hover:bg-[#333538] border border-[#3A3B3D] text-[#E3E2E3] font-medium py-2.5 px-4 rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2.5 text-sm cursor-pointer active:scale-98 flex-1"
         >
           {/* Multi-color Google Plus icon representation */}
@@ -29,7 +55,9 @@ export const LeftSidebar: React.FC = () => {
             <span className="w-0.5 h-3.5 bg-[#4285F4] rounded-full absolute" />
           </div>
           <span>{language === 'vi' ? 'Tạo' : 'Create'}</span>
-          <span className="text-[#9AA0A6] text-xs ml-auto">▾</span>
+          <span className="text-[#9AA0A6] text-xs ml-auto transition-transform duration-200" style={{ transform: isCreateMenuOpen ? 'rotate(180deg)' : 'none' }}>
+            ▾
+          </span>
         </button>
 
         <button
@@ -39,6 +67,42 @@ export const LeftSidebar: React.FC = () => {
         >
           <PanelLeftClose className="w-4 h-4" />
         </button>
+
+        {/* Dropdown Menu (Ảnh 3) */}
+        {isCreateMenuOpen && (
+          <div className="absolute left-0 top-14 w-56 bg-[#242628] border border-[#3C4043] rounded-xl shadow-2xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+            <button
+              onClick={() => handleSelectCreateType('event')}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-[#303336] transition-colors text-left text-[#E3E2E3] group cursor-pointer"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#8AB4F8]" />
+              <div className="flex flex-col">
+                <span className="text-xs font-medium">{language === 'vi' ? 'Sự kiện' : 'Event'}</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleSelectCreateType('task')}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-[#303336] transition-colors text-left text-[#9AA0A6] hover:text-[#E3E2E3] cursor-pointer"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#81C995]" />
+              <span className="text-xs font-medium">{language === 'vi' ? 'Việc cần làm' : 'Task'}</span>
+            </button>
+
+            <button
+              onClick={() => handleSelectCreateType('appointment')}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 hover:bg-[#303336] transition-colors text-left text-[#9AA0A6] hover:text-[#E3E2E3] cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <span className="w-2 h-2 rounded-full bg-[#FDD663]" />
+                <span className="text-xs font-medium">{language === 'vi' ? 'Lên lịch hẹn' : 'Appointment schedule'}</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded bg-[#01552C] text-[#8ED7A1] text-[10px] font-semibold">
+                {language === 'vi' ? 'MỚI' : 'NEW'}
+              </span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 2. Mini Calendar Picker Component */}

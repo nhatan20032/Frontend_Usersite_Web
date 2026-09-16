@@ -116,8 +116,12 @@ export const WeekTimelineView: React.FC = () => {
                   return (
                     <div
                       key={`${h}-${wd.day}-${wd.month}`}
-                      onClick={() => selectDate(wd.day, wd.month, wd.year)}
-                      className="h-8 border border-dashed app-border rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onClick={() => {
+                        selectDate(wd.day, wd.month, wd.year);
+                        openModal('create');
+                      }}
+                      title={language === 'vi' ? `Nhấp để tạo sự kiện lúc ${h}` : `Click to create event at ${h}`}
+                      className="h-8 border border-dashed border-[#2A2B2D] rounded-lg cursor-pointer hover:bg-[#1E1F20] transition-colors"
                     />
                   );
                 })}

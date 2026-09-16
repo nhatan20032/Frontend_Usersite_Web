@@ -38,6 +38,7 @@ export interface CalendarEvent {
   type: 'routine' | 'event';
   title: string;
   time: string;
+  endTime?: string;
   priority: Priority;
   year: number;
   month: number; // 0-11
@@ -50,6 +51,11 @@ export interface CalendarEvent {
   location?: string;
   travelTime?: string;
   alertTime?: string;
+  description?: string;
+  attendees?: string[];
+  hasMeet?: boolean;
+  colorTag?: string;
+  status?: 'busy' | 'free';
 }
 
 export interface SubTask {
@@ -78,7 +84,17 @@ export interface ToastNotification {
   duration?: number;
 }
 
-export type ActiveModalType = 'create' | 'detail' | 'checkout' | 'limit' | 'settings' | 'upgrade' | 'recurring-action' | null;
+export type ActiveModalType = 'create' | 'detail' | 'checkout' | 'limit' | 'settings' | 'upgrade' | 'recurring-action' | 'appointment-schedule' | null;
+
+export interface DailyAvailabilitySlot {
+  id: string;
+  dayIndex: number; // 0: Sunday, 1: Monday, ... 6: Saturday
+  dayNameVi: string;
+  dayNameEn: string;
+  isAvailable: boolean;
+  startTime: string;
+  endTime: string;
+}
 
 export interface CategoryFilters {
   routine: boolean;

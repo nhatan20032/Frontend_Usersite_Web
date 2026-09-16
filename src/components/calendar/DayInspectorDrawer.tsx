@@ -112,7 +112,7 @@ export const DayInspectorDrawer: React.FC = () => {
           onClick={() => {
             openModal('create');
           }}
-          className="w-full apple-btn-primary font-bold py-2.5 px-4 rounded-2xl shadow-md shadow-blue-500/20 text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
+          className="w-full bg-[#1A73E8] hover:bg-[#1557B0] text-white font-semibold py-2.5 px-4 rounded-full shadow-md text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
         >
           <Plus className="w-4 h-4" />
           <span>{t('sidebar.addSchedule')} ({selectedDay}/{selectedMonth + 1})</span>
@@ -121,18 +121,18 @@ export const DayInspectorDrawer: React.FC = () => {
         {/* Day's Event and Routine List */}
         <div className="flex-1 overflow-y-auto space-y-3 pr-1">
           {dayEvents.length === 0 ? (
-            <div className="apple-glass-card p-8 text-center rounded-3xl space-y-3 my-auto">
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-sky-400 flex items-center justify-center mx-auto">
+            <div className="bg-[#121314] border border-[#2A2B2D] p-8 text-center rounded-2xl space-y-3 my-auto">
+              <div className="w-12 h-12 rounded-full bg-[#8AB4F8]/15 text-[#8AB4F8] flex items-center justify-center mx-auto border border-[#8AB4F8]/30">
                 <Sparkles className="w-6 h-6" />
               </div>
-              <p className="text-xs font-semibold app-text-secondary">
-                Không có thói quen hoặc sự kiện nào trong ngày này.
+              <p className="text-xs font-medium text-[#9AA0A6]">
+                {language === 'vi' ? 'Không có thói quen hoặc sự kiện nào trong ngày này.' : 'No habits or events scheduled for this day.'}
               </p>
               <button
                 onClick={() => openModal('create')}
-                className="text-xs text-blue-600 dark:text-sky-400 font-bold hover:underline cursor-pointer"
+                className="text-xs text-[#8AB4F8] font-semibold hover:underline cursor-pointer"
               >
-                + Thêm thói quen ngay
+                + {language === 'vi' ? 'Thêm lịch trình hoặc thói quen ngay' : 'Add event or habit now'}
               </button>
             </div>
           ) : (

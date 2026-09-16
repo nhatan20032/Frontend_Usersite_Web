@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export const MonthGridView: React.FC = () => {
-  const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate, openDayInspector } = useApp();
+  const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, closeDayInspector } = useApp();
   const { language, t } = useLanguage();
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
@@ -34,6 +34,12 @@ export const MonthGridView: React.FC = () => {
     t('calendar.sat'),
   ];
 
+  const handleCellClick = (day: number, month: number, year: number) => {
+    selectDate(day, month, year);
+    closeDayInspector();
+    openModal('create');
+  };
+
   return (
     <div className="w-full select-none">
       {/* Google Calendar Dark Main Grid Container */}
@@ -54,11 +60,8 @@ export const MonthGridView: React.FC = () => {
           {leadingPadding.map((pad) => (
             <div
               key={`grid-pad-prev-${pad}`}
-              onClick={() => {
-                selectDate(pad, prevMonthIndex, prevYear);
-                openDayInspector(pad);
-              }}
-              title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
+              onClick={() => handleCellClick(pad, prevMonthIndex, prevYear)}
+              title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
               className="p-1.5 min-h-[96px] sm:min-h-[112px] border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start"
             >
               <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
@@ -75,11 +78,8 @@ export const MonthGridView: React.FC = () => {
             return (
               <div
                 key={d}
-                onClick={() => {
-                  selectDate(d, selectedMonth, selectedYear);
-                  openDayInspector(d);
-                }}
-                title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
+                onClick={() => handleCellClick(d, selectedMonth, selectedYear)}
+                title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
                 className={`p-1.5 min-h-[96px] sm:min-h-[112px] border-r border-[#2A2B2D] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-between ${
                   isToday ? 'bg-[#1A73E8]/5' : 'hover:bg-[#1C1D1F]'
                 }`}
@@ -104,6 +104,10 @@ export const MonthGridView: React.FC = () => {
                     return (
                       <div
                         key={ev.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal('detail', ev.id);
+                        }}
                         className={`text-[10px] truncate px-2 py-0.5 rounded font-medium flex items-center gap-1 transition-opacity hover:opacity-90 ${
                           isGreen
                             ? 'bg-[#1E8E3E] text-[#E6F4EA]'
@@ -131,11 +135,8 @@ export const MonthGridView: React.FC = () => {
           {trailingPadding.map((pad) => (
             <div
               key={`grid-pad-next-${pad}`}
-              onClick={() => {
-                selectDate(pad, nextMonthIndex, nextYear);
-                openDayInspector(pad);
-              }}
-              title={language === 'vi' ? 'Nhấp để xem chi tiết & quản lý lịch trình' : 'Click to inspect & manage day'}
+              onClick={() => handleCellClick(pad, nextMonthIndex, nextYear)}
+              title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
               className="p-1.5 min-h-[96px] sm:min-h-[112px] border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start"
             >
               <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
