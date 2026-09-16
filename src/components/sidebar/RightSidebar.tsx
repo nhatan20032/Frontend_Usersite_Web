@@ -13,6 +13,8 @@ export const RightSidebar: React.FC = () => {
     toggleRightSidebar,
     rightSidebarTab,
     addTask,
+    addSubtask,
+    deleteSubtask,
     deleteTask,
     toggleTask,
     toggleSubtask,
@@ -183,6 +185,8 @@ export const RightSidebar: React.FC = () => {
               onToggleTask={toggleTask}
               onToggleSubtask={toggleSubtask}
               onDeleteTask={deleteTask}
+              onAddSubtask={addSubtask}
+              onDeleteSubtask={deleteSubtask}
             />
           ))
         )}

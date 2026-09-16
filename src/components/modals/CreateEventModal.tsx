@@ -47,6 +47,7 @@ export const CreateEventModal: React.FC = () => {
     activeModal,
     closeModal,
     addEvent,
+    addTask,
     openModal,
     selectedDay,
     selectedMonth,
@@ -59,6 +60,7 @@ export const CreateEventModal: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [startTime, setStartTime] = useState<string>('09:00 AM');
   const [endTime, setEndTime] = useState<string>('10:00 AM');
+  const [dueTime, setDueTime] = useState<string>('17:00 PM');
   const [priority, setPriority] = useState<Priority>('medium');
   const [frequency, setFrequency] = useState<string>('none');
   const [location, setLocation] = useState<string>('');
@@ -70,6 +72,10 @@ export const CreateEventModal: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string>('#8AB4F8');
   const [status, setStatus] = useState<'busy' | 'free'>('busy');
   const [reminder, setReminder] = useState<string>('30m');
+
+  // Subtasks State for Task Tab
+  const [subtaskList, setSubtaskList] = useState<string[]>([]);
+  const [newSubtaskInput, setNewSubtaskInput] = useState<string>('');
 
   if (activeModal !== 'create') return null;
 
@@ -92,6 +98,20 @@ export const CreateEventModal: React.FC = () => {
     setGuests(guests.filter((_, idx) => idx !== indexToRemove));
   };
 
+  const handleAddSubtask = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (newSubtaskInput.trim()) {
+        setSubtaskList((prev) => [...prev, newSubtaskInput.trim()]);
+        setNewSubtaskInput('');
+      }
+    }
+  };
+
+  const handleRemoveSubtask = (indexToRemove: number) => {
+    setSubtaskList((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
   const handleTabChange = (tab: 'event' | 'task' | 'appointment') => {
     if (tab === 'appointment') {
       openModal('appointment-schedule');
@@ -104,6 +124,35 @@ export const CreateEventModal: React.FC = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
+    if (activeTab === 'task') {
+      let reminderText = 'Push App';
+      if (reminder === '15m') reminderText = 'Push App • 15m';
+      else if (reminder === '30m') reminderText = 'Push App • SMS';
+      else if (reminder === '60m') reminderText = 'Push App • SMS • Email';
+
+      addTask({
+        title: title.trim(),
+        dueDate: `${selectedDay} ${monthNames[selectedMonth]}, ${dueTime}`,
+        priority,
+        reminders: reminderText,
+        subtasks: subtaskList.map((st) => ({ title: st, completed: false })),
+      });
+
+      showToast(
+        language === 'vi' ? 'Đã tạo việc cần làm' : 'Task created',
+        language === 'vi'
+          ? `Đã thêm "${title}"${subtaskList.length > 0 ? ` kèm ${subtaskList.length} việc con` : ''}`
+          : `Added "${title}" to tasks`,
+        'success'
+      );
+      closeModal();
+      setTitle('');
+      setSubtaskList([]);
+      setNewSubtaskInput('');
+      setDescription('');
+      return;
+    }
+
     let freqText = 'Một lần';
     if (frequency === 'daily') {
       freqText = language === 'vi' ? 'Hàng ngày' : 'Daily';
@@ -114,7 +163,7 @@ export const CreateEventModal: React.FC = () => {
     }
 
     const success = addEvent({
-      type: activeTab === 'task' ? 'routine' : 'event',
+      type: 'event',
       title: title.trim(),
       time: startTime,
       endTime,
@@ -222,7 +271,7 @@ export const CreateEventModal: React.FC = () => {
               >
                 <CalendarPlus className="w-3.5 h-3.5 text-[#FDD663]" />
                 <span>{language === 'vi' ? 'Lên lịch hẹn' : 'Appointment'}</span>
-                <span className="px-1.5 py-0.2 rounded bg-[#01552C] text-[#8ED7A1] text-[9px] font-bold">
+                <span className="px-1.5 py-0.5 rounded bg-[#01552C] text-[#8ED7A1] text-[9px] font-bold">
                   {language === 'vi' ? 'MỚI' : 'NEW'}
                 </span>
               </button>
@@ -230,7 +279,7 @@ export const CreateEventModal: React.FC = () => {
 
             {/* 3. Detailed Fields with Google-Style Icons */}
             <div className="space-y-4 pt-1 text-xs text-[#E3E2E3]">
-              {/* Row 1: Date & Time */}
+              {/* Row 1: Date & Time (Context-aware) */}
               <div className="flex items-start gap-3.5">
                 <Clock className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
                 <div className="flex-1 space-y-2">
@@ -238,158 +287,267 @@ export const CreateEventModal: React.FC = () => {
                     <span className="px-3 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] font-medium text-[#E3E2E3]">
                       {weekdayName}, {selectedDay} {monthNames[selectedMonth]}
                     </span>
-                    <span className="text-[#9AA0A6]">•</span>
-                    <select
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
-                    >
-                      <option value="08:00 AM">08:00 AM</option>
-                      <option value="09:00 AM">09:00 AM</option>
-                      <option value="10:00 AM">10:00 AM</option>
-                      <option value="11:00 AM">11:00 AM</option>
-                      <option value="01:00 PM">01:00 PM</option>
-                      <option value="02:00 PM">02:00 PM</option>
-                      <option value="03:00 PM">03:00 PM</option>
-                      <option value="04:00 PM">04:00 PM</option>
-                      <option value="05:00 PM">05:00 PM</option>
-                    </select>
-                    <span className="text-[#9AA0A6]">–</span>
-                    <select
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
-                    >
-                      <option value="09:00 AM">09:00 AM</option>
-                      <option value="10:00 AM">10:00 AM</option>
-                      <option value="11:00 AM">11:00 AM</option>
-                      <option value="12:00 PM">12:00 PM</option>
-                      <option value="02:00 PM">02:00 PM</option>
-                      <option value="03:00 PM">03:00 PM</option>
-                      <option value="04:00 PM">04:00 PM</option>
-                      <option value="05:00 PM">05:00 PM</option>
-                      <option value="06:00 PM">06:00 PM</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center gap-3 text-[11px] text-[#9AA0A6]">
-                    <span>GMT+7 Giờ Đông Dương</span>
-                    <span>•</span>
-                    <select
-                      value={frequency}
-                      onChange={(e) => setFrequency(e.target.value)}
-                      className="bg-transparent border-0 text-[#8AB4F8] hover:underline focus:outline-none cursor-pointer p-0"
-                    >
-                      <option value="none" className="bg-[#242628] text-[#E3E2E3]">
-                        {language === 'vi' ? 'Không lặp lại' : 'Does not repeat'}
-                      </option>
-                      <option value="daily" className="bg-[#242628] text-[#E3E2E3]">
-                        {language === 'vi' ? 'Hàng ngày' : 'Daily'}
-                      </option>
-                      <option value="weekly" className="bg-[#242628] text-[#E3E2E3]">
-                        {language === 'vi' ? 'Hàng tuần' : 'Weekly'}
-                      </option>
-                      <option value="monthly" className="bg-[#242628] text-[#E3E2E3]">
-                        {language === 'vi' ? 'Hàng tháng' : 'Monthly'}
-                      </option>
-                    </select>
-                  </div>
-                </div>
-              </div>
 
-              {/* Row 2: Add Guests */}
-              <div className="flex items-start gap-3.5">
-                <Users className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <input
-                    type="text"
-                    value={guestEmail}
-                    onChange={(e) => setGuestEmail(e.target.value)}
-                    onKeyDown={handleAddGuest}
-                    placeholder={language === 'vi' ? 'Thêm khách (nhập email rồi nhấn Enter)...' : 'Add guests (press Enter)...'}
-                    className="w-full bg-[#1E1F20] border border-[#333538] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-[#8AB4F8]"
-                  />
-                  <div className="flex flex-wrap gap-1.5">
-                    {guests.map((guest, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1E1F20] border border-[#333538] text-[11px] text-[#E3E2E3]"
-                      >
-                        <div className="w-4 h-4 rounded-full bg-[#8AB4F8] text-[#121314] text-[9px] font-bold flex items-center justify-center">
-                          {guest.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="truncate max-w-[200px]">{guest}</span>
-                        {idx > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveGuest(idx)}
-                            className="text-[#9AA0A6] hover:text-[#E3E2E3] cursor-pointer"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
+                    {activeTab === 'task' ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#9AA0A6]">{language === 'vi' ? 'Hạn chót:' : 'Due:'}</span>
+                        <select
+                          value={dueTime}
+                          onChange={(e) => setDueTime(e.target.value)}
+                          className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer font-mono"
+                        >
+                          <option value="09:00 AM">09:00 AM</option>
+                          <option value="12:00 PM">12:00 PM</option>
+                          <option value="15:00 PM">15:00 PM</option>
+                          <option value="17:00 PM">17:00 PM</option>
+                          <option value="18:00 PM">18:00 PM</option>
+                          <option value="20:00 PM">20:00 PM</option>
+                          <option value="23:59 PM">23:59 PM</option>
+                        </select>
                       </div>
-                    ))}
+                    ) : (
+                      <>
+                        <span className="text-[#9AA0A6]">•</span>
+                        <select
+                          value={startTime}
+                          onChange={(e) => setStartTime(e.target.value)}
+                          className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
+                        >
+                          <option value="08:00 AM">08:00 AM</option>
+                          <option value="09:00 AM">09:00 AM</option>
+                          <option value="10:00 AM">10:00 AM</option>
+                          <option value="11:00 AM">11:00 AM</option>
+                          <option value="01:00 PM">01:00 PM</option>
+                          <option value="02:00 PM">02:00 PM</option>
+                          <option value="03:00 PM">03:00 PM</option>
+                          <option value="04:00 PM">04:00 PM</option>
+                          <option value="05:00 PM">05:00 PM</option>
+                        </select>
+                        <span className="text-[#9AA0A6]">–</span>
+                        <select
+                          value={endTime}
+                          onChange={(e) => setEndTime(e.target.value)}
+                          className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
+                        >
+                          <option value="09:00 AM">09:00 AM</option>
+                          <option value="10:00 AM">10:00 AM</option>
+                          <option value="11:00 AM">11:00 AM</option>
+                          <option value="12:00 PM">12:00 PM</option>
+                          <option value="02:00 PM">02:00 PM</option>
+                          <option value="03:00 PM">03:00 PM</option>
+                          <option value="04:00 PM">04:00 PM</option>
+                          <option value="05:00 PM">05:00 PM</option>
+                          <option value="06:00 PM">06:00 PM</option>
+                        </select>
+                      </>
+                    )}
+                  </div>
+
+                  {activeTab === 'event' && (
+                    <div className="flex items-center gap-3 text-[11px] text-[#9AA0A6]">
+                      <span>GMT+7 Giờ Đông Dương</span>
+                      <span>•</span>
+                      <select
+                        value={frequency}
+                        onChange={(e) => setFrequency(e.target.value)}
+                        className="bg-transparent border-0 text-[#8AB4F8] hover:underline focus:outline-none cursor-pointer p-0"
+                      >
+                        <option value="none" className="bg-[#242628] text-[#E3E2E3]">
+                          {language === 'vi' ? 'Không lặp lại' : 'Does not repeat'}
+                        </option>
+                        <option value="daily" className="bg-[#242628] text-[#E3E2E3]">
+                          {language === 'vi' ? 'Hàng ngày' : 'Daily'}
+                        </option>
+                        <option value="weekly" className="bg-[#242628] text-[#E3E2E3]">
+                          {language === 'vi' ? 'Hàng tuần' : 'Weekly'}
+                        </option>
+                        <option value="monthly" className="bg-[#242628] text-[#E3E2E3]">
+                          {language === 'vi' ? 'Hàng tháng' : 'Monthly'}
+                        </option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Row 2: Add Guests (Chỉ dành cho Sự kiện) */}
+              {activeTab === 'event' && (
+                <div className="flex items-start gap-3.5">
+                  <Users className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="text"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      onKeyDown={handleAddGuest}
+                      placeholder={language === 'vi' ? 'Thêm khách (nhập email rồi nhấn Enter)...' : 'Add guests (press Enter)...'}
+                      className="w-full bg-[#1E1F20] border border-[#333538] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-[#8AB4F8]"
+                    />
+                    <div className="flex flex-wrap gap-1.5">
+                      {guests.map((guest, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1E1F20] border border-[#333538] text-[11px] text-[#E3E2E3]"
+                        >
+                          <div className="w-4 h-4 rounded-full bg-[#8AB4F8] text-[#121314] text-[9px] font-bold flex items-center justify-center">
+                            {guest.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="truncate max-w-[200px]">{guest}</span>
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveGuest(idx)}
+                              className="text-[#9AA0A6] hover:text-[#E3E2E3] cursor-pointer"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Row 3: Location */}
-              <div className="flex items-center gap-3.5">
-                <MapPin className="w-5 h-5 text-[#9AA0A6] shrink-0" />
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder={language === 'vi' ? 'Thêm vị trí hoặc phòng họp...' : 'Add location...'}
-                    className="w-full bg-[#1E1F20] border border-[#333538] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-[#8AB4F8]"
-                  />
+              {/* Row 3: Location (Chỉ dành cho Sự kiện) */}
+              {activeTab === 'event' && (
+                <div className="flex items-center gap-3.5">
+                  <MapPin className="w-5 h-5 text-[#9AA0A6] shrink-0" />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder={language === 'vi' ? 'Thêm vị trí hoặc phòng họp...' : 'Add location...'}
+                      className="w-full bg-[#1E1F20] border border-[#333538] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-[#8AB4F8]"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Row 5: Description & Mini Toolbar */}
+              {/* Row 4: Subtasks Checklist (Dành riêng cho Việc cần làm) */}
+              {activeTab === 'task' && (
+                <div className="flex items-start gap-3.5 pt-1">
+                  <List className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-semibold text-[#9AA0A6]">
+                        {language === 'vi' ? 'Danh sách việc con (Checklist)' : 'Subtasks / Checklist'}
+                      </span>
+                      {subtaskList.length > 0 && (
+                        <span className="text-[#8AB4F8] font-mono font-medium">
+                          {subtaskList.length} {language === 'vi' ? 'việc' : 'items'}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Danh sách việc con đã thêm */}
+                    {subtaskList.length > 0 && (
+                      <div className="space-y-1.5 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
+                        {subtaskList.map((st, idx) => (
+                          <div
+                            key={idx}
+                            className="group flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] hover:border-[#3C4043] transition-colors"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#8AB4F8] shrink-0" />
+                              <span className="text-xs text-[#E3E2E3] truncate">{st}</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSubtask(idx)}
+                              className="text-[#70757A] hover:text-[#F28B82] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-0.5"
+                              title={language === 'vi' ? 'Xóa việc con' : 'Delete subtask'}
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Input thêm việc con */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newSubtaskInput}
+                        onChange={(e) => setNewSubtaskInput(e.target.value)}
+                        onKeyDown={handleAddSubtask}
+                        placeholder={language === 'vi' ? '+ Thêm việc con rồi nhấn Enter...' : '+ Add subtask item and press Enter...'}
+                        className="flex-1 bg-[#1E1F20] border border-[#333538] focus:border-[#8AB4F8] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none transition-colors"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (newSubtaskInput.trim()) {
+                            setSubtaskList((prev) => [...prev, newSubtaskInput.trim()]);
+                            setNewSubtaskInput('');
+                          }
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-[#28292A] hover:bg-[#333538] text-[#9AA0A6] hover:text-[#E3E2E3] text-xs font-medium border border-[#333538] transition-colors cursor-pointer shrink-0"
+                      >
+                        {language === 'vi' ? 'Thêm' : 'Add'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Row 5: Description & Mini Toolbar (Ngữ cảnh hóa) */}
               <div className="flex items-start gap-3.5">
                 <AlignLeft className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
                 <div className="flex-1 border border-[#333538] rounded-lg bg-[#1E1F20] overflow-hidden">
-                  {/* Mini Toolbar */}
-                  <div className="flex items-center gap-1 px-2.5 py-1 bg-[#28292A] border-b border-[#333538] text-[#9AA0A6]">
-                    <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Đậm">
-                      <Bold className="w-3.5 h-3.5" />
-                    </button>
-                    <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Nghiêng">
-                      <Italic className="w-3.5 h-3.5" />
-                    </button>
-                    <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Gạch chân">
-                      <Underline className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="w-[1px] h-3.5 bg-[#3C4043] mx-1" />
-                    <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Danh sách">
-                      <List className="w-3.5 h-3.5" />
-                    </button>
-                    <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Liên kết">
-                      <Link className="w-3.5 h-3.5" />
-                    </button>
-                    <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Đính kèm">
-                      <Paperclip className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  <textarea
-                    rows={3}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder={language === 'vi' ? 'Thêm mô tả hoặc tài liệu đính kèm cho cuộc họp...' : 'Add description or attachments...'}
-                    className="w-full bg-transparent border-0 p-2.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none resize-none"
-                  />
+                  {activeTab === 'event' ? (
+                    <>
+                      {/* Mini Toolbar chỉ dành cho Sự kiện */}
+                      <div className="flex items-center gap-1 px-2.5 py-1 bg-[#28292A] border-b border-[#333538] text-[#9AA0A6]">
+                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Đậm">
+                          <Bold className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Nghiêng">
+                          <Italic className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Gạch chân">
+                          <Underline className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-[1px] h-3.5 bg-[#3C4043] mx-1" />
+                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Danh sách">
+                          <List className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Liên kết">
+                          <Link className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Đính kèm">
+                          <Paperclip className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <textarea
+                        rows={3}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder={language === 'vi' ? 'Thêm mô tả hoặc tài liệu đính kèm cho cuộc họp...' : 'Add description or attachments...'}
+                        className="w-full bg-transparent border-0 p-2.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none resize-none"
+                      />
+                    </>
+                  ) : (
+                    <textarea
+                      rows={2}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder={language === 'vi' ? 'Thêm ghi chú ngắn cho công việc...' : 'Add quick notes...'}
+                      className="w-full bg-transparent border-0 p-2.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none resize-none"
+                    />
+                  )}
                 </div>
               </div>
 
-              {/* Row 6: Color Palette & Calendar Category & Reminders */}
+              {/* Row 6: Color Palette & Priority & Reminders */}
               <div className="flex items-center gap-3.5">
                 <Palette className="w-5 h-5 text-[#9AA0A6] shrink-0" />
                 <div className="flex-1 flex flex-wrap items-center justify-between gap-3">
                   {/* Swatches */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-[#9AA0A6]">Màu sắc:</span>
+                    <span className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Màu sắc:' : 'Color:'}</span>
                     <div className="flex items-center gap-1.5">
                       {colorPalette.map((cp) => (
                         <div
@@ -407,7 +565,7 @@ export const CreateEventModal: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Status & Priority & Reminder Badges */}
+                  {/* Priority & Status (nếu có) & Reminder Badges */}
                   <div className="flex items-center gap-2 text-[11px]">
                     <select
                       value={priority}
@@ -419,14 +577,16 @@ export const CreateEventModal: React.FC = () => {
                       <option value="low">{language === 'vi' ? 'Ưu tiên thấp' : 'Low'}</option>
                     </select>
 
-                    <select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value as 'busy' | 'free')}
-                      className="px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#9AA0A6] focus:outline-none cursor-pointer"
-                    >
-                      <option value="busy">{language === 'vi' ? 'Bận' : 'Busy'}</option>
-                      <option value="free">{language === 'vi' ? 'Rảnh' : 'Free'}</option>
-                    </select>
+                    {activeTab === 'event' && (
+                      <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value as 'busy' | 'free')}
+                        className="px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#9AA0A6] focus:outline-none cursor-pointer"
+                      >
+                        <option value="busy">{language === 'vi' ? 'Bận' : 'Busy'}</option>
+                        <option value="free">{language === 'vi' ? 'Rảnh' : 'Free'}</option>
+                      </select>
+                    )}
 
                     <div className="flex items-center gap-1 px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#9AA0A6]">
                       <Bell className="w-3 h-3 text-[#8AB4F8]" />
@@ -435,9 +595,9 @@ export const CreateEventModal: React.FC = () => {
                         onChange={(e) => setReminder(e.target.value)}
                         className="bg-transparent border-0 text-[#9AA0A6] focus:outline-none cursor-pointer p-0"
                       >
-                        <option value="15m" className="bg-[#242628]">15 phút trước</option>
-                        <option value="30m" className="bg-[#242628]">30 phút trước</option>
-                        <option value="60m" className="bg-[#242628]">1 giờ trước</option>
+                        <option value="15m" className="bg-[#242628]">{language === 'vi' ? '15 phút trước' : '15 min before'}</option>
+                        <option value="30m" className="bg-[#242628]">{language === 'vi' ? '30 phút trước' : '30 min before'}</option>
+                        <option value="60m" className="bg-[#242628]">{language === 'vi' ? '1 giờ trước' : '1 hour before'}</option>
                       </select>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type {
   CalendarEvent,
   TaskItem,
+  CreateTaskInput,
   CalendarViewMode,
   ThemeName,
   CategoryFilters,
@@ -41,7 +42,9 @@ interface AppContextType {
 
   // Tasks & Subtasks
   tasksData: TaskItem[];
-  addTask: (title: string, priority?: Priority) => void;
+  addTask: (input: string | CreateTaskInput, priority?: Priority) => void;
+  addSubtask: (taskId: number, title: string) => void;
+  deleteSubtask: (taskId: number, subtaskId: number) => void;
   deleteTask: (id: number) => void;
   toggleTask: (id: number) => void;
   toggleSubtask: (taskId: number, subtaskId: number) => void;
@@ -557,18 +560,66 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const addTask = (title: string, priority: Priority = 'medium') => {
-    const newTask: TaskItem = {
-      id: Date.now(),
-      title,
-      dueDate: 'Hôm nay',
-      priority,
-      completed: false,
-      reminders: 'Push App',
-      subtasks: [],
-    };
+  const addTask = (input: string | CreateTaskInput, priority: Priority = 'medium') => {
+    let newTask: TaskItem;
+    if (typeof input === 'string') {
+      newTask = {
+        id: Date.now(),
+        title: input,
+        dueDate: 'Hôm nay',
+        priority,
+        completed: false,
+        reminders: 'Push App',
+        subtasks: [],
+      };
+    } else {
+      newTask = {
+        id: Date.now(),
+        title: input.title,
+        dueDate: input.dueDate || 'Hôm nay',
+        priority: input.priority || 'medium',
+        completed: false,
+        reminders: input.reminders || 'Push App',
+        subtasks: (input.subtasks || []).map((st, idx) => ({
+          id: Date.now() + idx + 1,
+          title: st.title,
+          completed: !!st.completed,
+        })),
+      };
+    }
     setTasksData((prev) => [newTask, ...prev]);
-    showToast('Tạo công việc thành công', `[${title}]`, 'success');
+    showToast('Tạo công việc thành công', `[${newTask.title}]`, 'success');
+  };
+
+  const addSubtask = (taskId: number, title: string) => {
+    if (!title.trim()) return;
+    setTasksData((prev) =>
+      prev.map((t) => {
+        if (t.id === taskId) {
+          const newSubtask = {
+            id: Date.now(),
+            title: title.trim(),
+            completed: false,
+          };
+          return { ...t, subtasks: [...t.subtasks, newSubtask] };
+        }
+        return t;
+      })
+    );
+  };
+
+  const deleteSubtask = (taskId: number, subtaskId: number) => {
+    setTasksData((prev) =>
+      prev.map((t) => {
+        if (t.id === taskId) {
+          return {
+            ...t,
+            subtasks: t.subtasks.filter((s) => s.id !== subtaskId),
+          };
+        }
+        return t;
+      })
+    );
   };
 
   const deleteTask = (id: number) => {
@@ -646,6 +697,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSearchQuery,
         tasksData,
         addTask,
+        addSubtask,
+        deleteSubtask,
         deleteTask,
         toggleTask,
         toggleSubtask,

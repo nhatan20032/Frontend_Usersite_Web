@@ -64,6 +64,14 @@ export interface SubTask {
   completed: boolean;
 }
 
+export interface CreateTaskInput {
+  title: string;
+  dueDate?: string;
+  priority?: Priority;
+  reminders?: string;
+  subtasks?: { title: string; completed?: boolean }[];
+}
+
 export interface TaskItem {
   id: number;
   title: string;
