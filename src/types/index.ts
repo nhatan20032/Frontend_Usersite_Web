@@ -56,6 +56,15 @@ export interface CalendarEvent {
   hasMeet?: boolean;
   colorTag?: string;
   status?: 'busy' | 'free';
+  subroutines?: SubTask[];
+}
+
+export interface CreateRoutineInput {
+  title: string;
+  time?: string;
+  frequency?: string;
+  priority?: Priority;
+  subroutines?: string[];
 }
 
 export interface SubTask {

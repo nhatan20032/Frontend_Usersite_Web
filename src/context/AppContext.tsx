@@ -3,6 +3,7 @@ import type {
   CalendarEvent,
   TaskItem,
   CreateTaskInput,
+  CreateRoutineInput,
   CalendarViewMode,
   ThemeName,
   CategoryFilters,
@@ -32,6 +33,10 @@ interface AppContextType {
   openRecurringModal: (event: CalendarEvent, action?: 'delete' | 'edit') => void;
   closeRecurringModal: () => void;
   toggleCheckInRoutine: (id: number) => void;
+  addRoutine: (input: CreateRoutineInput) => void;
+  addSubroutine: (routineId: number, title: string) => void;
+  toggleSubroutine: (routineId: number, subroutineId: number) => void;
+  deleteSubroutine: (routineId: number, subroutineId: number) => void;
   setCalendarView: (view: CalendarViewMode) => void;
   selectDate: (day: number, month?: number, year?: number) => void;
   selectToday: () => void;
@@ -99,6 +104,11 @@ const getInitialSampleEvents = (year: number, month: number, day: number): Calen
     month,
     day,
     frequency: 'Hàng ngày',
+    subroutines: [
+      { id: 1, title: 'Uống 300ml nước ấm sau khi ngủ dậy', completed: true },
+      { id: 2, title: 'Khởi động khớp gối & cổ chân 5 phút', completed: true },
+      { id: 3, title: 'Chạy 3.5km với nhịp pace 6:15', completed: false },
+    ],
   },
   {
     id: 2,
@@ -125,6 +135,11 @@ const getInitialSampleEvents = (year: number, month: number, day: number): Calen
     month,
     day,
     frequency: 'Hàng ngày',
+    subroutines: [
+      { id: 1, title: 'Chọn 1 chương mục tiêu trong sách', completed: true },
+      { id: 2, title: 'Đọc tập trung 25 phút Pomodoro', completed: false },
+      { id: 3, title: 'Note lại 3 ý tưởng cốt lõi vào Keep', completed: false },
+    ],
   },
   {
     id: 4,
@@ -138,6 +153,12 @@ const getInitialSampleEvents = (year: number, month: number, day: number): Calen
     year,
     month,
     day: Math.min(day + 1, 28),
+    subroutines: [
+      { id: 1, title: 'Khởi động khớp & làm nóng 5 phút', completed: true },
+      { id: 2, title: '4 set Squats (8-10 reps)', completed: false },
+      { id: 3, title: '3 set Bench Press (tạ đòn)', completed: false },
+      { id: 4, title: 'Căng cơ hạ nhiệt 5 phút', completed: false },
+    ],
   },
   {
     id: 5,
@@ -164,6 +185,11 @@ const getInitialSampleEvents = (year: number, month: number, day: number): Calen
     month,
     day,
     frequency: 'Hàng ngày',
+    subroutines: [
+      { id: 1, title: 'Ôn lại từ cũ trên Flashcard', completed: true },
+      { id: 2, title: 'Học 20 từ mới theo chủ đề', completed: true },
+      { id: 3, title: 'Đặt 5 câu ví dụ thực tế', completed: true },
+    ],
   },
 ];
 
@@ -551,13 +577,117 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const nextCompleted = !target.completed;
     const nextStreak = nextCompleted ? (target.streak || 0) + 1 : Math.max(1, (target.streak || 1) - 1);
     setEventsData((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, completed: nextCompleted, streak: nextStreak } : e))
+      prev.map((e) => {
+        if (e.id === id) {
+          // Toggle all subroutines to match routine completed state
+          const updatedSubs = (e.subroutines || []).map((s) => ({
+            ...s,
+            completed: nextCompleted,
+          }));
+          return {
+            ...e,
+            completed: nextCompleted,
+            streak: nextStreak,
+            subroutines: updatedSubs,
+          };
+        }
+        return e;
+      })
     );
     if (nextCompleted) {
       showToast('Điểm danh thành công', `Chuỗi thói quen [${target.title}] đạt ${nextStreak} ngày liên tục.`, 'success');
     } else {
       showToast('Hủy điểm danh', `Đã hoàn tác trạng thái [${target.title}].`, 'info');
     }
+  };
+
+  const addRoutine = (input: CreateRoutineInput) => {
+    const newRoutine: CalendarEvent = {
+      id: Date.now(),
+      type: 'routine',
+      title: input.title,
+      time: input.time || '07:00 AM',
+      priority: input.priority || 'medium',
+      year: selectedYear,
+      month: selectedMonth,
+      day: selectedDay,
+      streak: 1,
+      completed: false,
+      frequency: input.frequency || 'Hàng ngày',
+      subroutines: (input.subroutines || []).map((st, idx) => ({
+        id: Date.now() + idx + 1,
+        title: st,
+        completed: false,
+      })),
+    };
+    setEventsData((prev) => [newRoutine, ...prev]);
+    showToast('Tạo thói quen thành công', `[${input.title}]`, 'success');
+  };
+
+  const addSubroutine = (routineId: number, title: string) => {
+    if (!title.trim()) return;
+    setEventsData((prev) =>
+      prev.map((e) => {
+        if (e.id === routineId) {
+          const newSub = {
+            id: Date.now(),
+            title: title.trim(),
+            completed: false,
+          };
+          const currentSubs = e.subroutines || [];
+          return {
+            ...e,
+            completed: false,
+            subroutines: [...currentSubs, newSub],
+          };
+        }
+        return e;
+      })
+    );
+  };
+
+  const toggleSubroutine = (routineId: number, subroutineId: number) => {
+    setEventsData((prev) =>
+      prev.map((e) => {
+        if (e.id === routineId) {
+          const currentSubs = e.subroutines || [];
+          const updatedSubs = currentSubs.map((s) =>
+            s.id === subroutineId ? { ...s, completed: !s.completed } : s
+          );
+          const allDone = updatedSubs.length > 0 && updatedSubs.every((s) => s.completed);
+          const nextStreak = allDone && !e.completed
+            ? (e.streak || 0) + 1
+            : !allDone && e.completed
+            ? Math.max(1, (e.streak || 1) - 1)
+            : (e.streak || 1);
+          return {
+            ...e,
+            completed: allDone,
+            streak: nextStreak,
+            subroutines: updatedSubs,
+          };
+        }
+        return e;
+      })
+    );
+  };
+
+  const deleteSubroutine = (routineId: number, subroutineId: number) => {
+    setEventsData((prev) =>
+      prev.map((e) => {
+        if (e.id === routineId) {
+          const currentSubs = e.subroutines || [];
+          const updatedSubs = currentSubs.filter((s) => s.id !== subroutineId);
+          const allDone = updatedSubs.length > 0 && updatedSubs.every((s) => s.completed);
+          return {
+            ...e,
+            completed: allDone,
+            subroutines: updatedSubs,
+          };
+        }
+        return e;
+      })
+    );
   };
 
   const addTask = (input: string | CreateTaskInput, priority: Priority = 'medium') => {
@@ -688,6 +818,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addEvent,
         deleteEvent,
         toggleCheckInRoutine,
+        addRoutine,
+        addSubroutine,
+        toggleSubroutine,
+        deleteSubroutine,
         setCalendarView: setCalendarViewMode,
         selectDate,
         selectToday,

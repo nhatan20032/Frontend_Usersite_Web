@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoutinePulse - Right Sidebar Companion Panel (Ghi chú & Routine 360px)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            surface: {
+              base: '#121314',
+              container: '#171819',
+              card: '#1F2021',
+              cardHover: '#242628',
+              active: '#28292A',
+              border: '#2A2B2D',
+              borderLight: '#333538'
+            },
+            accent: {
+              amber: '#E37400',
+              amberLight: '#FDD663',
+              amberBg: 'rgba(227, 116, 0, 0.15)',
+              amberBorder: 'rgba(227, 116, 0, 0.35)',
+              blue: '#1A73E8',
+              blueLight: '#8AB4F8',
+              green: '#1E8E3E',
+              greenLight: '#81C995',
+              greenBg: 'rgba(30, 142, 62, 0.15)',
+              red: '#EA4335',
+              redLight: '#F28B82',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #2A2B2D;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #3C4043;
+    }
+  </style>
+</head>
+<body class="bg-[#0D0E0F] text-[#E3E2E3] font-sans h-full overflow-hidden flex flex-col select-none">
+
+  <!-- Top Bar giải thích ngữ cảnh Kiến trúc -->
+  <div class="h-10 bg-[#161719] border-b border-[#2A2B2D] px-4 flex items-center justify-between text-xs text-[#9AA0A6] flex-shrink-0">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span>
+      <span class="font-semibold text-[#E3E2E3]">Thiết Kế Kiến Trúc Chuẩn:</span>
+      <span>Thanh Phụ Trợ Bên Phải (Right Companion Panel 360px + Dock 56px)</span>
+    </div>
+    <div class="flex items-center gap-3 text-[11px] font-mono">
+      <span class="px-2 py-0.5 rounded bg-[#1F2021] border border-[#2A2B2D]">Panel Width: 360px</span>
+      <span class="px-2 py-0.5 rounded bg-[#1F2021] border border-[#2A2B2D]">Dock Width: 56px</span>
+      <span class="text-accent-amberLight font-semibold">Tab: notes-routine (Active)</span>
+    </div>
+  </div>
+
+  <!-- Workspace Container: Nền mờ Calendar phía sau + Panel 360px + Dock 56px -->
+  <div class="flex-1 flex overflow-hidden relative">
+
+    <!-- 1. VÙNG LÀM VIỆC CHÍNH (CALENDAR CANVAS) - Giữ tỷ lệ hiển thị mờ thực tế -->
+    <div class="flex-1 bg-[#121314] opacity-35 filter blur-[1px] p-6 overflow-hidden flex flex-col pointer-events-none">
+      <div class="flex items-center justify-between pb-4 border-b border-[#2A2B2D]">
+        <div class="flex items-center gap-3">
+          <span class="text-xl font-semibold text-white">Tháng 9, 2026</span>
+          <span class="px-2.5 py-1 text-xs rounded bg-[#1F2021] text-[#9AA0A6] border border-[#2A2B2D]">Hôm nay</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1.5 rounded-full bg-[#1F2021] text-xs text-[#9AA0A6]">Lưới Tháng</span>
+        </div>
+      </div>
+      <div class="flex-1 grid grid-cols-7 gap-px bg-[#2A2B2D] mt-4 rounded-lg overflow-hidden border border-[#2A2B2D]">
+        <div class="bg-[#18191A] p-3 text-xs text-neutral-500">Th 2 (14)</div>
+        <div class="bg-[#18191A] p-3 text-xs text-neutral-500">Th 3 (15)</div>
+        <div class="bg-[#1E1F20] p-3 text-xs text-accent-blueLight font-semibold border border-accent-blue/40">Th 4 (16) - Hiện tại</div>
+        <div class="bg-[#18191A] p-3 text-xs text-neutral-500">Th 5 (17)</div>
+        <div class="bg-[#18191A] p-3 text-xs text-neutral-500">Th 6 (18)</div>
+        <div class="bg-[#18191A] p-3 text-xs text-neutral-500">Th 7 (19)</div>
+        <div class="bg-[#18191A] p-3 text-xs text-neutral-500">CN (20)</div>
+      </div>
+    </div>
+
+    <!-- 2. RIGHT SIDEBAR PANEL CHÍNH THỨC (Width 360px chuẩn của App) -->
+    <aside id="rightSidebar" class="w-[360px] border-l border-[#2A2B2D] bg-[#121314] p-3.5 flex-shrink-0 flex flex-col justify-between overflow-hidden shadow-2xl z-10">
+      
+      <!-- TOP HEADER: Ghi chú & Routine (360px) -->
+      <div class="flex items-center justify-between border-b border-[#2A2B2D] pb-3 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-full bg-accent-amber/15 flex items-center justify-center text-accent-amberLight border border-accent-amber/30 shadow-xs">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-sm text-[#E3E2E3] tracking-tight">Ghi chú & Routine</h3>
+            <p class="text-[10px] text-[#70757A]">Kỷ luật & Ghi chép nhanh</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="p-1.5 hover:bg-surface-active rounded-full text-[#9AA0A6] hover:text-accent-amberLight transition-colors cursor-pointer" title="Thêm nhanh">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+          <button class="p-1.5 hover:bg-surface-active rounded-full text-[#9AA0A6] hover:text-[#E3E2E3] transition-colors cursor-pointer" title="Đóng bảng">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN SCROLLABLE BODY (360px) -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar space-y-3.5 py-3 pr-1">
+
+        <!-- A. DUAL QUICK COMPOSER: Tab [Ghi chú | Thói quen mới] -->
+        <div class="bg-surface-card border border-surface-border rounded-lg p-2.5 space-y-2">
+          <!-- Segmented Tab Switcher -->
+          <div class="flex items-center p-0.5 rounded-md bg-[#161718] border border-surface-border text-[11px]">
+            <button type="button" class="flex-1 py-1 rounded text-center font-medium text-[#9AA0A6] hover:text-[#E3E2E3] transition cursor-pointer">
+              Ghi chú nhanh
+            </button>
+            <button type="button" class="flex-1 py-1 rounded text-center font-semibold bg-accent-amber/20 text-accent-amberLight border border-accent-amber/40 shadow-xs transition cursor-pointer">
+              + Thói quen mới
+            </button>
+          </div>
+
+          <!-- Quick Routine Form (Đang Active) -->
+          <form class="space-y-2 text-xs pt-1">
+            <input 
+              type="text" 
+              placeholder="Tên thói quen kỷ luật (vd: Tập hít đất 50 cái)..." 
+              value="Tập Mobility & Giãn cơ tối"
+              class="w-full bg-[#161718] border border-surface-border rounded px-2.5 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-accent-amber transition"
+            />
+            
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1 flex-1 bg-[#161718] border border-surface-border rounded px-2 py-1 text-[11px] text-[#9AA0A6]">
+                <i data-lucide="clock" class="w-3 h-3 text-accent-amberLight"></i>
+                <select class="bg-transparent border-0 text-[#E3E2E3] focus:outline-none cursor-pointer w-full p-0">
+                  <option>21:30 PM</option>
+                  <option>06:30 AM</option>
+                  <option>07:30 AM</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-1 flex-1 bg-[#161718] border border-surface-border rounded px-2 py-1 text-[11px] text-[#9AA0A6]">
+                <i data-lucide="repeat" class="w-3 h-3 text-[#8AB4F8]"></i>
+                <select class="bg-transparent border-0 text-[#E3E2E3] focus:outline-none cursor-pointer w-full p-0">
+                  <option>Hàng ngày</option>
+                  <option>Cứ 2 ngày</option>
+                  <option>Ngày trong tuần</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Mini Checklist Builder for New Routine -->
+            <div class="space-y-1.5 pt-1">
+              <span class="text-[10px] text-[#9AA0A6] font-semibold uppercase tracking-wider">Các bước kỷ luật con (Sub-routines):</span>
+              <div class="space-y-1">
+                <div class="flex items-center justify-between px-2 py-1 rounded bg-[#161718] border border-surface-border text-[11px]">
+                  <span class="text-[#D0D2D5] truncate">1. Xoay khớp cổ chân & khớp háng 3p</span>
+                  <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red cursor-pointer"></i>
+                </div>
+                <div class="flex items-center justify-between px-2 py-1 rounded bg-[#161718] border border-surface-border text-[11px]">
+                  <span class="text-[#D0D2D5] truncate">2. Foam roller lăn lưng và bắp chuối</span>
+                  <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red cursor-pointer"></i>
+                </div>
+              </div>
+              <input 
+                type="text" 
+                placeholder="+ Thêm bước con rồi ấn Enter ↵" 
+                class="w-full bg-[#161718] border border-dashed border-surface-border rounded px-2 py-1 text-[11px] text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-accent-amber"
+              />
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-1 border-t border-surface-border">
+              <button type="button" class="px-2.5 py-1 rounded text-[#9AA0A6] hover:text-[#E3E2E3] text-[11px]">Hủy</button>
+              <button type="button" class="px-3.5 py-1 rounded bg-accent-amber hover:bg-[#C26200] text-white font-semibold text-[11px] transition shadow-xs cursor-pointer">
+                Lưu thói quen
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- B. SECTION: KỶ LUẬT HÔM NAY VỚI ROUTINE CON (SUB-ROUTINES) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-[11px] px-0.5">
+            <span class="font-semibold tracking-wider text-[10px] text-[#9AA0A6] uppercase">
+              Kỷ luật hôm nay (4)
+            </span>
+            <div class="flex items-center gap-1.5">
+              <span class="bg-accent-greenBg text-accent-greenLight border border-accent-green/30 font-medium px-2 py-0.5 rounded text-[10px]">
+                1/4 Hoàn tất
+              </span>
+              <span class="bg-accent-amberBg text-accent-amberLight border border-accent-amberBorder font-semibold px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
+                <i data-lucide="flame" class="w-3 h-3"></i>
+                <span>45 ngày</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- ROUTINE 1: Chạy bộ 30 phút (EXPANDED ACCORDION) -->
+          <div class="bg-surface-card border border-accent-amber/40 rounded-lg p-2.5 space-y-2.5 transition-all">
+            <!-- Header thói quen -->
+            <div class="flex items-start justify-between gap-2 cursor-pointer">
+              <div class="flex items-start gap-2 min-w-0 flex-1">
+                <input 
+                  type="checkbox" 
+                  class="w-4 h-4 rounded border-[#3A3B3D] bg-[#28292A] text-accent-green focus:ring-0 cursor-pointer accent-accent-green mt-0.5" 
+                />
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-semibold text-xs text-[#E3E2E3] truncate">Chạy bộ 30 phút buổi sáng</h4>
+                  <div class="flex items-center gap-2 text-[10px] text-[#70757A] mt-0.5">
+                    <span class="flex items-center gap-1 font-mono"><i data-lucide="clock" class="w-2.5 h-2.5"></i> 06:30 AM</span>
+                    <span>• Hàng ngày</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <span class="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-surface-active text-accent-amberLight">
+                  14 ngày
+                </span>
+                <i data-lucide="chevron-up" class="w-3.5 h-3.5 text-accent-amberLight"></i>
+              </div>
+            </div>
+
+            <!-- Thanh tiến độ bước con (Progress Bar) -->
+            <div class="space-y-1 pt-1 border-t border-surface-border">
+              <div class="flex justify-between text-[10px] text-[#9AA0A6]">
+                <span class="font-medium text-[#D0D2D5]">Tiến độ hành động con:</span>
+                <span class="font-mono font-semibold text-accent-amberLight">2/3 bước (67%)</span>
+              </div>
+              <div class="w-full bg-[#161718] h-1.5 rounded-full overflow-hidden">
+                <div class="bg-accent-amber h-full rounded-full transition-all" style="width: 67%;"></div>
+              </div>
+            </div>
+
+            <!-- Danh sách các bước con (Sub-routines Checklist) -->
+            <div class="space-y-1.5 pt-0.5 pl-1">
+              <!-- Step 1: Checked -->
+              <div class="group flex items-center justify-between gap-2 py-0.5">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] flex-1 min-w-0">
+                  <input type="checkbox" checked class="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-accent-amber focus:ring-0 accent-accent-amber cursor-pointer" />
+                  <span class="line-through text-[#70757A] truncate">Uống 300ml nước ấm sau khi ngủ dậy</span>
+                </label>
+                <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red opacity-0 group-hover:opacity-100 transition cursor-pointer"></i>
+              </div>
+
+              <!-- Step 2: Checked -->
+              <div class="group flex items-center justify-between gap-2 py-0.5">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] flex-1 min-w-0">
+                  <input type="checkbox" checked class="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-accent-amber focus:ring-0 accent-accent-amber cursor-pointer" />
+                  <span class="line-through text-[#70757A] truncate">Khởi động khớp gối & cổ chân 5 phút</span>
+                </label>
+                <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red opacity-0 group-hover:opacity-100 transition cursor-pointer"></i>
+              </div>
+
+              <!-- Step 3: Unchecked -->
+              <div class="group flex items-center justify-between gap-2 py-0.5">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] flex-1 min-w-0">
+                  <input type="checkbox" class="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-accent-amber focus:ring-0 accent-accent-amber cursor-pointer" />
+                  <span class="text-[#E3E2E3] font-medium truncate">Chạy 3.5km với nhịp pace 6:15</span>
+                </label>
+                <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red opacity-0 group-hover:opacity-100 transition cursor-pointer"></i>
+              </div>
+
+              <!-- Quick Inline Add Subroutine Button / Input -->
+              <button type="button" class="text-[10px] text-accent-amberLight/80 hover:text-accent-amberLight hover:underline flex items-center gap-1 transition pt-1 cursor-pointer">
+                <i data-lucide="plus" class="w-3 h-3"></i>
+                <span>+ Thêm bước con (Quick-add)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ROUTINE 2: Tập Gym chu kỳ interval (EXPANDED ACCORDION) -->
+          <div class="bg-surface-card border border-surface-border rounded-lg p-2.5 space-y-2 hover:border-[#3C4043] transition-all">
+            <div class="flex items-start justify-between gap-2 cursor-pointer">
+              <div class="flex items-start gap-2 min-w-0 flex-1">
+                <input type="checkbox" class="w-4 h-4 rounded border-[#3A3B3D] bg-[#28292A] text-accent-green focus:ring-0 cursor-pointer accent-accent-green mt-0.5" />
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-semibold text-xs text-[#E3E2E3] truncate">Tập Gym chu kỳ interval</h4>
+                  <div class="flex items-center gap-2 text-[10px] text-[#70757A] mt-0.5">
+                    <span class="flex items-center gap-1 font-mono"><i data-lucide="clock" class="w-2.5 h-2.5"></i> 07:30 AM</span>
+                    <span>• Cứ 3 ngày 1 lần</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <span class="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-surface-active text-accent-amberLight">
+                  45 ngày
+                </span>
+                <i data-lucide="chevron-up" class="w-3.5 h-3.5 text-[#9AA0A6]"></i>
+              </div>
+            </div>
+
+            <!-- Progress 25% -->
+            <div class="space-y-1 pt-1 border-t border-surface-border">
+              <div class="flex justify-between text-[10px] text-[#9AA0A6]">
+                <span class="text-[#D0D2D5]">Tiến độ hành động con:</span>
+                <span class="font-mono font-semibold text-accent-amberLight">1/4 bước (25%)</span>
+              </div>
+              <div class="w-full bg-[#161718] h-1.5 rounded-full overflow-hidden">
+                <div class="bg-accent-amber h-full rounded-full transition-all" style="width: 25%;"></div>
+              </div>
+            </div>
+
+            <!-- 4 Subroutines -->
+            <div class="space-y-1.5 pt-0.5 pl-1">
+              <div class="group flex items-center justify-between gap-2 py-0.5">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] flex-1 min-w-0">
+                  <input type="checkbox" checked class="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-accent-amber focus:ring-0 accent-accent-amber" />
+                  <span class="line-through text-[#70757A] truncate">Khởi động khớp & làm nóng 5 phút</span>
+                </label>
+                <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red opacity-0 group-hover:opacity-100 transition cursor-pointer"></i>
+              </div>
+              <div class="group flex items-center justify-between gap-2 py-0.5">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] flex-1 min-w-0">
+                  <input type="checkbox" class="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-accent-amber focus:ring-0 accent-accent-amber" />
+                  <span class="text-[#E3E2E3] truncate">4 set Squats (8-10 reps)</span>
+                </label>
+                <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red opacity-0 group-hover:opacity-100 transition cursor-pointer"></i>
+              </div>
+              <div class="group flex items-center justify-between gap-2 py-0.5">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] flex-1 min-w-0">
+                  <input type="checkbox" class="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-accent-amber focus:ring-0 accent-accent-amber" />
+                  <span class="text-[#E3E2E3] truncate">3 set Bench Press (tạ đòn)</span>
+                </label>
+                <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red opacity-0 group-hover:opacity-100 transition cursor-pointer"></i>
+              </div>
+              <div class="group flex items-center justify-between gap-2 py-0.5">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] flex-1 min-w-0">
+                  <input type="checkbox" class="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-accent-amber focus:ring-0 accent-accent-amber" />
+                  <span class="text-[#E3E2E3] truncate">Căng cơ hạ nhiệt 5 phút</span>
+                </label>
+                <i data-lucide="x" class="w-3 h-3 text-[#70757A] hover:text-accent-red opacity-0 group-hover:opacity-100 transition cursor-pointer"></i>
+              </div>
+              <button type="button" class="text-[10px] text-accent-amberLight/80 hover:text-accent-amberLight hover:underline flex items-center gap-1 transition pt-1 cursor-pointer">
+                <i data-lucide="plus" class="w-3 h-3"></i>
+                <span>+ Thêm bài tập con</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ROUTINE 3: Đọc sách (COLLAPSED STATE) -->
+          <div class="bg-surface-card border border-surface-border rounded-lg p-2.5 flex items-center justify-between gap-2 hover:border-[#3C4043] transition cursor-pointer">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+              <input type="checkbox" class="w-4 h-4 rounded border-[#3A3B3D] bg-[#28292A] text-accent-green focus:ring-0 cursor-pointer accent-accent-green" />
+              <div class="min-w-0 flex-1">
+                <h4 class="font-medium text-xs text-[#E3E2E3] truncate">Đọc sách chuyên ngành 20 trang</h4>
+                <div class="flex items-center gap-2 text-[10px] text-[#70757A] mt-0.5">
+                  <span class="flex items-center gap-1 font-mono"><i data-lucide="clock" class="w-2.5 h-2.5"></i> 22:00 PM</span>
+                  <span>• 3 bước</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-surface-active text-accent-amberLight">
+                7 ngày
+              </span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#70757A]"></i>
+            </div>
+          </div>
+
+          <!-- ROUTINE 4: Học từ vựng (COMPLETED STATE) -->
+          <div class="bg-surface-card/60 border border-surface-border rounded-lg p-2.5 flex items-center justify-between gap-2 opacity-85 transition">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+              <div class="w-4 h-4 rounded bg-accent-green text-white flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <h4 class="font-medium text-xs text-[#70757A] line-through truncate">Học 20 từ vựng Tiếng Anh</h4>
+                <div class="flex items-center gap-2 text-[10px] text-[#70757A] mt-0.5">
+                  <span class="flex items-center gap-1 font-mono"><i data-lucide="clock" class="w-2.5 h-2.5"></i> 21:00 PM</span>
+                  <span>• Hoàn tất 3/3 bước</span>
+                </div>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-accent-greenBg text-accent-greenLight">
+              ✓ 19 ngày
+            </span>
+          </div>
+
+        </div>
+
+        <!-- C. SECTION: KEEP NOTES (TẤT CẢ / ĐÃ GHIM) -->
+        <div class="space-y-2 pt-1 border-t border-surface-border">
+          <div class="flex items-center justify-between text-[11px] text-[#9AA0A6] px-0.5">
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-white border-b-2 border-accent-amber pb-0.5">Tất cả (3)</span>
+              <span class="hover:text-white cursor-pointer pb-0.5">Đã ghim (1)</span>
+            </div>
+            <span class="text-[10px] text-[#5F6368] font-mono uppercase tracking-wider">KEEP NOTES</span>
+          </div>
+
+          <!-- Pinned Note Card -->
+          <div class="bg-surface-card border border-accent-amber/40 rounded-lg p-2.5 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <h5 class="font-semibold text-xs text-[#E3E2E3] truncate">Kỷ luật & Thói quen cốt lõi</h5>
+              <i data-lucide="pin" class="w-3 h-3 text-accent-amberLight fill-accent-amberLight"></i>
+            </div>
+            <p class="text-[11px] text-[#9AA0A6] leading-relaxed line-clamp-2">
+              Nguyên tắc bất di bất dịch: Ngủ trước 23:00, không màn hình xanh sau 22:30.
+            </p>
+            <div class="flex items-center gap-1.5 pt-1">
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#161718] text-accent-amberLight border border-accent-amber/30">#KỷLuật</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#161718] text-[#8AB4F8] border border-[#8AB4F8]/30">#Mindset</span>
+              <span class="text-[9px] text-[#70757A] ml-auto">Hôm nay</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER THỐNG KÊ GỌN (360px) -->
+      <div class="pt-2.5 border-t border-surface-border flex items-center justify-between text-[11px] text-[#70757A] flex-shrink-0">
+        <span class="flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-greenLight"></span>
+          Đã lưu tự động
+        </span>
+        <span class="font-mono">4 thói quen • 3 ghi chú</span>
+      </div>
+
+    </aside>
+
+    <!-- 3. COMPANION DOCK PHẢI (Width 56px chuẩn - Như ảnh thực tế người dùng chụp) -->
+    <div class="w-14 flex-shrink-0 h-full border-l border-[#2A2B2D] bg-[#171819] flex flex-col items-center justify-between py-3 px-1.5 z-20 select-none">
+      
+      <!-- Top Dock Items -->
+      <div class="flex flex-col items-center space-y-4 w-full">
+        <!-- User Avatar AN -->
+        <div class="w-8 h-8 rounded-full bg-accent-blue flex items-center justify-center text-white text-xs font-bold ring-2 ring-white/10 shadow-xs mb-1">
+          AN
+        </div>
+
+        <!-- 1. Google Tasks Icon (Inactive) -->
+        <button class="w-10 h-10 rounded-full hover:bg-surface-active text-[#9AA0A6] flex items-center justify-center relative cursor-pointer group" title="Google Tasks">
+          <div class="w-7 h-7 rounded-full bg-accent-blue flex items-center justify-center text-white shadow-xs">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+          </div>
+          <span class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-accent-red text-white text-[9px] font-bold flex items-center justify-center">
+            3
+          </span>
+        </button>
+
+        <!-- 2. Ghi chú & Routine Icon (ACTIVE VỚI VẠCH VÀNG) -->
+        <button class="w-10 h-10 rounded-full bg-accent-amber/20 ring-1 ring-accent-amber/50 flex items-center justify-center relative cursor-pointer" title="Ghi chú & Routine (Đang mở)">
+          <div class="w-7 h-7 rounded-full bg-accent-amber/20 flex items-center justify-center text-accent-amberLight">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i>
+          </div>
+          <!-- Active Marker Line -->
+          <span class="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-accent-amberLight"></span>
+        </button>
+
+        <!-- 3. Contacts Icon (Inactive) -->
+        <button class="w-10 h-10 rounded-full hover:bg-surface-active text-[#9AA0A6] flex items-center justify-center cursor-pointer" title="Danh bạ & Nhóm">
+          <div class="w-7 h-7 rounded-full bg-accent-green/20 flex items-center justify-center text-accent-greenLight">
+            <i data-lucide="users" class="w-4 h-4"></i>
+          </div>
+        </button>
+      </div>
+
+      <!-- Bottom Dock: Nút Đóng / Thu Gọn Sidebar Panel -->
+      <button class="p-2 hover:bg-surface-active rounded-full text-[#9AA0A6] hover:text-[#E3E2E3] transition cursor-pointer" title="Đóng bảng phụ">
+        <i data-lucide="panel-right-close" class="w-4 h-4"></i>
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
