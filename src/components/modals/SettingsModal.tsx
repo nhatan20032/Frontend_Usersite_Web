@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -19,13 +19,19 @@ import {
 
 export const SettingsModal: React.FC = () => {
   const { currentUser, currentRole, isPremium, updateProfile } = useAuth();
-  const { activeModal, closeModal, currentTheme, setTheme, showToast, openModal, triggerPremiumFeature } = useApp();
+  const { activeModal, closeModal, currentTheme, setTheme, showToast, openModal, triggerPremiumFeature, settingsInitialTab } = useApp();
   const { language, setLanguage, t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'language' | 'notifications' | 'devices' | 'billing'>('profile');
   const [name, setName] = useState<string>(currentUser?.name || 'Nguyễn Văn An');
   const [email, setEmail] = useState<string>(currentUser?.email || 'an.nguyen@routinepulse.com');
   const [phone, setPhone] = useState<string>(currentUser?.phone || '0987 654 321');
+
+  useEffect(() => {
+    if (settingsInitialTab && ['profile', 'appearance', 'language', 'notifications', 'devices', 'billing'].includes(settingsInitialTab)) {
+      setActiveTab(settingsInitialTab as any);
+    }
+  }, [settingsInitialTab, activeModal]);
 
   if (activeModal !== 'settings') return null;
 
@@ -37,166 +43,150 @@ export const SettingsModal: React.FC = () => {
   };
 
   const themes: { id: ThemeName; name: string; desc: string; previewClass: string }[] = [
-    { id: 'default', name: 'Default Light', desc: 'Apple Studio Canvas + Frosted Crystal', previewClass: 'from-slate-100 to-slate-200 border-slate-300' },
-    { id: 'dark', name: 'Dark Obsidian', desc: 'Deep OLED + Frosted Smoky Glass (VIP)', previewClass: 'from-slate-900 to-black border-slate-700' },
-    { id: 'tet', name: 'Tết Cổ Truyền 2026', desc: 'Đỏ son ấm áp & May mắn thịnh vượng (VIP)', previewClass: 'from-red-50 to-red-100 border-red-300' },
-    { id: 'christmas', name: 'Giáng Sinh Tuyết', desc: 'Xanh thông tuyết phủ & Bình an (VIP)', previewClass: 'from-emerald-50 to-emerald-100 border-emerald-300' },
-    { id: 'sakura', name: 'Anime Sakura', desc: 'Hồng hoa anh đào rực rỡ & Tươi mới (VIP)', previewClass: 'from-pink-50 to-pink-100 border-pink-300' },
+    { id: 'default', name: 'Default Dark Studio', desc: 'Google Material 3 Dark Canvas tiêu chuẩn', previewClass: 'from-[#121314] to-[#1F2021] border-[#333538]' },
+    { id: 'dark', name: 'Dark Obsidian OLED', desc: 'Đen OLED sâu tuyệt đối & viền khói', previewClass: 'from-[#050505] to-[#121314] border-[#222]' },
+    { id: 'tet', name: 'Tết Cổ Truyền 2026', desc: 'Sắc đỏ son ấm áp & May mắn thịnh vượng', previewClass: 'from-[#1E1111] to-[#2E1818] border-[#E53935]/40' },
+    { id: 'christmas', name: 'Giáng Sinh Tuyết', desc: 'Xanh thông ngọc bích & Bạc tuyết phủ', previewClass: 'from-[#0F1E16] to-[#172E22] border-[#2E7D32]/40' },
+    { id: 'sakura', name: 'Anime Sakura', desc: 'Hồng hoa anh đào rực rỡ & Tươi mới', previewClass: 'from-[#1E1219] to-[#2E1926] border-[#D81B60]/40' },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xl flex items-center justify-center p-4">
-      <div className="apple-glass-modal max-w-2xl w-full rounded-[28px] overflow-hidden relative shadow-2xl flex flex-col md:flex-row max-h-[85vh]">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 select-none animate-in fade-in duration-150">
+      <div className="bg-[#1F2021] border border-[#333538] max-w-2xl w-full rounded-2xl overflow-hidden relative shadow-2xl flex flex-col md:flex-row max-h-[85vh] text-[#E3E2E3]">
         <button
           onClick={closeModal}
-          className="absolute top-5 right-5 text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 p-1.5 rounded-full hover:bg-rose-500/10 z-20 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 text-[#9AA0A6] hover:text-[#E3E2E3] p-1.5 rounded-full hover:bg-[#28292A] z-20 transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Settings Left Tabs */}
-        <div className="w-full md:w-56 apple-glass-surface border-r app-border p-5 space-y-3 flex-shrink-0">
-          <div className="flex items-center gap-2 pb-2 border-b app-border">
-            <Settings className="w-4 h-4 text-blue-600 dark:text-sky-400" />
-            <h3 className="font-bold text-sm app-text-primary">{t('modals.settings.title')}</h3>
+        <div className="w-full md:w-56 bg-[#18191B] border-r border-[#2A2B2D] p-4 space-y-2 flex-shrink-0">
+          <div className="flex items-center gap-2 pb-2.5 border-b border-[#2A2B2D]">
+            <Settings className="w-4 h-4 text-[#8AB4F8]" />
+            <h3 className="font-semibold text-sm text-[#E3E2E3]">{t('modals.settings.title')}</h3>
           </div>
 
-          <nav className="space-y-1 text-xs font-semibold">
+          <nav className="space-y-1 text-xs">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`w-full text-left p-2.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer ${
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
                 activeTab === 'profile'
-                  ? 'app-text-primary bg-blue-500/10 text-blue-600 dark:text-sky-400 font-bold'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
               }`}
             >
-              <User className="w-4 h-4 flex-shrink-0" />
+              <User className="w-4 h-4 shrink-0" />
               <span className="truncate">{t('modals.settings.tabProfile')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('appearance')}
-              className={`w-full text-left p-2.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer ${
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
                 activeTab === 'appearance'
-                  ? 'app-text-primary bg-blue-500/10 text-blue-600 dark:text-sky-400 font-bold'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
               }`}
             >
-              <Palette className="w-4 h-4 flex-shrink-0" />
+              <Palette className="w-4 h-4 shrink-0" />
               <span className="truncate">{t('modals.settings.tabAppearance')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('language')}
-              className={`w-full text-left p-2.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer ${
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
                 activeTab === 'language'
-                  ? 'app-text-primary bg-blue-500/10 text-blue-600 dark:text-sky-400 font-bold'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
               }`}
             >
-              <Globe className="w-4 h-4 flex-shrink-0" />
+              <Globe className="w-4 h-4 shrink-0" />
               <span className="truncate">{t('modals.settings.tabLanguage')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('notifications')}
-              className={`w-full text-left p-2.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer ${
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
                 activeTab === 'notifications'
-                  ? 'app-text-primary bg-blue-500/10 text-blue-600 dark:text-sky-400 font-bold'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
               }`}
             >
-              <Bell className="w-4 h-4 flex-shrink-0" />
+              <Bell className="w-4 h-4 shrink-0" />
               <span className="truncate">{t('modals.settings.tabNotifications')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('devices')}
-              className={`w-full text-left p-2.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer ${
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
                 activeTab === 'devices'
-                  ? 'app-text-primary bg-blue-500/10 text-blue-600 dark:text-sky-400 font-bold'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
               }`}
             >
-              <Smartphone className="w-4 h-4 flex-shrink-0" />
+              <Smartphone className="w-4 h-4 shrink-0" />
               <span className="truncate">{t('modals.settings.tabDevices')}</span>
             </button>
 
             <button
               onClick={() => setActiveTab('billing')}
-              className={`w-full text-left p-2.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer ${
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
                 activeTab === 'billing'
-                  ? 'app-text-primary bg-blue-500/10 text-blue-600 dark:text-sky-400 font-bold'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
               }`}
             >
-              <CreditCard className="w-4 h-4 flex-shrink-0" />
+              <CreditCard className="w-4 h-4 shrink-0" />
               <span className="truncate">{t('modals.settings.tabBilling')}</span>
             </button>
           </nav>
         </div>
 
-        {/* Settings Right Content Area */}
-        <div className="flex-1 p-6 sm:p-8 overflow-y-auto space-y-5">
+        {/* Settings Right Content Viewport */}
+        <div className="flex-1 p-5 sm:p-6 overflow-y-auto bg-[#1F2021] text-[#E3E2E3] custom-scrollbar">
           {/* Tab 1: Profile */}
           {activeTab === 'profile' && (
-            <div className="space-y-4">
+            <div className="space-y-4 text-xs">
               <div>
-                <h4 className="text-base font-bold app-text-primary">{t('modals.settings.profileTitle')}</h4>
-                <p className="text-xs app-text-muted">{t('modals.settings.profileSubtitle')}</p>
+                <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.profileTitle')}</h4>
+                <p className="text-xs text-[#9AA0A6]">{t('modals.settings.profileSubtitle')}</p>
               </div>
 
-              <form onSubmit={handleProfileSubmit} className="space-y-3.5 text-xs">
-                <div className="flex items-center gap-3 pb-2 border-b app-border">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md shadow-blue-500/20">
-                    {currentUser?.avatarInitial || 'AN'}
-                  </div>
-                  <div className="space-y-1">
-                    <button
-                      type="button"
-                      onClick={() => showToast(t('toasts.profileSavedTitle'), t('toasts.profileSavedDesc'), 'info')}
-                      className="apple-glass-pill font-semibold px-3 py-1.5 rounded-xl hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 transition-all cursor-pointer"
-                    >
-                      {t('modals.settings.avatarChange')}
-                    </button>
-                    <p className="text-[10px] app-text-muted">{t('modals.settings.avatarNote')}</p>
-                  </div>
-                </div>
-
+              <form onSubmit={handleProfileSubmit} className="space-y-3 pt-2">
                 <div className="space-y-1">
-                  <label className="font-semibold app-text-primary">{t('modals.settings.fullName')}</label>
+                  <label className="font-medium text-[#9AA0A6]">{t('modals.settings.nameLabel')}</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full apple-input px-3.5 py-2 text-xs font-sans"
+                    className="w-full bg-[#18191B] border border-[#333538] text-[#E3E2E3] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[#8AB4F8]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold app-text-primary">{t('modals.settings.email')}</label>
+                  <label className="font-medium text-[#9AA0A6]">{t('modals.settings.emailLabel')}</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full apple-input px-3.5 py-2 text-xs font-sans"
+                    className="w-full bg-[#18191B] border border-[#333538] text-[#E3E2E3] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[#8AB4F8]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold app-text-primary">{t('modals.settings.phone')}</label>
+                  <label className="font-medium text-[#9AA0A6]">{t('modals.settings.phoneLabel')}</label>
                   <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full apple-input px-3.5 py-2 text-xs font-sans"
+                    className="w-full bg-[#18191B] border border-[#333538] text-[#E3E2E3] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[#8AB4F8]"
                   />
                 </div>
 
                 <div className="pt-3">
                   <button
                     type="submit"
-                    className="apple-btn-primary font-bold px-5 py-2.5 rounded-2xl shadow-md shadow-blue-500/20 text-xs cursor-pointer"
+                    className="bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer"
                   >
                     {t('modals.settings.saveProfile')}
                   </button>
@@ -209,8 +199,8 @@ export const SettingsModal: React.FC = () => {
           {activeTab === 'appearance' && (
             <div className="space-y-4">
               <div>
-                <h4 className="text-base font-bold app-text-primary">{t('modals.settings.themeTitle')}</h4>
-                <p className="text-xs app-text-muted">
+                <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.themeTitle')}</h4>
+                <p className="text-xs text-[#9AA0A6]">
                   {t('modals.settings.themeSubtitle')}
                 </p>
               </div>
@@ -232,34 +222,34 @@ export const SettingsModal: React.FC = () => {
                         setTheme(th.id);
                         showToast(t('toasts.themeChangedTitle'), t('toasts.themeChangedDesc'), 'success');
                       }}
-                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 relative ${
+                      className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 relative ${
                         isCurrent
-                          ? 'border-2 border-blue-500 bg-blue-500/10 shadow-sm'
+                          ? 'border-[#8AB4F8] bg-[#1A73E8]/10 shadow-xs'
                           : isLocked
-                          ? 'apple-glass-pill opacity-75 hover:opacity-100 hover:border-amber-500/50'
-                          : 'apple-glass-pill hover:border-slate-400'
+                          ? 'bg-[#18191B] border-[#2A2B2D] opacity-75 hover:opacity-100 hover:border-[#FDD663]/40'
+                          : 'bg-[#18191B] border-[#2A2B2D] hover:border-[#3A3B3D]'
                       }`}
                     >
                       <div
-                        className={`w-10 h-10 rounded-xl bg-gradient-to-br ${th.previewClass} border shadow-xs flex items-center justify-center flex-shrink-0 relative`}
+                        className={`w-9 h-9 rounded-lg bg-gradient-to-br ${th.previewClass} border shadow-xs flex items-center justify-center shrink-0 relative`}
                       >
-                        {isCurrent && <Check className="w-4 h-4 text-blue-600 dark:text-sky-400" />}
-                        {isLocked && !isCurrent && <Crown className="w-4 h-4 text-amber-500" />}
+                        {isCurrent && <Check className="w-4 h-4 text-[#8AB4F8]" />}
+                        {isLocked && !isCurrent && <Crown className="w-4 h-4 text-[#FDD663]" />}
                       </div>
-                      <div className="space-y-0.5 flex-1">
-                        <div className="font-bold app-text-primary flex items-center justify-between">
-                          <span>{th.name}</span>
+                      <div className="space-y-0.5 flex-1 min-w-0">
+                        <div className="font-semibold text-[#E3E2E3] flex items-center justify-between">
+                          <span className="truncate">{th.name}</span>
                           {isVipTheme && (
                             <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                               isLocked
-                                ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                                : 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                                ? 'bg-[#FDD663]/15 text-[#FDD663]'
+                                : 'bg-[#81C995]/15 text-[#81C995]'
                             }`}>
-                              {isLocked ? 'VIP 🔒' : 'VIP ✓'}
+                              {isLocked ? 'PRO' : '✓'}
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] app-text-muted leading-tight">{th.desc}</p>
+                        <p className="text-[11px] text-[#9AA0A6] leading-tight line-clamp-2">{th.desc}</p>
                       </div>
                     </div>
                   );
@@ -270,34 +260,34 @@ export const SettingsModal: React.FC = () => {
 
           {/* Tab 3: Language & Region */}
           {activeTab === 'language' && (
-            <div className="space-y-5 text-xs">
+            <div className="space-y-4 text-xs">
               <div>
-                <h4 className="text-base font-bold app-text-primary">{t('modals.settings.langTitle')}</h4>
-                <p className="text-xs app-text-muted">{t('modals.settings.langSubtitle')}</p>
+                <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.langTitle')}</h4>
+                <p className="text-xs text-[#9AA0A6]">{t('modals.settings.langSubtitle')}</p>
               </div>
 
-              <div className="space-y-3">
-                <label className="font-semibold app-text-primary">{t('modals.settings.selectLang')}</label>
+              <div className="space-y-2">
+                <label className="font-medium text-[#9AA0A6]">{t('modals.settings.selectLang')}</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div
                     onClick={() => {
                       setLanguage('vi');
                       showToast('Ngôn ngữ', 'Giao diện đã chuyển sang Tiếng Việt.', 'success');
                     }}
-                    className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                       language === 'vi'
-                        ? 'border-2 border-blue-500 bg-blue-500/10 shadow-sm'
-                        : 'apple-glass-pill hover:border-slate-400'
+                        ? 'border-[#8AB4F8] bg-[#1A73E8]/10 shadow-xs'
+                        : 'bg-[#18191B] border-[#2A2B2D] hover:border-[#3A3B3D]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">🇻🇳</span>
                       <div>
-                        <div className="font-bold text-sm app-text-primary">Tiếng Việt</div>
-                        <div className="text-[11px] app-text-muted">Vietnamese (Default)</div>
+                        <div className="font-semibold text-sm text-[#E3E2E3]">Tiếng Việt</div>
+                        <div className="text-[11px] text-[#9AA0A6]">Mặc định (Vietnamese)</div>
                       </div>
                     </div>
-                    {language === 'vi' && <Check className="w-5 h-5 text-blue-600 dark:text-sky-400" />}
+                    {language === 'vi' && <Check className="w-5 h-5 text-[#8AB4F8]" />}
                   </div>
 
                   <div
@@ -305,37 +295,37 @@ export const SettingsModal: React.FC = () => {
                       setLanguage('en');
                       showToast('Language', 'Interface language changed to English.', 'success');
                     }}
-                    className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                       language === 'en'
-                        ? 'border-2 border-blue-500 bg-blue-500/10 shadow-sm'
-                        : 'apple-glass-pill hover:border-slate-400'
+                        ? 'border-[#8AB4F8] bg-[#1A73E8]/10 shadow-xs'
+                        : 'bg-[#18191B] border-[#2A2B2D] hover:border-[#3A3B3D]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">🇬🇧</span>
                       <div>
-                        <div className="font-bold text-sm app-text-primary">English</div>
-                        <div className="text-[11px] app-text-muted">International English</div>
+                        <div className="font-semibold text-sm text-[#E3E2E3]">English</div>
+                        <div className="text-[11px] text-[#9AA0A6]">International English</div>
                       </div>
                     </div>
-                    {language === 'en' && <Check className="w-5 h-5 text-blue-600 dark:text-sky-400" />}
+                    {language === 'en' && <Check className="w-5 h-5 text-[#8AB4F8]" />}
                   </div>
                 </div>
               </div>
 
-              {/* Font Synchronization Card */}
-              <div className="apple-glass-pill p-4 rounded-2xl space-y-2 border border-blue-500/20">
-                <div className="flex items-center gap-2 font-bold text-blue-600 dark:text-sky-400">
+              {/* Typography Spec Info */}
+              <div className="bg-[#18191B] p-3.5 rounded-xl space-y-2 border border-[#2A2B2D]">
+                <div className="flex items-center gap-2 font-medium text-[#8AB4F8]">
                   <Type className="w-4 h-4" />
                   <span>{t('modals.settings.fontSyncTitle')}</span>
                 </div>
-                <p className="text-[11px] app-text-secondary leading-relaxed">
+                <p className="text-[11px] text-[#9AA0A6] leading-relaxed">
                   {t('modals.settings.fontSyncDesc')}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1 font-mono text-[10px]">
-                  <span className="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 app-text-primary">Plus Jakarta Sans</span>
-                  <span className="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 app-text-primary">Be Vietnam Pro</span>
-                  <span className="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 app-text-primary">JetBrains Mono</span>
+                  <span className="px-2 py-0.5 rounded bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Geist Sans</span>
+                  <span className="px-2 py-0.5 rounded bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Plus Jakarta Sans</span>
+                  <span className="px-2 py-0.5 rounded bg-[#28292A] text-[#E3E2E3] border border-[#333538]">JetBrains Mono</span>
                 </div>
               </div>
             </div>
@@ -345,33 +335,33 @@ export const SettingsModal: React.FC = () => {
           {activeTab === 'notifications' && (
             <div className="space-y-4 text-xs">
               <div>
-                <h4 className="text-base font-bold app-text-primary">{language === 'vi' ? 'Kênh thông báo & Nhắc nhở' : 'Notification Channels & Alerts'}</h4>
-                <p className="text-xs app-text-muted">{language === 'vi' ? 'Đa dạng kênh nhắc việc qua App, SMS, Email và Cuộc gọi AI' : 'Multiple channels via App, SMS, Email, and AI Calls'}</p>
+                <h4 className="text-base font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Kênh thông báo & Nhắc nhở' : 'Notification Channels & Alerts'}</h4>
+                <p className="text-xs text-[#9AA0A6]">{language === 'vi' ? 'Quản lý cách nhận thông báo sự kiện và công việc' : 'Manage how you receive alerts'}</p>
               </div>
 
-              <div className="space-y-3">
-                <label className="flex items-center justify-between p-3 apple-glass-pill rounded-2xl cursor-pointer">
+              <div className="space-y-2.5">
+                <label className="flex items-center justify-between p-3 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D]">
                   <div className="space-y-0.5">
-                    <div className="font-bold app-text-primary">{language === 'vi' ? 'Push Notification trên App' : 'In-App Push Notifications'}</div>
-                    <div className="text-[11px] app-text-muted">{language === 'vi' ? 'Nhận thông báo tức thì trên thiết bị' : 'Instant notifications on active devices'}</div>
+                    <div className="font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Push Notification trên App' : 'In-App Push Notifications'}</div>
+                    <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Nhận thông báo tức thì trên thiết bị' : 'Instant notifications on active devices'}</div>
                   </div>
-                  <input type="checkbox" defaultChecked disabled className="w-4 h-4 text-blue-600 rounded" />
+                  <input type="checkbox" defaultChecked disabled className="w-4 h-4 text-[#1A73E8] rounded bg-[#28292A]" />
                 </label>
 
-                <label className="flex items-center justify-between p-3 apple-glass-pill rounded-2xl cursor-pointer">
+                <label className="flex items-center justify-between p-3 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D]">
                   <div className="space-y-0.5">
-                    <div className="font-bold app-text-primary">{language === 'vi' ? 'Tin nhắn SMS nhắc giờ' : 'SMS Reminder'}</div>
-                    <div className="text-[11px] app-text-muted">{language === 'vi' ? 'Nhắn tin khi sắp đến giờ sự kiện' : 'Receive SMS when event is approaching'}</div>
+                    <div className="font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Tin nhắn SMS nhắc giờ' : 'SMS Reminder'}</div>
+                    <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Nhắn tin khi sắp đến giờ sự kiện quan trọng' : 'Receive SMS for urgent meetings'}</div>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded" />
+                  <input type="checkbox" defaultChecked className="w-4 h-4 text-[#1A73E8] rounded bg-[#28292A]" />
                 </label>
 
-                <label className="flex items-center justify-between p-3 apple-glass-pill rounded-2xl cursor-pointer">
+                <label className="flex items-center justify-between p-3 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D]">
                   <div className="space-y-0.5">
-                    <div className="font-bold app-text-primary">{language === 'vi' ? 'Cuộc gọi tự động AI (Voice Call)' : 'AI Automated Voice Call'}</div>
-                    <div className="text-[11px] app-text-muted">{language === 'vi' ? 'Gọi nhắc nhở sự kiện cực kỳ quan trọng' : 'AI phone calls for critical priority events'}</div>
+                    <div className="font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Thông báo qua Email' : 'Email Alerts'}</div>
+                    <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Gửi tóm tắt lịch trình buổi sáng vào hộp thư' : 'Daily morning schedule summary'}</div>
                   </div>
-                  <input type="checkbox" className="w-4 h-4 text-blue-600 rounded" />
+                  <input type="checkbox" defaultChecked className="w-4 h-4 text-[#1A73E8] rounded bg-[#28292A]" />
                 </label>
               </div>
             </div>
@@ -381,33 +371,33 @@ export const SettingsModal: React.FC = () => {
           {activeTab === 'devices' && (
             <div className="space-y-4 text-xs">
               <div>
-                <h4 className="text-base font-bold app-text-primary">{t('modals.settings.devicesTitle')}</h4>
-                <p className="text-xs app-text-muted">{t('modals.settings.devicesSubtitle')}</p>
+                <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.devicesTitle')}</h4>
+                <p className="text-xs text-[#9AA0A6]">{t('modals.settings.devicesSubtitle')}</p>
               </div>
 
               <div className="space-y-2.5">
-                <div className="p-3.5 apple-glass-pill rounded-2xl flex items-center justify-between">
+                <div className="p-3.5 bg-[#18191B] border border-[#2A2B2D] rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Smartphone className="w-5 h-5 text-blue-600 dark:text-sky-400" />
+                    <Smartphone className="w-5 h-5 text-[#8AB4F8]" />
                     <div>
-                      <div className="font-bold app-text-primary">MacBook Pro 16" (Web Safari)</div>
-                      <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {language === 'vi' ? 'Thiết bị hiện tại (Đang hoạt động)' : 'Current Device (Active)'}
+                      <div className="font-semibold text-[#E3E2E3]">Thiết bị Web hiện tại</div>
+                      <div className="text-[11px] text-[#81C995] font-medium flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#81C995]"></span> {language === 'vi' ? 'Đang hoạt động' : 'Active'}
                       </div>
                     </div>
                   </div>
-                  <span className="text-[10px] app-text-muted font-mono">Hà Nội, VN</span>
+                  <span className="text-[10px] text-[#70757A] font-mono">Hà Nội, VN</span>
                 </div>
 
-                <div className="p-3.5 apple-glass-pill rounded-2xl flex items-center justify-between">
+                <div className="p-3.5 bg-[#18191B] border border-[#2A2B2D] rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Smartphone className="w-5 h-5 text-slate-400" />
+                    <Smartphone className="w-5 h-5 text-[#70757A]" />
                     <div>
-                      <div className="font-bold app-text-primary">iPhone 15 Pro (RoutinePulse iOS)</div>
-                      <div className="text-[11px] app-text-muted">{language === 'vi' ? 'Đồng bộ cách đây 12 phút' : 'Synced 12 mins ago'}</div>
+                      <div className="font-semibold text-[#E3E2E3]">Mobile App Companion</div>
+                      <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Đồng bộ hóa đám mây' : 'Cloud Synchronized'}</div>
                     </div>
                   </div>
-                  <span className="text-[10px] app-text-muted font-mono">iOS 18</span>
+                  <span className="text-[10px] text-[#70757A] font-mono">iOS / Android</span>
                 </div>
               </div>
             </div>
@@ -417,15 +407,15 @@ export const SettingsModal: React.FC = () => {
           {activeTab === 'billing' && (
             <div className="space-y-4 text-xs">
               <div>
-                <h4 className="text-base font-bold app-text-primary">{t('modals.settings.billingTitle')}</h4>
-                <p className="text-xs app-text-muted">{t('modals.settings.billingSubtitle')}</p>
+                <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.billingTitle')}</h4>
+                <p className="text-xs text-[#9AA0A6]">{t('modals.settings.billingSubtitle')}</p>
               </div>
 
-              <div className="apple-glass-card p-4 rounded-2xl space-y-3">
+              <div className="bg-[#18191B] border border-[#2A2B2D] p-4 rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{language === 'vi' ? 'Gói hiện tại' : 'Current Tier'}</span>
-                    <h5 className="text-sm font-bold text-blue-600 dark:text-sky-400">
+                    <span className="text-[10px] font-medium text-[#70757A] uppercase tracking-wider">{language === 'vi' ? 'Gói hiện tại' : 'Current Tier'}</span>
+                    <h5 className="text-sm font-bold text-[#8AB4F8]">
                       {currentRole === 'FREE'
                         ? 'Gói Miễn Phí (FREE PLAN)'
                         : currentRole === 'TRIAL'
@@ -438,29 +428,17 @@ export const SettingsModal: React.FC = () => {
                       closeModal();
                       openModal('checkout');
                     }}
-                    className="apple-btn-primary font-bold px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1 cursor-pointer"
+                    className="bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <Crown className="w-3.5 h-3.5" />
                     <span>{t('sidebar.upgradeBtn')}</span>
                   </button>
                 </div>
-                <p className="text-[11px] app-text-secondary">
+                <p className="text-[11px] text-[#9AA0A6] leading-relaxed">
                   {currentRole === 'FREE'
-                    ? (language === 'vi' ? 'Giới hạn 1 thiết bị, tối đa 5 thói quen và lưu trữ báo cáo 7 ngày.' : 'Limited to 1 device, 5 habits, and 7-day reports.')
-                    : (language === 'vi' ? 'Không giới hạn thiết bị, mở khóa toàn bộ kho theme, bản đồ AI và lưu trữ dữ liệu báo cáo trọn đời.' : 'Unlimited devices, all VIP themes, AI map navigation, and lifetime report storage.')}
+                    ? (language === 'vi' ? 'Gói miễn phí: Lưu trữ cơ bản 7 ngày gần nhất.' : 'Free tier: basic 7-day retention.')
+                    : (language === 'vi' ? 'Không giới hạn thiết bị, mở khóa toàn bộ kho theme và lưu trữ dữ liệu trọn đời.' : 'Unlimited devices, all themes, and lifetime sync.')}
                 </p>
-              </div>
-
-              <div className="apple-glass-card p-4 rounded-2xl space-y-2 text-xs">
-                <h5 className="font-bold app-text-primary">{language === 'vi' ? 'Hóa đơn điện tử PDF & Lịch sử' : 'E-Invoices & Payment History'}</h5>
-                <p className="text-[11px] app-text-muted">{language === 'vi' ? 'Tự động kết xuất hóa đơn điện tử cho mỗi lần mua gói Premium.' : 'Automatically generate VAT e-invoices for every subscription.'}</p>
-                <button
-                  type="button"
-                  onClick={() => showToast(language === 'vi' ? 'Hóa đơn điện tử' : 'E-Invoice', language === 'vi' ? 'Đã mô phỏng mở hóa đơn điện tử PDF.' : 'Simulated opening PDF invoice.', 'info')}
-                  className="text-blue-600 dark:text-sky-400 font-bold hover:underline cursor-pointer"
-                >
-                  {language === 'vi' ? 'Xem lịch sử thanh toán & Hóa đơn PDF' : 'View Billing History & PDF Invoices'}
-                </button>
               </div>
             </div>
           )}

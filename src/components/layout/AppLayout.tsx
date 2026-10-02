@@ -7,6 +7,7 @@ import { RightSidebar } from '../sidebar/RightSidebar';
 import { RightSidebarDock } from '../sidebar/RightSidebarDock';
 import { MonthGridView } from '../calendar/MonthGridView';
 import { WeekTimelineView } from '../calendar/WeekTimelineView';
+import { AgendaListView } from '../calendar/AgendaListView';
 import { DayInspectorDrawer } from '../calendar/DayInspectorDrawer';
 import { ProductivityKPI } from '../calendar/ProductivityKPI';
 import { ModalManager } from '../modals/ModalManager';
@@ -33,6 +34,7 @@ export const AppLayout: React.FC = () => {
           <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             {calendarView === 'month' && <MonthGridView />}
             {calendarView === 'week' && <WeekTimelineView />}
+            {calendarView === 'agenda' && <AgendaListView />}
           </div>
           <ProductivityKPI />
         </main>

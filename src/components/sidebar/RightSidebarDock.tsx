@@ -14,59 +14,55 @@ export const RightSidebarDock: React.FC = () => {
       {/* 1. Google Tasks Companion App Icon */}
       <button
         onClick={() => openRightSidebarTab('tasks')}
-        className={`w-10 h-10 rounded-full transition-all flex items-center justify-center group cursor-pointer relative ${
+        className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center cursor-pointer relative ${
           isRightSidebarOpen && rightSidebarTab === 'tasks'
-            ? 'bg-[#1A73E8]/20 text-[#8AB4F8] ring-1 ring-[#1A73E8]'
+            ? 'bg-[#2D2E30] text-white'
             : 'hover:bg-[#28292A] text-[#9AA0A6]'
         }`}
         title={t('sidebar.dockTasks') || 'Google Tasks'}
       >
-        <div className="w-7 h-7 rounded-full bg-[#1A73E8] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+        <div className="w-7 h-7 rounded-full bg-[#1A73E8] flex items-center justify-center text-white shadow-xs">
           <CheckSquare className="w-4 h-4" />
         </div>
         {pendingCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#EA4335] text-white text-[9px] font-bold flex items-center justify-center shadow-xs">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#EA4335] text-white text-[9px] font-bold flex items-center justify-center">
             {pendingCount > 99 ? '99+' : pendingCount}
           </span>
         )}
         {isRightSidebarOpen && rightSidebarTab === 'tasks' && (
-          <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[#1A73E8]" />
+          <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[#1A73E8]" />
         )}
       </button>
 
       {/* 2. Google Keep & Routine Icon (Lucide Lightbulb) */}
       <button
         onClick={() => openRightSidebarTab('notes-routine')}
-        className={`w-10 h-10 rounded-full transition-all flex items-center justify-center cursor-pointer group relative ${
+        className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center cursor-pointer relative ${
           isRightSidebarOpen && rightSidebarTab === 'notes-routine'
-            ? 'bg-[#FDD663]/20 ring-1 ring-[#FDD663]/50'
-            : 'hover:bg-[#28292A]'
+            ? 'bg-[#2D2E30] text-[#FDD663]'
+            : 'hover:bg-[#28292A] text-[#FDD663]'
         }`}
         title="Ghi chú & Routine"
       >
-        <div className="w-7 h-7 rounded-full bg-[#FDD663]/15 flex items-center justify-center group-hover:scale-105 transition-transform">
-          <Lightbulb className="w-4 h-4 text-[#FDD663]" />
-        </div>
+        <Lightbulb className="w-5 h-5 text-[#FDD663]" />
         {isRightSidebarOpen && rightSidebarTab === 'notes-routine' && (
-          <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[#FDD663]" />
+          <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[#FDD663]" />
         )}
       </button>
 
       {/* 3. Google Contacts Icon (Lucide Users) */}
       <button
         onClick={() => openRightSidebarTab('contacts')}
-        className={`w-10 h-10 rounded-full transition-all flex items-center justify-center cursor-pointer group relative ${
+        className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center cursor-pointer relative ${
           isRightSidebarOpen && rightSidebarTab === 'contacts'
-            ? 'bg-[#81C995]/20 ring-1 ring-[#81C995]/50'
-            : 'hover:bg-[#28292A]'
+            ? 'bg-[#2D2E30] text-[#81C995]'
+            : 'hover:bg-[#28292A] text-[#81C995]'
         }`}
         title="Danh bạ & Nhóm"
       >
-        <div className="w-7 h-7 rounded-full bg-[#81C995]/15 flex items-center justify-center group-hover:scale-105 transition-transform">
-          <Users className="w-4 h-4 text-[#81C995]" />
-        </div>
+        <Users className="w-5 h-5 text-[#81C995]" />
         {isRightSidebarOpen && rightSidebarTab === 'contacts' && (
-          <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[#81C995]" />
+          <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[#81C995]" />
         )}
       </button>
 

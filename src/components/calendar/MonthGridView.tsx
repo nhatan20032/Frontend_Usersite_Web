@@ -8,7 +8,7 @@ const monthNamesShortEn = [
 ];
 
 export const MonthGridView: React.FC = () => {
-  const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, closeDayInspector } = useApp();
+  const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector } = useApp();
   const { language, t } = useLanguage();
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
@@ -43,6 +43,11 @@ export const MonthGridView: React.FC = () => {
     selectDate(day, month, year);
     closeDayInspector();
     openModal('create');
+  };
+
+  const handleCellDoubleClick = (day: number, month: number, year: number) => {
+    selectDate(day, month, year);
+    openDayInspector(day);
   };
 
   return (
@@ -86,7 +91,8 @@ export const MonthGridView: React.FC = () => {
             <div
               key={d}
               onClick={() => handleCellClick(d, selectedMonth, selectedYear)}
-              title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
+              onDoubleClick={() => handleCellDoubleClick(d, selectedMonth, selectedYear)}
+              title={language === 'vi' ? 'Nhấp để tạo sự kiện, nhấp đúp để xem chi tiết ngày' : 'Click to create event, double-click for day details'}
               className={`p-1 sm:p-1.5 h-full border-r border-[#2A2B2D] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-start overflow-hidden ${
                 isToday ? 'bg-[#1A73E8]/5' : 'hover:bg-[#1C1D1F]'
               }`}
@@ -107,22 +113,16 @@ export const MonthGridView: React.FC = () => {
                 )}
               </div>
 
-              {/* Event Chips List (Muted Pastel Surfaces) */}
+              {/* Event Chips List (Clean Google Calendar Solid Blocks) */}
               <div className="space-y-1 flex-1 flex flex-col justify-start overflow-hidden">
                 {dayEvents.slice(0, 3).map((ev) => {
                   const isRoutine = ev.type === 'routine';
                   const isEvent = ev.type === 'event';
-                  const chipStyle = isRoutine
-                    ? 'bg-[#E37400]/15 border border-[#E37400]/35 text-[#FDD663] hover:bg-[#E37400]/25'
+                  const chipBg = isRoutine
+                    ? 'bg-[#D96B27] hover:bg-[#C25E20]'
                     : isEvent
-                    ? 'bg-[#1A73E8]/15 border border-[#1A73E8]/35 text-[#8AB4F8] hover:bg-[#1A73E8]/25'
-                    : 'bg-[#1E8E3E]/15 border border-[#1E8E3E]/35 text-[#81C995] hover:bg-[#1E8E3E]/25';
-
-                  const dotColor = isRoutine
-                    ? 'bg-[#FDD663]'
-                    : isEvent
-                    ? 'bg-[#8AB4F8]'
-                    : 'bg-[#81C995]';
+                    ? 'bg-[#1A73E8] hover:bg-[#1B66CA]'
+                    : 'bg-[#1E8E3E] hover:bg-[#187533]';
 
                   return (
                     <div
@@ -131,11 +131,11 @@ export const MonthGridView: React.FC = () => {
                         e.stopPropagation();
                         openModal('detail', ev.id);
                       }}
-                      className={`text-[10px] truncate px-1.5 py-0.5 rounded font-medium flex items-center gap-1.5 transition-all ${chipStyle}`}
+                      className={`text-[10px] text-white truncate px-2 py-0.5 rounded font-medium flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer ${chipBg}`}
                       title={`${ev.time ? ev.time + ' ' : ''}${ev.title}`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${dotColor} shrink-0`} />
-                      {ev.time && <span className="font-semibold text-[9px] opacity-80 shrink-0 font-mono">{ev.time.split(' ')[0]}</span>}
+                      <span className="w-1.5 h-1.5 rounded-full bg-white/90 shrink-0" />
+                      {ev.time && <span className="font-semibold text-[9px] text-white/85 shrink-0 font-mono">{ev.time.split(' ')[0]}</span>}
                       <span className="truncate">{ev.title}</span>
                     </div>
                   );

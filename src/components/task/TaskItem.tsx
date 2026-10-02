@@ -51,12 +51,12 @@ export const TaskItem: React.FC<TaskItemProps> = ({
               {task.title}
             </h4>
             {task.priority === 'high' && (
-              <span className="text-[9px] bg-[#EA4335]/15 text-[#F28B82] border border-[#EA4335]/35 font-bold px-1.5 py-0.5 rounded flex-shrink-0">
+              <span className="text-[9px] bg-[#D93025] text-white font-bold px-1.5 py-0.5 rounded shadow-xs shrink-0">
                 {language === 'vi' ? 'GẤP' : 'URGENT'}
               </span>
             )}
             {task.priority === 'medium' && (
-              <span className="text-[9px] bg-[#FBBC04]/15 text-[#FDD663] border border-[#FBBC04]/35 font-medium px-1.5 py-0.5 rounded flex-shrink-0">
+              <span className="text-[9px] bg-[#E37400] text-white font-semibold px-1.5 py-0.5 rounded shadow-xs shrink-0">
                 {language === 'vi' ? 'TB' : 'MED'}
               </span>
             )}

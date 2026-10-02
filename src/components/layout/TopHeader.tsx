@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Search,
   Settings,
-  Calendar,
 } from 'lucide-react';
 
 const monthNamesVi = [
@@ -66,8 +65,13 @@ export const TopHeader: React.FC = () => {
 
         {/* Calendar Brand Logo */}
         <div className="flex items-center gap-2.5 mr-1 sm:mr-2">
-          <div className="w-9 h-9 rounded-xl bg-[#1A73E8]/15 border border-[#1A73E8]/35 text-[#8AB4F8] flex items-center justify-center shadow-xs">
-            <Calendar className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-lg bg-[#1A73E8] text-white flex flex-col items-center justify-center shadow-sm select-none shrink-0">
+            <span className="text-[8px] font-bold uppercase tracking-wider text-white/85 leading-none">
+              {language === 'vi' ? `T${selectedMonth + 1}` : 'CAL'}
+            </span>
+            <span className="text-sm font-bold text-white leading-tight">
+              {new Date().getDate()}
+            </span>
           </div>
           <span className="hidden xs:inline font-semibold text-base tracking-tight text-[#E3E2E3]">Lịch</span>
         </div>
@@ -164,6 +168,16 @@ export const TopHeader: React.FC = () => {
             }`}
           >
             {language === 'vi' ? 'Tuần' : 'Week'}
+          </button>
+          <button
+            onClick={() => setCalendarView('agenda')}
+            className={`px-2.5 py-1 rounded transition-colors cursor-pointer font-medium ${
+              calendarView === 'agenda'
+                ? 'bg-[#28292A] text-[#8AB4F8] shadow-xs'
+                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+            }`}
+          >
+            {language === 'vi' ? 'Lịch biểu' : 'Schedule'}
           </button>
         </div>
 

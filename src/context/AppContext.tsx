@@ -81,7 +81,8 @@ interface AppContextType {
 
   // Modals & Navigation
   activeModal: ActiveModalType;
-  openModal: (modal: ActiveModalType, eventId?: number) => void;
+  settingsInitialTab: string;
+  openModal: (modal: ActiveModalType, param?: number | string) => void;
   closeModal: () => void;
   triggerPremiumFeature: (featureName: string) => void;
 
@@ -784,10 +785,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const toggleLeftSidebar = () => setIsLeftSidebarOpen((prev) => !prev);
   const toggleRightSidebar = () => setIsRightSidebarOpen((prev) => !prev);
 
-  const openModal = (modal: ActiveModalType, eventId?: number) => {
+  const [settingsInitialTab, setSettingsInitialTab] = useState<string>('profile');
+
+  const openModal = (modal: ActiveModalType, param?: number | string) => {
     setActiveModal(modal);
-    if (eventId !== undefined) {
-      setActiveEventId(eventId);
+    if (typeof param === 'number') {
+      setActiveEventId(param);
+    } else if (typeof param === 'string') {
+      setSettingsInitialTab(param);
     }
   };
 
@@ -854,6 +859,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         currentTheme,
         setTheme: setCurrentTheme,
         activeModal,
+        settingsInitialTab,
         openModal,
         closeModal,
         activeRecurringEvent,

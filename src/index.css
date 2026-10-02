@@ -132,16 +132,62 @@ code, kbd, samp, pre, .font-mono {
   color: #ffffff;
 }
 
+/* Theme Engine Variants */
+body.theme-dark {
+  --bg-base: #050505;
+  --surface-canvas: #050505;
+  --surface-container: #111213;
+  --surface-container-high: #1a1b1d;
+  --border-grid: #1e2022;
+  --border-subtle: #2a2c30;
+}
+
+body.theme-tet {
+  --bg-base: #140d0d;
+  --surface-canvas: #140d0d;
+  --surface-container: #221616;
+  --surface-container-high: #2c1d1d;
+  --border-grid: #3a2222;
+  --border-subtle: #4d2d2d;
+  --google-blue: #ff8a65;
+  --google-blue-hover: #ffab91;
+  --google-blue-primary: #d32f2f;
+}
+
+body.theme-christmas {
+  --bg-base: #0c1410;
+  --surface-canvas: #0c1410;
+  --surface-container: #14221b;
+  --surface-container-high: #1b2e25;
+  --border-grid: #1f382c;
+  --border-subtle: #2d4f3e;
+  --google-blue: #80cbc4;
+  --google-blue-hover: #b2dfdb;
+  --google-blue-primary: #2e7d32;
+}
+
+body.theme-sakura {
+  --bg-base: #140e12;
+  --surface-canvas: #140e12;
+  --surface-container: #22161e;
+  --surface-container-high: #2d1d28;
+  --border-grid: #3a2434;
+  --border-subtle: #4e3046;
+  --google-blue: #f48fb1;
+  --google-blue-hover: #f8bbd0;
+  --google-blue-primary: #c2185b;
+}
+
 /* Backward-compatible aliases for existing components & modals */
 .app-border { border-color: #2a2b2d; }
 .app-text-primary { color: #e3e2e3; }
 .app-text-secondary { color: #9aa0a6; }
 .app-text-muted { color: #70757a; }
 .apple-glass-surface { background-color: #121314; border-color: #2a2b2d; }
-.apple-glass-card { background-color: #1f2021; border-color: #2a2b2d; }
+.apple-glass-card { background-color: #1f2021; border-color: #2a2b2d; border-radius: 12px; }
 .apple-glass-pill { background-color: #28292a; border-color: #333538; color: #e3e2e3; }
-.apple-glass-modal { background-color: #1f2021; border-color: #333538; color: #e3e2e3; }
-.apple-btn-primary { background-color: #1a73e8; color: #ffffff; font-weight: 600; }
+.apple-glass-modal { background-color: #1f2021; border: 1px solid #333538; color: #e3e2e3; border-radius: 16px; }
+.apple-btn-primary { background-color: #1a73e8; color: #ffffff; font-weight: 600; border-radius: 9999px; }
 .apple-btn-primary:hover { background-color: #1b66ca; }
 .apple-input { background-color: #1f2021; border: 1px solid #333538; color: #e3e2e3; border-radius: 8px; }
 .apple-input:focus { border-color: #8ab4f8; outline: none; background-color: #28292a; }

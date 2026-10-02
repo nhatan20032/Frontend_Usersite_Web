@@ -94,7 +94,7 @@ export const LeftSidebar: React.FC = () => {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#C58AF9]" />
                 <span className="text-xs font-medium">{language === 'vi' ? 'Lên lịch hẹn' : 'Appointment schedule'}</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded bg-[#8430CE]/20 text-[#C58AF9] text-[10px] font-semibold">
+              <span className="px-1.5 py-0.5 rounded bg-[#8430CE] text-white text-[9px] font-bold shadow-xs">
                 {language === 'vi' ? 'MỚI' : 'NEW'}
               </span>
             </button>
@@ -105,16 +105,7 @@ export const LeftSidebar: React.FC = () => {
       {/* 2. Mini Calendar Picker Component */}
       <MiniCalendarPicker />
 
-      {/* 3. Search People Filter Input */}
-      <div className="space-y-1">
-        <input
-          type="text"
-          placeholder={language === 'vi' ? 'Tìm người...' : 'Search people...'}
-          className="w-full bg-[#28292A] border border-[#333538] focus:border-[#8AB4F8] text-[#E3E2E3] rounded-md px-3 py-1.5 text-xs placeholder-[#70757A] transition-all focus:outline-none"
-        />
-      </div>
-
-      {/* 4. My Calendars Checklist (Semantic Color Synced) */}
+      {/* 3. My Calendars Checklist (Semantic Color Synced) */}
       <div className="space-y-2 text-xs flex-1">
         <div className="flex items-center justify-between text-[#9AA0A6] font-semibold text-[11px] uppercase tracking-wider px-1">
           <span>{language === 'vi' ? 'Lịch của tôi' : 'My Calendars'}</span>
@@ -187,13 +178,13 @@ export const LeftSidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* 5. Sync / Plan Status Footer */}
-      <div className="pt-2 border-t border-[#2A2B2D] text-[11px] text-[#70757A] flex items-center justify-between flex-shrink-0 px-1">
+      {/* 4. Sync / Plan Status Footer */}
+      <div className="pt-2 border-t border-[#2A2B2D] text-[11px] text-[#70757A] flex items-center justify-between shrink-0 px-1">
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#81C995] animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-[#81C995]"></span>
           <span>{language === 'vi' ? 'Đã đồng bộ' : 'Synced'}</span>
         </span>
-        <span className="font-semibold text-[#9AA0A6]">
+        <span className="font-medium text-[#9AA0A6]">
           {currentRole === 'FREE' ? 'FREE' : 'PRO'}
         </span>
       </div>

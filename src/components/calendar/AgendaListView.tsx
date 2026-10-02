@@ -1,15 +1,12 @@
 import React from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import {
   CalendarCheck2,
   Calendar as CalendarIcon,
   Flame,
-  Crown,
   Check,
   MapPin,
-  Navigation,
   Clock,
 } from 'lucide-react';
 
@@ -26,7 +23,6 @@ const monthNamesEn = [
 ];
 
 export const AgendaListView: React.FC = () => {
-  const { isPremium } = useAuth();
   const {
     eventsData,
     selectedDay,
@@ -36,7 +32,6 @@ export const AgendaListView: React.FC = () => {
     searchQuery,
     toggleCheckInRoutine,
     openModal,
-    triggerPremiumFeature,
   } = useApp();
   const { language, t } = useLanguage();
 
@@ -51,160 +46,145 @@ export const AgendaListView: React.FC = () => {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-bold text-sm app-text-primary flex items-center gap-2">
-          <CalendarCheck2 className="w-4 h-4 text-blue-600 dark:text-sky-400" />
-          <span>
-            {language === 'vi'
-              ? `Lịch trình ngày ${selectedDay} ${monthNames[selectedMonth]} năm ${selectedYear}`
-              : `Schedule for ${monthNames[selectedMonth]} ${selectedDay}, ${selectedYear}`}
+    <div className="w-full h-full p-4 sm:p-6 overflow-y-auto bg-[#121314] select-none custom-scrollbar">
+      <div className="max-w-4xl mx-auto space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-3">
+          <h3 className="font-semibold text-base text-[#E3E2E3] flex items-center gap-2">
+            <CalendarCheck2 className="w-5 h-5 text-[#8AB4F8]" />
+            <span>
+              {language === 'vi'
+                ? `Lịch trình ngày ${selectedDay} ${monthNames[selectedMonth]} năm ${selectedYear}`
+                : `Schedule for ${monthNames[selectedMonth]} ${selectedDay}, ${selectedYear}`}
+            </span>
+          </h3>
+          <span className="text-xs text-[#9AA0A6] hidden sm:inline">
+            {language === 'vi' ? 'Nhấp vào mục để xem chi tiết hoặc điểm danh' : 'Click an item for details or check-in'}
           </span>
-        </h3>
-        <span className="text-xs app-text-muted hidden sm:inline">
-          {language === 'vi' ? 'Nhấn vào mục để xem chi tiết hoặc điểm danh' : 'Click an item for details or check-in'}
-        </span>
-      </div>
+        </div>
 
-      <div className="space-y-3">
-        {filtered.length === 0 ? (
-          <div className="apple-glass-card p-8 text-center rounded-3xl space-y-2">
-            <CalendarIcon className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto" />
-            <p className="text-xs app-text-secondary font-medium">
-              {t('calendar.emptyDayEvents')}
-            </p>
-            <button
-              onClick={() => openModal('create')}
-              className="text-blue-600 dark:text-sky-400 font-bold text-xs hover:underline cursor-pointer"
-            >
-              + {t('sidebar.addSchedule')}
-            </button>
-          </div>
-        ) : (
-          filtered.map((ev) => {
-            const isRoutine = ev.type === 'routine';
-            const isAiEvent = ev.type === 'event';
+        {/* Event List */}
+        <div className="space-y-3">
+          {filtered.length === 0 ? (
+            <div className="bg-[#1F2021] border border-[#2A2B2D] p-10 text-center rounded-xl space-y-2">
+              <CalendarIcon className="w-8 h-8 text-[#70757A] mx-auto" />
+              <p className="text-xs text-[#9AA0A6] font-medium">
+                {t('calendar.emptyDayEvents')}
+              </p>
+              <button
+                onClick={() => openModal('create')}
+                className="text-[#8AB4F8] hover:text-[#AECBFA] font-semibold text-xs hover:underline cursor-pointer"
+              >
+                + {t('sidebar.addSchedule')}
+              </button>
+            </div>
+          ) : (
+            filtered.map((ev) => {
+              const isRoutine = ev.type === 'routine';
+              const isEvent = ev.type === 'event';
 
-            let priorityBadge = null;
-            if (ev.priority === 'high') {
-              priorityBadge = (
-                <span className="bg-rose-500/15 text-rose-800 dark:text-rose-300 border border-rose-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-                  {t('common.high').toUpperCase()}
-                </span>
-              );
-            } else if (ev.priority === 'medium') {
-              priorityBadge = (
-                <span className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-                  {t('common.medium').toUpperCase()}
-                </span>
-              );
-            } else {
-              priorityBadge = (
-                <span className="apple-glass-pill text-slate-600 dark:text-slate-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-                  {t('common.low').toUpperCase()}
-                </span>
-              );
-            }
+              let priorityBadge = null;
+              if (ev.priority === 'high') {
+                priorityBadge = (
+                  <span className="bg-[#F28B82]/15 text-[#F28B82] border border-[#F28B82]/30 text-[10px] px-2 py-0.5 rounded-full font-medium">
+                    {t('common.high')}
+                  </span>
+                );
+              } else if (ev.priority === 'medium') {
+                priorityBadge = (
+                  <span className="bg-[#FDD663]/15 text-[#FDD663] border border-[#FDD663]/30 text-[10px] px-2 py-0.5 rounded-full font-medium">
+                    {t('common.medium')}
+                  </span>
+                );
+              } else {
+                priorityBadge = (
+                  <span className="bg-[#28292A] text-[#9AA0A6] border border-[#333538] text-[10px] px-2 py-0.5 rounded-full font-medium">
+                    {t('common.low')}
+                  </span>
+                );
+              }
 
-            if (isRoutine) {
-              return (
-                <div
-                  key={ev.id}
-                  onClick={() => openModal('detail', ev.id)}
-                  className="apple-glass-card p-4 rounded-3xl border-l-4 border-l-amber-500 flex items-start justify-between gap-4 cursor-pointer"
-                >
-                  <div className="space-y-1.5 text-xs flex-1">
-                    <div className="flex flex-wrap items-center gap-2 font-bold app-text-primary">
-                      <span className="text-amber-600 dark:text-amber-400 font-mono flex-shrink-0">{ev.time}</span>
-                      <span className="text-sm break-words">{ev.title}</span>
-                      <span className="bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 font-mono flex-shrink-0">
-                        <Flame className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
-                        <span>{ev.streak} {t('common.days')}</span>
-                      </span>
-                      <span className="flex-shrink-0">{priorityBadge}</span>
-                      {ev.isPremium && (
-                        <span className="bg-amber-400 text-slate-950 text-[9px] px-2 py-0.5 rounded-full font-extrabold uppercase flex-shrink-0">
-                          VIP
+              if (isRoutine) {
+                return (
+                  <div
+                    key={ev.id}
+                    onClick={() => openModal('detail', ev.id)}
+                    className="bg-[#1F2021] hover:bg-[#242527] border border-[#2A2B2D] hover:border-[#3A3B3D] p-4 rounded-xl flex items-start justify-between gap-4 cursor-pointer transition-all border-l-4 border-l-[#FDD663]"
+                  >
+                    <div className="space-y-1.5 text-xs flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 font-semibold text-[#E3E2E3]">
+                        <span className="text-[#FDD663] font-mono shrink-0">{ev.time}</span>
+                        <span className="text-sm truncate">{ev.title}</span>
+                        <span className="bg-[#FDD663]/15 text-[#FDD663] border border-[#FDD663]/30 text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1 font-mono shrink-0">
+                          <Flame className="w-3.5 h-3.5 text-[#FDD663] shrink-0" />
+                          <span>{ev.streak} {t('common.days')}</span>
                         </span>
-                      )}
+                        <span className="shrink-0">{priorityBadge}</span>
+                      </div>
+                      <p className="text-[#9AA0A6] text-[11px] line-clamp-1">
+                        {ev.frequency || (language === 'vi' ? 'Rèn luyện thói quen kỷ luật mỗi ngày.' : 'Daily discipline routine building.')}
+                      </p>
                     </div>
-                    <p className="app-text-muted text-[11px] line-clamp-2">
-                      {ev.frequency || (language === 'vi' ? 'Rèn luyện thói quen kỷ luật mỗi ngày.' : 'Daily discipline routine building.')}
-                    </p>
-                  </div>
 
-                  {ev.isPremium && !isPremium ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        triggerPremiumFeature(ev.title);
-                      }}
-                      className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-2xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1 min-w-[90px] flex-shrink-0 cursor-pointer"
-                    >
-                      <Crown className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span>{language === 'vi' ? 'Mở khóa' : 'Unlock'}</span>
-                    </button>
-                  ) : (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleCheckInRoutine(ev.id);
                       }}
-                      className={`${
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
                         ev.completed
-                          ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40'
-                          : 'apple-btn-primary'
-                      } px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 min-w-[124px] flex-shrink-0 cursor-pointer`}
+                          ? 'bg-[#1E8E3E]/20 text-[#81C995] border border-[#1E8E3E]/40'
+                          : 'bg-[#1A73E8] hover:bg-[#1B66CA] text-white shadow-xs'
+                      }`}
                     >
-                      <Check className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="truncate">{ev.completed ? (language === 'vi' ? 'Đã điểm danh' : 'Checked In') : (language === 'vi' ? 'Điểm danh' : 'Check In')}</span>
+                      <Check className="w-3.5 h-3.5 shrink-0" />
+                      <span>{ev.completed ? (language === 'vi' ? 'Đã điểm danh' : 'Checked In') : (language === 'vi' ? 'Điểm danh' : 'Check In')}</span>
                     </button>
-                  )}
-                </div>
-              );
-            }
-
-            if (isAiEvent) {
-              return (
-                <div
-                  key={ev.id}
-                  onClick={() => openModal('detail', ev.id)}
-                  className="apple-glass-card p-4 rounded-3xl border-l-4 border-l-emerald-500 space-y-3 cursor-pointer"
-                >
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 font-bold app-text-primary">
-                      <span className="text-emerald-600 dark:text-emerald-400 font-mono">{ev.time}</span>
-                      <span className="text-sm">{ev.title}</span>
-                      {priorityBadge}
-                    </div>
-                    <span className="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-400/30 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-emerald-500" /> {language === 'vi' ? 'Bản đồ AI' : 'AI Map'}
-                    </span>
                   </div>
+                );
+              }
 
-                  <div className="apple-glass-pill p-3.5 rounded-2xl text-xs space-y-1.5 app-text-secondary">
-                    <div className="flex items-center gap-2 font-bold app-text-primary">
-                      <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                      <span>{ev.location}</span>
-                    </div>
-                    <div className="flex items-center justify-between pt-1.5 border-t app-border text-[11px]">
-                      <span className="flex items-center gap-1">
-                        <Navigation className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400" />
-                        <span>{t('modals.detail.travelTime')} <b>{ev.travelTime}</b></span>
-                      </span>
-                      <span className="text-amber-600 dark:text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-400/20 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        <span>{t('modals.detail.reminder')} {ev.alertTime}</span>
+              if (isEvent) {
+                return (
+                  <div
+                    key={ev.id}
+                    onClick={() => openModal('detail', ev.id)}
+                    className="bg-[#1F2021] hover:bg-[#242527] border border-[#2A2B2D] hover:border-[#3A3B3D] p-4 rounded-xl space-y-2.5 cursor-pointer transition-all border-l-4 border-l-[#8AB4F8]"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 font-semibold text-[#E3E2E3]">
+                        <span className="text-[#8AB4F8] font-mono shrink-0">{ev.time}</span>
+                        <span className="text-sm truncate">{ev.title}</span>
+                        {priorityBadge}
+                      </div>
+                      <span className="bg-[#1A73E8]/15 text-[#8AB4F8] border border-[#1A73E8]/30 text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-[#8AB4F8]" />
+                        <span>{language === 'vi' ? 'Sự kiện' : 'Event'}</span>
                       </span>
                     </div>
-                  </div>
-                </div>
-              );
-            }
 
-            return null;
-          })
-        )}
+                    {ev.location && (
+                      <div className="bg-[#191A1B] border border-[#2A2B2D] p-2.5 rounded-lg text-xs flex items-center justify-between text-[#9AA0A6]">
+                        <div className="flex items-center gap-1.5 text-[#E3E2E3]">
+                          <MapPin className="w-3.5 h-3.5 text-[#81C995]" />
+                          <span>{ev.location}</span>
+                        </div>
+                        {ev.alertTime && (
+                          <div className="flex items-center gap-1 text-[11px] text-[#FDD663]">
+                            <Clock className="w-3 h-3" />
+                            <span>{ev.alertTime}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return null;
+            })
+          )}
+        </div>
       </div>
     </div>
   );

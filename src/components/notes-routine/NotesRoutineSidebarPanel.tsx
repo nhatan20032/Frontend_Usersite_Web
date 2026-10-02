@@ -149,7 +149,7 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
       {/* 1. PANEL HEADER */}
       <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-3 pt-1 flex-shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-[#E37400]/15 flex items-center justify-center text-[#FDD663] border border-[#E37400]/30 shadow-xs">
+          <div className="w-7 h-7 rounded-full bg-[#242527] flex items-center justify-center text-[#FDD663] border border-[#333538] shadow-xs">
             <Lightbulb className="w-4 h-4" />
           </div>
           <div>
@@ -212,7 +212,7 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                   onClick={() => setComposerTab('routine')}
                   className={`flex-1 py-1 rounded text-center transition cursor-pointer ${
                     composerTab === 'routine'
-                      ? 'bg-[#E37400]/20 text-[#FDD663] font-semibold border border-[#E37400]/40 shadow-xs'
+                      ? 'bg-[#E37400] text-white font-medium shadow-xs'
                       : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
                   }`}
                 >
@@ -397,11 +397,11 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
               Kỷ luật hôm nay ({routines.length})
             </span>
             <div className="flex items-center gap-2">
-              <span className="bg-[#1E8E3E]/15 text-[#81C995] border border-[#1E8E3E]/30 font-medium px-2 py-0.5 rounded text-[10px]">
+              <span className="bg-[#1E8E3E] text-white font-medium px-2 py-0.5 rounded text-[10px] shadow-xs">
                 {completedRoutinesCount}/{routines.length} Hoàn tất
               </span>
               {maxStreak > 0 && (
-                <span className="bg-[#E37400]/15 text-[#FDD663] border border-[#E37400]/30 font-medium px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
+                <span className="bg-[#242527] text-[#FDD663] border border-[#333538] font-medium px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
                   <Flame className="w-3 h-3 text-[#FDD663]" />
                   <span>{maxStreak} ngày</span>
                 </span>

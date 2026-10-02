@@ -608,14 +608,12 @@ export const CreateEventModal: React.FC = () => {
 
           {/* Modal Footer Actions */}
           <div className="flex items-center justify-between px-6 py-3.5 bg-[#1E1F20]/90 border-t border-[#333538]">
-            {/* Left: Ghost More Options */}
-            <button
-              type="button"
-              onClick={() => openModal('appointment-schedule')}
-              className="text-xs font-medium text-[#9AA0A6] hover:text-[#E3E2E3] hover:underline cursor-pointer"
-            >
-              {language === 'vi' ? 'Tùy chọn khác' : 'More options'}
-            </button>
+            {/* Left: Context Info Hint */}
+            <span className="text-[11px] text-[#70757A]">
+              {activeTab === 'task'
+                ? (language === 'vi' ? 'Được đồng bộ vào bảng Tasks bên phải' : 'Syncs to Tasks companion panel')
+                : (language === 'vi' ? 'Thời gian GMT+7 Đông Dương' : 'Indochina Time GMT+7')}
+            </span>
 
             {/* Right: Cancel & Save */}
             <div className="flex items-center gap-2.5">

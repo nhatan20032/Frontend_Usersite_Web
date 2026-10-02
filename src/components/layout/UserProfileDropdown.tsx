@@ -35,103 +35,103 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
     if (isPremium) {
       setRole('FREE_USER');
       upgradeToTier('FREE', 'Gói Miễn Phí');
-      showToast('Chuyển sang tài khoản FREE', 'Đang giả lập trải nghiệm Người dùng Miễn phí.', 'info');
+      showToast('Tài khoản FREE', 'Đang giả lập trải nghiệm Người dùng Miễn phí.', 'info');
     } else {
       setRole('PREMIUM_USER');
       upgradeToTier('PRO', 'Gói Chuyên Nghiệp (PRO)');
-      showToast('Kích hoạt tài khoản PRO', 'Mở khóa toàn bộ đặc quyền Premium Pro!', 'success');
+      showToast('Kích hoạt PRO', 'Mở khóa đặc quyền gói Pro thành công!', 'success');
     }
   };
 
   return (
     <div
       ref={dropdownRef}
-      className="absolute right-0 mt-2 w-72 apple-glass-modal rounded-3xl p-2.5 space-y-1 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 border app-border"
+      className="absolute right-0 mt-2 w-72 bg-[#1F2021] border border-[#333538] rounded-xl p-2 space-y-1 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 text-[#E3E2E3]"
     >
       {/* Account Info Header */}
-      <div className="p-3 border-b app-border space-y-1 rounded-2xl bg-black/5 dark:bg-white/5">
+      <div className="p-3 border-b border-[#2A2B2D] space-y-1 rounded-lg bg-[#191A1B]">
         <div className="flex items-center justify-between">
-          <span className="font-bold text-xs app-text-primary">{currentUser?.name || 'Nguyễn Văn An'}</span>
+          <span className="font-semibold text-xs text-[#E3E2E3]">{currentUser?.name || 'Nguyễn Văn An'}</span>
           {isPremium ? (
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 flex items-center gap-1 shadow-xs">
-              <Crown className="w-2.5 h-2.5 fill-slate-950" />
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FDD663]/20 text-[#FDD663] border border-[#FDD663]/40 flex items-center gap-1 shadow-xs">
+              <Crown className="w-2.5 h-2.5" />
               {subscriptionTier}
             </span>
           ) : (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#28292A] text-[#9AA0A6] border border-[#333538]">
               FREE
             </span>
           )}
         </div>
-        <p className="text-[11px] app-text-muted truncate">{currentUser?.email || 'an.nguyen@routinepulse.com'}</p>
-        <div className="text-[10px] text-slate-500 pt-0.5">
+        <p className="text-[11px] text-[#9AA0A6] truncate">{currentUser?.email || 'an.nguyen@routinepulse.com'}</p>
+        <div className="text-[10px] text-[#70757A] pt-0.5">
           {isPremium
             ? `⭐ ${currentUser?.planName || 'Gói Pro'} (Đang kích hoạt)`
-            : '🔒 Gói Miễn phí (Giới hạn 10 task, 5 routines)'}
+            : '🔒 Gói Miễn phí (Giới hạn lưu trữ)'}
         </div>
       </div>
 
       {/* Quick Demo Switcher between FREE & PRO */}
-      <div className="p-1.5 border-b app-border">
+      <div className="p-1 border-b border-[#2A2B2D]">
         <button
           onClick={handleToggleDemoTier}
-          className="w-full p-2 rounded-xl text-[11px] font-bold flex items-center justify-between bg-blue-500/10 text-blue-600 dark:text-sky-400 hover:bg-blue-500/20 transition-all cursor-pointer"
+          className="w-full p-2 rounded-lg text-[11px] font-semibold flex items-center justify-between bg-[#1A73E8]/10 text-[#8AB4F8] hover:bg-[#1A73E8]/20 transition-all cursor-pointer border border-[#1A73E8]/30"
         >
           <div className="flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{isPremium ? 'Chuyển về Test FREE' : 'Kích hoạt Test PRO'}</span>
           </div>
-          <span className="text-[9px] bg-blue-500 text-white px-1.5 py-0.5 rounded-md">Demo Mode</span>
+          <span className="text-[9px] bg-[#1A73E8] text-white px-1.5 py-0.5 rounded">Demo</span>
         </button>
       </div>
 
-      {/* Settings Navigation */}
+      {/* Settings Navigation with Contextual Tabs */}
       <button
         onClick={() => {
-          openModal('settings');
+          openModal('settings', 'profile');
           onClose();
         }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 flex items-center gap-2 transition-colors cursor-pointer"
+        className="w-full text-left p-2 rounded-lg text-xs font-medium text-[#E3E2E3] hover:bg-[#28292A] flex items-center gap-2 transition-colors cursor-pointer"
       >
-        <User className="w-4 h-4 text-slate-400" />
+        <User className="w-4 h-4 text-[#9AA0A6]" />
         <span>{t('modals.settings.tabProfile')}</span>
       </button>
 
       <button
         onClick={() => {
-          openModal('settings');
+          openModal('settings', 'appearance');
           onClose();
         }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 flex items-center gap-2 transition-colors cursor-pointer"
+        className="w-full text-left p-2 rounded-lg text-xs font-medium text-[#E3E2E3] hover:bg-[#28292A] flex items-center gap-2 transition-colors cursor-pointer"
       >
-        <Palette className="w-4 h-4 text-slate-400" />
+        <Palette className="w-4 h-4 text-[#9AA0A6]" />
         <span>{t('modals.settings.tabAppearance')}</span>
       </button>
 
       <button
         onClick={() => {
-          openModal('settings');
+          openModal('settings', 'devices');
           onClose();
         }}
-        className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold app-text-primary hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-sky-400 flex items-center gap-2 transition-colors cursor-pointer"
+        className="w-full text-left p-2 rounded-lg text-xs font-medium text-[#E3E2E3] hover:bg-[#28292A] flex items-center gap-2 transition-colors cursor-pointer"
       >
-        <Smartphone className="w-4 h-4 text-slate-400" />
+        <Smartphone className="w-4 h-4 text-[#9AA0A6]" />
         <span>{t('modals.settings.tabDevices')}</span>
       </button>
 
       {/* Language Switcher Row */}
-      <div className="p-2 border-t border-b app-border flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-xs font-semibold app-text-primary">
-          <Globe className="w-4 h-4 text-blue-600 dark:text-sky-400 flex-shrink-0" />
+      <div className="p-2 border-t border-b border-[#2A2B2D] flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs font-medium text-[#E3E2E3]">
+          <Globe className="w-4 h-4 text-[#8AB4F8] shrink-0" />
           <span className="truncate">{t('common.language')}</span>
         </div>
-        <div className="flex items-center apple-glass-pill p-0.5 rounded-xl text-[11px] border border-slate-300/80 dark:border-slate-700 shadow-xs flex-shrink-0">
+        <div className="flex items-center bg-[#28292A] p-0.5 rounded-lg text-[11px] border border-[#333538] shrink-0">
           <button
             onClick={() => setLanguage('vi')}
-            className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+            className={`px-2 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
               language === 'vi'
-                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm'
-                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 font-bold'
+                ? 'text-white bg-[#1A73E8] font-bold shadow-xs'
+                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
             }`}
           >
             <span>🇻🇳</span>
@@ -139,10 +139,10 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
           </button>
           <button
             onClick={() => setLanguage('en')}
-            className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+            className={`px-2 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
               language === 'en'
-                ? 'text-blue-600 dark:text-sky-400 bg-white dark:bg-slate-800 font-extrabold shadow-sm'
-                : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 font-bold'
+                ? 'text-white bg-[#1A73E8] font-bold shadow-xs'
+                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
             }`}
           >
             <span>🇬🇧</span>
@@ -158,28 +158,28 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ isOpen
             openModal('checkout');
             onClose();
           }}
-          className="w-full text-left p-2.5 rounded-2xl text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 flex items-center gap-2 transition-colors cursor-pointer"
+          className="w-full text-left p-2 rounded-lg text-xs font-semibold text-[#FDD663] bg-[#FDD663]/10 hover:bg-[#FDD663]/20 flex items-center gap-2 transition-colors cursor-pointer border border-[#FDD663]/30"
         >
-          <Crown className="w-4 h-4 text-amber-500" />
+          <Crown className="w-4 h-4 text-[#FDD663]" />
           <span>{t('sidebar.upgradeBtn')}</span>
         </button>
       ) : (
-        <div className="p-2 text-center text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center justify-center gap-1">
+        <div className="p-1.5 text-center text-[11px] font-medium text-[#81C995] flex items-center justify-center gap-1">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Tài khoản PRO đã mở khóa toàn bộ</span>
+          <span>Đã mở khóa toàn bộ tính năng PRO</span>
         </div>
       )}
 
       {/* Logout */}
-      <div className="border-t app-border pt-1">
+      <div className="border-t border-[#2A2B2D] pt-1">
         <button
           onClick={() => {
             onClose();
             logout();
           }}
-          className="w-full text-left p-2.5 rounded-2xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/15 flex items-center gap-2 transition-colors cursor-pointer"
+          className="w-full text-left p-2 rounded-lg text-xs font-medium text-[#F28B82] hover:bg-[#F28B82]/15 flex items-center gap-2 transition-colors cursor-pointer"
         >
-          <LogOut className="w-4 h-4 text-rose-500" />
+          <LogOut className="w-4 h-4 text-[#F28B82]" />
           <span>{t('header.logout')}</span>
         </button>
       </div>

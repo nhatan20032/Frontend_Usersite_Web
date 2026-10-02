@@ -39,7 +39,7 @@ const hoursList = [
 ];
 
 export const AppointmentScheduleModal: React.FC = () => {
-  const { activeModal, closeModal, showToast, addEvent, selectedMonth, selectedYear } = useApp();
+  const { activeModal, closeModal, showToast, addEvent, selectedMonth, selectedYear, selectedDay } = useApp();
   const { language } = useLanguage();
 
   const [title, setTitle] = useState<string>('Tư vấn Thiết kế UI/UX & Code Review');
@@ -86,7 +86,6 @@ export const AppointmentScheduleModal: React.FC = () => {
   };
 
   const handleSave = () => {
-    // Add sample appointment schedule anchor
     addEvent({
       type: 'event',
       title: `[Lịch hẹn] ${title}`,
@@ -95,7 +94,7 @@ export const AppointmentScheduleModal: React.FC = () => {
       priority: 'high',
       year: selectedYear,
       month: selectedMonth,
-      day: 15,
+      day: selectedDay,
       colorTag: '#8AB4F8',
       description: `Lịch hẹn đặt trước: thời lượng ${duration} phút/slot. Khung giờ khả dụng Thứ 2 - Thứ 6 (09:00 - 17:00).`,
     });
@@ -108,16 +107,31 @@ export const AppointmentScheduleModal: React.FC = () => {
     closeModal();
   };
 
-  // Weekday dates representation (13 to 19 Sep 2026)
-  const weekDays = [
-    { nameVi: 'CN', nameEn: 'SUN', dayNum: 13, dayIndex: 0 },
-    { nameVi: 'THỨ 2', nameEn: 'MON', dayNum: 14, dayIndex: 1 },
-    { nameVi: 'THỨ 3', nameEn: 'TUE', dayNum: 15, dayIndex: 2, isToday: true },
-    { nameVi: 'THỨ 4', nameEn: 'WED', dayNum: 16, dayIndex: 3 },
-    { nameVi: 'THỨ 5', nameEn: 'THU', dayNum: 17, dayIndex: 4 },
-    { nameVi: 'THỨ 6', nameEn: 'FRI', dayNum: 18, dayIndex: 5 },
-    { nameVi: 'THỨ 7', nameEn: 'SAT', dayNum: 19, dayIndex: 6 },
-  ];
+  // Dynamic 7-day week representation based on selectedDay, selectedMonth, selectedYear
+  const currentDate = new Date(selectedYear, selectedMonth, selectedDay || 1);
+  const dayOfWeek = currentDate.getDay(); // 0 = Sun
+  const startOfWeekDate = new Date(selectedYear, selectedMonth, (selectedDay || 1) - dayOfWeek);
+
+  const weekNamesVi = ['CN', 'THỨ 2', 'THỨ 3', 'THỨ 4', 'THỨ 5', 'THỨ 6', 'THỨ 7'];
+  const weekNamesEn = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+  const weekDays = Array.from({ length: 7 }).map((_, idx) => {
+    const d = new Date(startOfWeekDate);
+    d.setDate(startOfWeekDate.getDate() + idx);
+    return {
+      nameVi: weekNamesVi[idx],
+      nameEn: weekNamesEn[idx],
+      dayNum: d.getDate(),
+      dayIndex: idx,
+      isToday: d.getDate() === selectedDay && d.getMonth() === selectedMonth && d.getFullYear() === selectedYear,
+      month: d.getMonth() + 1,
+      year: d.getFullYear(),
+    };
+  });
+
+  const weekRangeLabel = language === 'vi'
+    ? `Tuần: ${weekDays[0].dayNum}/${weekDays[0].month} – ${weekDays[6].dayNum}/${weekDays[6].month}/${weekDays[6].year}`
+    : `Week: ${weekDays[0].month}/${weekDays[0].dayNum} – ${weekDays[6].month}/${weekDays[6].dayNum}/${weekDays[6].year}`;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 select-none animate-in fade-in duration-200">
@@ -145,7 +159,7 @@ export const AppointmentScheduleModal: React.FC = () => {
 
           <div className="flex items-center gap-2">
             <span className="text-xs text-[#9AA0A6] hidden md:inline">
-              {language === 'vi' ? 'Tuần: 13 – 19 Tháng 9, 2026' : 'Week: Sep 13 – 19, 2026'}
+              {weekRangeLabel}
             </span>
             <button
               onClick={handleSave}
