@@ -103,14 +103,24 @@ export interface ToastNotification {
 
 export type ActiveModalType = 'create' | 'detail' | 'checkout' | 'limit' | 'settings' | 'upgrade' | 'recurring-action' | 'appointment-schedule' | null;
 
+/** Khoảng giờ rảnh, tính bằng phút kể từ 00:00 */
+export interface TimeRange {
+  id: string;
+  start: number;
+  end: number;
+}
+
 export interface DailyAvailabilitySlot {
   id: string;
   dayIndex: number; // 0: Sunday, 1: Monday, ... 6: Saturday
   dayNameVi: string;
   dayNameEn: string;
   isAvailable: boolean;
-  startTime: string;
-  endTime: string;
+  ranges: TimeRange[];
+  /** @deprecated dùng `ranges` */
+  startTime?: string;
+  /** @deprecated dùng `ranges` */
+  endTime?: string;
 }
 
 export interface CategoryFilters {

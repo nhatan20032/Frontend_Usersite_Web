@@ -28,6 +28,21 @@
   --shadow-pill: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Tailwind v4 utilities mapped to the tokens above (bg-panel, text-fg-2, border-line, ...) */
+@theme inline {
+  --color-canvas: var(--surface-canvas);
+  --color-panel: var(--surface-container-low);
+  --color-raised: var(--surface-container-high);
+  --color-line: var(--border-grid);
+  --color-line-strong: var(--border-subtle);
+  --color-fg: var(--text-primary);
+  --color-fg-2: var(--text-secondary);
+  --color-fg-3: var(--text-muted);
+  --color-accent: var(--google-blue);
+  --color-accent-hover: var(--google-blue-hover);
+  --color-now: var(--google-rose);
+}
+
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
