@@ -711,6 +711,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         priority: input.priority || 'medium',
         completed: false,
         reminders: input.reminders || 'Push App',
+        colorTag: input.colorTag,
         subtasks: (input.subtasks || []).map((st, idx) => ({
           id: Date.now() + idx + 1,
           title: st.title,

@@ -136,6 +136,7 @@ export const CreateEventModal: React.FC = () => {
         priority,
         reminders: reminderText,
         subtasks: subtaskList.map((st) => ({ title: st, completed: false })),
+        colorTag: selectedColor,
       });
 
       showToast(

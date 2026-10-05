@@ -79,6 +79,7 @@ export interface CreateTaskInput {
   priority?: Priority;
   reminders?: string;
   subtasks?: { title: string; completed?: boolean }[];
+  colorTag?: string;
 }
 
 export interface TaskItem {
@@ -89,6 +90,7 @@ export interface TaskItem {
   completed: boolean;
   reminders?: string;
   subtasks: SubTask[];
+  colorTag?: string;
 }
 
 export type ToastType = 'info' | 'success' | 'warning' | 'error';

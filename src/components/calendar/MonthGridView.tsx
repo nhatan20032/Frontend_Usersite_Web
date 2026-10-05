@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { X } from 'lucide-react';
 
 const monthNamesShortEn = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -8,8 +9,10 @@ const monthNamesShortEn = [
 ];
 
 export const MonthGridView: React.FC = () => {
-  const { eventsData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector } = useApp();
+  const { eventsData, tasksData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector } = useApp();
   const { language, t } = useLanguage();
+
+  const [popoverState, setPopoverState] = useState<{ day: number, x: number, y: number, items: any[] } | null>(null);
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
   const firstDayIndex = new Date(selectedYear, selectedMonth, 1).getDay(); // 0 = Sunday
@@ -50,6 +53,12 @@ export const MonthGridView: React.FC = () => {
     openDayInspector(day);
   };
 
+  const getRealToday = () => {
+    const d = new Date();
+    return { d: d.getDate(), m: d.getMonth(), y: d.getFullYear() };
+  };
+  const realToday = getRealToday();
+
   return (
     <div className="w-full h-full flex flex-col select-none overflow-hidden bg-[#121314]">
       {/* Day of Week Headers */}
@@ -63,7 +72,7 @@ export const MonthGridView: React.FC = () => {
 
       {/* Dynamic Month Grid (Full Height Liquid Layout) */}
       <div
-        className="grid grid-cols-7 flex-1 w-full h-full divide-x divide-y divide-[#2A2B2D] overflow-hidden"
+        className="grid grid-cols-7 flex-1 w-full h-full divide-x divide-y divide-[#2A2B2D] overflow-hidden relative"
         style={{ gridAutoRows: '1fr' }}
       >
         {/* Leading padding days from previous month */}
@@ -74,8 +83,8 @@ export const MonthGridView: React.FC = () => {
             title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
             className="p-1 sm:p-1.5 h-full border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
           >
-            <div className="flex items-center justify-end">
-              <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
+            <div className="flex flex-col items-center mb-1 mt-1">
+              <span className="text-[11px] font-medium text-[#4A4D51] px-1">{pad}</span>
             </div>
           </div>
         ))}
@@ -85,7 +94,24 @@ export const MonthGridView: React.FC = () => {
           const dayEvents = eventsData.filter(
             (e) => e.year === selectedYear && e.month === selectedMonth && e.day === d
           );
-          const isToday = d === selectedDay;
+          
+          const dayTasks = tasksData.filter(t => {
+             const isRealToday = d === realToday.d && selectedMonth === realToday.m && selectedYear === realToday.y;
+             if (t.dueDate === 'Hôm nay' && isRealToday) return true;
+             const taskDate = new Date(t.dueDate);
+             if (!isNaN(taskDate.getTime())) {
+                return taskDate.getDate() === d && taskDate.getMonth() === selectedMonth && taskDate.getFullYear() === selectedYear;
+             }
+             if (t.dueDate?.includes(':') && isRealToday) return true;
+             return false;
+          });
+          
+          const allItems = [
+            ...dayEvents.map(e => ({ id: e.id, title: e.title, itemType: e.type, time: e.time, colorTag: e.colorTag })),
+            ...dayTasks.map(t => ({ id: t.id + 10000, title: t.title, itemType: 'task', time: t.dueDate, colorTag: t.colorTag }))
+          ];
+
+          const isToday = d === selectedDay; // Or use realToday to highlight actual today, keeping selectedDay for now
 
           return (
             <div
@@ -93,57 +119,72 @@ export const MonthGridView: React.FC = () => {
               onClick={() => handleCellClick(d, selectedMonth, selectedYear)}
               onDoubleClick={() => handleCellDoubleClick(d, selectedMonth, selectedYear)}
               title={language === 'vi' ? 'Nhấp để tạo sự kiện, nhấp đúp để xem chi tiết ngày' : 'Click to create event, double-click for day details'}
-              className={`p-1 sm:p-1.5 h-full border-r border-[#2A2B2D] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-start overflow-hidden ${
-                isToday ? 'bg-[#1A73E8]/5' : 'hover:bg-[#1C1D1F]'
+              className={`p-1 sm:p-[6px] h-full border-r border-[#2A2B2D] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-start overflow-hidden ${
+                isToday ? 'bg-[#1C1D1F]' : 'hover:bg-[#1C1D1F]'
               }`}
             >
-              {/* Day Header: Date Number with Google Blue Circle if Today */}
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-[10px] font-medium text-[#8AB4F8] truncate">
-                  {d === 1 ? (language === 'vi' ? `1 thg ${selectedMonth + 1}` : `1 ${monthNamesShortEn[selectedMonth]}`) : ''}
-                </span>
+              {/* Day Header: Date Number */}
+              <div className="flex flex-col items-center mb-1 mt-0.5">
                 {isToday ? (
-                  <span className="w-6 h-6 rounded-full bg-[#1A73E8] text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                  <span className="w-[22px] h-[22px] rounded-full bg-[#8AB4F8] text-[#202124] font-bold text-xs flex items-center justify-center">
                     {d}
                   </span>
                 ) : (
-                  <span className="text-xs font-medium text-[#E3E2E3] px-1 hover:text-white">
-                    {d}
+                  <span className="text-[11px] font-medium text-[#e8eaed]">
+                    {d === 1 ? (language === 'vi' ? `1 thg ${selectedMonth + 1}` : `1 ${monthNamesShortEn[selectedMonth]}`) : d}
                   </span>
                 )}
               </div>
 
-              {/* Event Chips List (Clean Google Calendar Solid Blocks) */}
-              <div className="space-y-1 flex-1 flex flex-col justify-start overflow-hidden">
-                {dayEvents.slice(0, 3).map((ev) => {
-                  const isRoutine = ev.type === 'routine';
-                  const isEvent = ev.type === 'event';
-                  const chipBg = isRoutine
-                    ? 'bg-[#D96B27] hover:bg-[#C25E20]'
-                    : isEvent
-                    ? 'bg-[#1A73E8] hover:bg-[#1B66CA]'
-                    : 'bg-[#1E8E3E] hover:bg-[#187533]';
-
-                  return (
-                    <div
-                      key={ev.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openModal('detail', ev.id);
-                      }}
-                      className={`text-[10px] text-white truncate px-2 py-0.5 rounded font-medium flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer ${chipBg}`}
-                      title={`${ev.time ? ev.time + ' ' : ''}${ev.title}`}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-white/90 shrink-0" />
-                      {ev.time && <span className="font-semibold text-[9px] text-white/85 shrink-0 font-mono">{ev.time.split(' ')[0]}</span>}
-                      <span className="truncate">{ev.title}</span>
-                    </div>
-                  );
+              {/* Event & Task Chips List */}
+              <div className="flex-1 flex flex-col justify-start overflow-hidden gap-[2px]">
+                {allItems.slice(0, 5).map((item) => {
+                  if (item.itemType === 'event' || item.itemType === 'routine') {
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (item.itemType !== 'task') openModal('detail', item.id);
+                        }}
+                        className="text-[11px] text-[#202124] truncate px-1.5 py-0.5 rounded-[3px] font-medium transition-opacity hover:opacity-90 shadow-none"
+                        style={{ backgroundColor: item.colorTag || '#8AB4F8' }}
+                        title={item.title}
+                      >
+                        {item.title}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        className="text-[11px] hover:bg-[#3c4043] truncate px-1.5 py-0.5 rounded-[3px] font-medium transition-colors flex items-center gap-[5px]"
+                        style={{ color: item.colorTag || '#8AB4F8' }}
+                        title={item.title}
+                      >
+                        <span 
+                          className="w-2 h-2 rounded-full border-[1.5px] shrink-0" 
+                          style={{ borderColor: item.colorTag || '#8AB4F8' }}
+                        />
+                        <span className="truncate leading-none">{item.title}</span>
+                      </div>
+                    );
+                  }
                 })}
 
-                {dayEvents.length > 3 && (
-                  <div className="text-[10px] text-[#9AA0A6] hover:text-[#8AB4F8] font-medium px-1">
-                    +{dayEvents.length - 3} {language === 'vi' ? 'khác' : 'more'}
+                {allItems.length > 5 && (
+                  <div 
+                    onClick={(e) => {
+                       e.stopPropagation();
+                       const rect = e.currentTarget.getBoundingClientRect();
+                       setPopoverState({ day: d, x: rect.left, y: rect.top, items: allItems });
+                    }}
+                    className="text-[11px] text-[#9AA0A6] hover:bg-[#3c4043] hover:text-[#e8eaed] rounded-[3px] px-1.5 py-0.5 font-medium transition-colors"
+                  >
+                    {allItems.length - 5} {language === 'vi' ? 'mục khác' : 'more'}
                   </div>
                 )}
               </div>
@@ -159,11 +200,72 @@ export const MonthGridView: React.FC = () => {
             title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
             className="p-1 sm:p-1.5 h-full border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
           >
-            <div className="flex items-center justify-end">
+            <div className="flex flex-col items-center mb-1 mt-1">
               <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
             </div>
           </div>
         ))}
+        
+        {/* Popover for "X mục khác" */}
+        {popoverState && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setPopoverState(null)} />
+            <div 
+              className="fixed z-50 bg-[#28292c] border border-[#3c4043] rounded-lg shadow-xl w-52 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+              style={{ 
+                top: Math.min(popoverState.y - 40, window.innerHeight - 350), 
+                left: Math.min(popoverState.x - 20, window.innerWidth - 220) 
+              }}
+            >
+              <div className="flex flex-col items-center pt-3 pb-2 relative">
+                <span className="text-[10px] text-[#9aa0a6] uppercase tracking-wider mb-1">
+                  {weekdayHeaders[(firstDayIndex + popoverState.day - 1) % 7]}
+                </span>
+                <span className="text-xl text-[#202124] font-medium leading-tight h-8 w-8 flex items-center justify-center rounded-full bg-[#aecbfa]">
+                  {popoverState.day}
+                </span>
+                <button 
+                  className="absolute top-2 right-2 text-[#9aa0a6] hover:text-[#e8eaed] hover:bg-[#3c4043] rounded-full p-1 transition-colors"
+                  onClick={() => setPopoverState(null)}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-[2px] p-2 max-h-60 overflow-y-auto custom-scrollbar">
+                {popoverState.items.map(item => {
+                  if (item.itemType === 'event' || item.itemType === 'routine') {
+                    return (
+                      <div
+                        key={item.id}
+                        className="text-[11px] text-[#202124] truncate px-2 py-1 rounded-[3px] font-medium transition-opacity hover:opacity-90 cursor-pointer"
+                        style={{ backgroundColor: item.colorTag || '#8AB4F8' }}
+                        title={item.title}
+                        onClick={() => { setPopoverState(null); if(item.itemType !== 'task') openModal('detail', item.id); }}
+                      >
+                        {item.title}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        key={item.id}
+                        className="text-[11px] hover:bg-[#3c4043] truncate px-2 py-1 rounded-[3px] font-medium transition-colors cursor-pointer flex items-center gap-[5px]"
+                        style={{ color: item.colorTag || '#8AB4F8' }}
+                        title={item.title}
+                      >
+                        <span 
+                          className="w-2.5 h-2.5 rounded-full border-[1.5px] shrink-0" 
+                          style={{ borderColor: item.colorTag || '#8AB4F8' }}
+                        />
+                        <span className="truncate leading-none pt-[1px]">{item.title}</span>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
