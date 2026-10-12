@@ -15,12 +15,11 @@ import {
 } from 'lucide-react';
 
 interface NotesRoutineSidebarPanelProps {
-  onClose: () => void;
+  onClose?: () => void;
   onOpenCreateModal?: () => void;
 }
 
 export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> = ({
-  onClose,
   onOpenCreateModal,
 }) => {
   const {
@@ -167,13 +166,6 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
               <Plus className="w-4 h-4" />
             </button>
           )}
-          <button
-            onClick={onClose}
-            className="p-1.5 hover:bg-[#28292A] rounded-full text-[#9AA0A6] hover:text-[#E3E2E3] transition-colors cursor-pointer"
-            title="Đóng bảng"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
       </div>
 
