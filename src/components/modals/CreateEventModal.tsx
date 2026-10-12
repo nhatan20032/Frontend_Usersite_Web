@@ -59,6 +59,7 @@ export const CreateEventModal: React.FC = () => {
     activeEditItem,
     eventsData,
     tasksData,
+    categories,
   } = useApp();
   const { language } = useLanguage();
 
@@ -77,6 +78,7 @@ export const CreateEventModal: React.FC = () => {
     'an.nguyen@routinepulse.com (Tổ chức)',
   ]);
   const [selectedColor, setSelectedColor] = useState<string>('#8AB4F8');
+  const [selectedCategory, setSelectedCategory] = useState<string>('event');
   const [status, setStatus] = useState<'busy' | 'free'>('busy');
   const [reminder, setReminder] = useState<string>('30m');
 
@@ -94,6 +96,7 @@ export const CreateEventModal: React.FC = () => {
           setTitle(task.title);
           setPriority(task.priority || 'medium');
           setSelectedColor(task.colorTag || '#8AB4F8');
+          setSelectedCategory(task.categoryId || 'task');
           setSubtaskList((task.subtasks || []).map((st) => st.title));
           // parse due time
           const match = task.dueDate.match(/\d{2}:\d{2} [AP]M/);
@@ -120,6 +123,7 @@ export const CreateEventModal: React.FC = () => {
           setLocation(event.location || '');
           setDescription(event.description || '');
           setSelectedColor(event.colorTag || '#8AB4F8');
+          setSelectedCategory(event.categoryId || event.type || 'event');
           setStatus(event.status || 'busy');
           if (event.attendees && event.attendees.length > 0) {
             setGuests(event.attendees);
@@ -161,6 +165,7 @@ export const CreateEventModal: React.FC = () => {
       setGuestEmail('');
       setGuests(['an.nguyen@routinepulse.com (Tổ chức)']);
       setSelectedColor('#8AB4F8');
+      setSelectedCategory(activeTab === 'task' ? 'task' : 'event');
       setStatus('busy');
       setReminder('30m');
       setSubtaskList([]);
@@ -211,6 +216,15 @@ export const CreateEventModal: React.FC = () => {
       return;
     }
     setActiveTab(tab);
+    if (tab === 'task') {
+      setSelectedCategory('task');
+      const taskCat = categories.find((c) => c.id === 'task');
+      if (taskCat) setSelectedColor(taskCat.color);
+    } else if (tab === 'event') {
+      setSelectedCategory('event');
+      const eventCat = categories.find((c) => c.id === 'event');
+      if (eventCat) setSelectedColor(eventCat.color);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -230,6 +244,7 @@ export const CreateEventModal: React.FC = () => {
         reminders: reminderText,
         subtasks: subtaskList.map((st) => ({ title: st, completed: false })),
         colorTag: selectedColor,
+        categoryId: selectedCategory || 'task',
       };
 
       if (activeModal === 'edit' && activeEditItem) {
@@ -263,7 +278,7 @@ export const CreateEventModal: React.FC = () => {
     }
 
     const eventData = {
-      type: 'event' as const,
+      type: (selectedCategory === 'routine' ? 'routine' : 'event') as 'routine' | 'event',
       title: title.trim(),
       time: startTime,
       endTime,
@@ -280,6 +295,7 @@ export const CreateEventModal: React.FC = () => {
       description: description.trim() || undefined,
       attendees: guests,
       colorTag: selectedColor,
+      categoryId: selectedCategory || 'event',
       status,
     };
 
@@ -656,27 +672,66 @@ export const CreateEventModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* Row 6: Color Palette & Priority & Reminders */}
-              <div className="flex items-center gap-3.5">
-                <Palette className="w-5 h-5 text-[#9AA0A6] shrink-0" />
-                <div className="flex-1 flex flex-wrap items-center justify-between gap-3">
-                  {/* Swatches */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Màu sắc:' : 'Color:'}</span>
-                    <div className="flex items-center gap-1.5">
-                      {colorPalette.map((cp) => (
-                        <div
-                          key={cp.id}
-                          onClick={() => setSelectedColor(cp.color)}
-                          style={{ backgroundColor: cp.color }}
-                          className={`w-4.5 h-4.5 rounded-full cursor-pointer transition-transform flex items-center justify-center ${
-                            selectedColor === cp.color ? 'ring-2 ring-white ring-offset-2 ring-offset-[#242628] scale-110' : 'hover:scale-110'
-                          }`}
-                          title={cp.name}
+              {/* Row 6: Category Selector & Color Swatches & Native Color Picker */}
+              <div className="flex items-start gap-3.5">
+                <Palette className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5">
+                    {/* Category Selector */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Danh mục / Tag:' : 'Category:'}</span>
+                      <select
+                        value={selectedCategory}
+                        onChange={(e) => {
+                          const catId = e.target.value;
+                          setSelectedCategory(catId);
+                          const cat = categories.find((c) => c.id === catId);
+                          if (cat) setSelectedColor(cat.color);
+                        }}
+                        className="px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] text-xs focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
+                      >
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.id === 'routine' ? (language === 'vi' ? 'Thói quen hằng ngày' : 'Daily Routine')
+                              : c.id === 'event' ? (language === 'vi' ? 'Sự kiện & Hội thảo' : 'Events')
+                              : c.id === 'task' ? (language === 'vi' ? 'Nhiệm vụ & Deadline' : 'Tasks')
+                              : c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Color Swatches & Native Color Picker */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Màu:' : 'Color:'}</span>
+                      <div className="flex items-center gap-1.5">
+                        {colorPalette.map((cp) => (
+                          <div
+                            key={cp.id}
+                            onClick={() => setSelectedColor(cp.color)}
+                            style={{ backgroundColor: cp.color }}
+                            className={`w-4.5 h-4.5 rounded-full cursor-pointer transition-transform flex items-center justify-center ${
+                              selectedColor.toLowerCase() === cp.color.toLowerCase() ? 'ring-2 ring-white ring-offset-2 ring-offset-[#242628] scale-110' : 'hover:scale-110'
+                            }`}
+                            title={cp.name}
+                          >
+                            {selectedColor.toLowerCase() === cp.color.toLowerCase() && <Check className="w-2.5 h-2.5 text-black stroke-[3]" />}
+                          </div>
+                        ))}
+                        {/* Native Color Picker for custom color picking */}
+                        <label
+                          className="w-4.5 h-4.5 rounded-full border border-dashed border-[#5F6368] flex items-center justify-center cursor-pointer hover:border-[#8AB4F8] transition-colors relative overflow-hidden"
+                          title={language === 'vi' ? 'Tự chọn màu khác từ Color Picker' : 'Custom color from Color Picker'}
                         >
-                          {selectedColor === cp.color && <Check className="w-2.5 h-2.5 text-black stroke-[3]" />}
-                        </div>
-                      ))}
+                          <input
+                            type="color"
+                            value={selectedColor}
+                            onChange={(e) => setSelectedColor(e.target.value)}
+                            className="opacity-0 absolute inset-0 cursor-pointer w-full h-full"
+                          />
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: selectedColor }} />
+                        </label>
+                      </div>
                     </div>
                   </div>
 

@@ -10,7 +10,7 @@ const monthNamesShortEn = [
 ];
 
 export const MonthGridView: React.FC = () => {
-  const { eventsData, tasksData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector, deleteEvent, deleteTask } = useApp();
+  const { eventsData, tasksData, categoryFilters, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector, deleteEvent, deleteTask } = useApp();
   const { language, t } = useLanguage();
   const { currentUser } = useAuth();
 
@@ -94,19 +94,24 @@ export const MonthGridView: React.FC = () => {
 
         {/* Current month dynamic days */}
         {currentMonthDays.map((d) => {
-          const dayEvents = eventsData.filter(
-            (e) => e.year === selectedYear && e.month === selectedMonth && e.day === d
-          );
+          const dayEvents = eventsData.filter((e) => {
+            if (e.year !== selectedYear || e.month !== selectedMonth || e.day !== d) return false;
+            const catId = e.categoryId || e.type;
+            if (categoryFilters[catId] === false) return false;
+            return true;
+          });
           
-          const dayTasks = tasksData.filter(t => {
-             const isRealToday = d === realToday.d && selectedMonth === realToday.m && selectedYear === realToday.y;
-             if (t.dueDate === 'Hôm nay' && isRealToday) return true;
-             const taskDate = new Date(t.dueDate);
-             if (!isNaN(taskDate.getTime())) {
-                return taskDate.getDate() === d && taskDate.getMonth() === selectedMonth && taskDate.getFullYear() === selectedYear;
-             }
-             if (t.dueDate?.includes(':') && isRealToday) return true;
-             return false;
+          const dayTasks = tasksData.filter((t) => {
+            const catId = t.categoryId || 'task';
+            if (categoryFilters[catId] === false) return false;
+            const isRealToday = d === realToday.d && selectedMonth === realToday.m && selectedYear === realToday.y;
+            if (t.dueDate === 'Hôm nay' && isRealToday) return true;
+            const taskDate = new Date(t.dueDate);
+            if (!isNaN(taskDate.getTime())) {
+              return taskDate.getDate() === d && taskDate.getMonth() === selectedMonth && taskDate.getFullYear() === selectedYear;
+            }
+            if (t.dueDate?.includes(':') && isRealToday) return true;
+            return false;
           });
           
           const allItems = [

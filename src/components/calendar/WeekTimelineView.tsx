@@ -23,7 +23,7 @@ const parseEventHour = (evTime: string, targetHourStr: string): boolean => {
 };
 
 export const WeekTimelineView: React.FC = () => {
-  const { eventsData, selectedDay, selectedMonth, selectedYear, openModal, selectDate } = useApp();
+  const { eventsData, categoryFilters, selectedDay, selectedMonth, selectedYear, openModal, selectDate } = useApp();
   const { t } = useLanguage();
 
   const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
@@ -106,13 +106,12 @@ export const WeekTimelineView: React.FC = () => {
 
             {/* 7 Day Columns */}
             {weekDays.map((wd) => {
-              const dayHourEvents = eventsData.filter(
-                (e) =>
-                  e.year === wd.year &&
-                  e.month === wd.month &&
-                  e.day === wd.day &&
-                  parseEventHour(e.time, h)
-              );
+              const dayHourEvents = eventsData.filter((e) => {
+                if (e.year !== wd.year || e.month !== wd.month || e.day !== wd.day) return false;
+                const catId = e.categoryId || e.type;
+                if (categoryFilters[catId] === false) return false;
+                return parseEventHour(e.time, h);
+              });
 
               return (
                 <div

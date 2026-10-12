@@ -54,8 +54,8 @@ export const DayInspectorDrawer: React.FC = () => {
 
   const dayEvents = eventsData.filter((e) => {
     if (e.year !== selectedYear || e.month !== selectedMonth || e.day !== selectedDay) return false;
-    if (e.type === 'routine' && !categoryFilters.routine) return false;
-    if (e.type === 'event' && !categoryFilters.event) return false;
+    const catId = e.categoryId || e.type;
+    if (categoryFilters[catId] === false) return false;
     return true;
   });
 

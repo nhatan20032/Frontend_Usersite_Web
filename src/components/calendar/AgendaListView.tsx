@@ -39,8 +39,8 @@ export const AgendaListView: React.FC = () => {
 
   const filtered = eventsData.filter((e) => {
     if (e.year !== selectedYear || e.month !== selectedMonth || e.day !== selectedDay) return false;
-    if (e.type === 'routine' && !categoryFilters.routine) return false;
-    if (e.type === 'event' && !categoryFilters.event) return false;
+    const catId = e.categoryId || e.type;
+    if (categoryFilters[catId] === false) return false;
     if (searchQuery && !e.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });

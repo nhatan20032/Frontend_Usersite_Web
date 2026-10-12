@@ -55,6 +55,7 @@ export interface CalendarEvent {
   attendees?: string[];
   hasMeet?: boolean;
   colorTag?: string;
+  categoryId?: string;
   status?: 'busy' | 'free';
   subroutines?: SubTask[];
 }
@@ -65,6 +66,7 @@ export interface CreateRoutineInput {
   frequency?: string;
   priority?: Priority;
   subroutines?: string[];
+  categoryId?: string;
 }
 
 export interface SubTask {
@@ -80,6 +82,7 @@ export interface CreateTaskInput {
   reminders?: string;
   subtasks?: { title: string; completed?: boolean }[];
   colorTag?: string;
+  categoryId?: string;
 }
 
 export interface TaskItem {
@@ -91,6 +94,7 @@ export interface TaskItem {
   reminders?: string;
   subtasks: SubTask[];
   colorTag?: string;
+  categoryId?: string;
 }
 
 export type ToastType = 'info' | 'success' | 'warning' | 'error';
@@ -125,10 +129,18 @@ export interface DailyAvailabilitySlot {
   endTime?: string;
 }
 
+export interface CalendarCategory {
+  id: string;
+  name: string;
+  color: string;
+  isBuiltIn?: boolean;
+}
+
 export interface CategoryFilters {
   routine: boolean;
   event: boolean;
   task: boolean;
+  [key: string]: boolean;
 }
 
 export type RightSidebarTab = 'tasks' | 'notes-routine' | 'contacts';

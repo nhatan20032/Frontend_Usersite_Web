@@ -6,6 +6,7 @@ import type {
   CreateRoutineInput,
   CalendarViewMode,
   ThemeName,
+  CalendarCategory,
   CategoryFilters,
   ToastNotification,
   ToastType,
@@ -23,6 +24,7 @@ interface AppContextType {
   selectedMonth: number; // 0-indexed (0 = Jan, 11 = Dec)
   selectedYear: number;
   calendarView: CalendarViewMode;
+  categories: CalendarCategory[];
   categoryFilters: CategoryFilters;
   searchQuery: string;
   activeEventId: number | null;
@@ -44,6 +46,8 @@ interface AppContextType {
   selectToday: () => void;
   prevMonth: () => void;
   nextMonth: () => void;
+  addCategory: (name: string, color: string) => void;
+  deleteCategory: (id: string) => void;
   setCategoryFilters: React.Dispatch<React.SetStateAction<CategoryFilters>>;
   setSearchQuery: (query: string) => void;
 
@@ -268,6 +272,12 @@ const getInitialSampleNotes = (): KeepNote[] => [
   },
 ];
 
+const defaultCategories: CalendarCategory[] = [
+  { id: 'routine', name: 'Thói quen hằng ngày', color: '#FDD663', isBuiltIn: true },
+  { id: 'event', name: 'Sự kiện & Hội thảo', color: '#8AB4F8', isBuiltIn: true },
+  { id: 'task', name: 'Nhiệm vụ & Deadline', color: '#81C995', isBuiltIn: true },
+];
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -278,6 +288,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedYear, setSelectedYear] = useState<number>(() => now.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number>(() => now.getMonth());
   const [selectedDay, setSelectedDay] = useState<number>(() => now.getDate());
+
+  // Dynamic Categories state
+  const [categories, setCategories] = useState<CalendarCategory[]>(() => {
+    const saved = localStorage.getItem('routinepulse_categories');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const merged = [...defaultCategories];
+          parsed.forEach((cat: CalendarCategory) => {
+            if (!merged.some((m) => m.id === cat.id)) {
+              merged.push(cat);
+            }
+          });
+          return merged;
+        }
+      } catch (err) {
+        console.error('Error parsing routinepulse_categories', err);
+      }
+    }
+    return defaultCategories;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('routinepulse_categories', JSON.stringify(categories));
+  }, [categories]);
 
   // Persistent storage for Events and Tasks
   const [eventsData, setEventsData] = useState<CalendarEvent[]>(() => {
@@ -320,7 +356,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     return 'default';
   });
-  const [categoryFilters, setCategoryFilters] = useState<CategoryFilters>({ routine: true, event: true, task: true });
+  const [categoryFilters, setCategoryFilters] = useState<CategoryFilters>(() => {
+    const initial: CategoryFilters = { routine: true, event: true, task: true };
+    categories.forEach((cat) => {
+      initial[cat.id] = true;
+    });
+    return initial;
+  });
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState<boolean>(true);
@@ -730,6 +772,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         completed: false,
         reminders: input.reminders || 'Push App',
         colorTag: input.colorTag,
+        categoryId: input.categoryId,
         subtasks: (input.subtasks || []).map((st, idx) => ({
           id: Date.now() + idx + 1,
           title: st.title,
@@ -806,6 +849,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  const addCategory = (name: string, color: string) => {
+    if (!name.trim()) return;
+    const newCat: CalendarCategory = {
+      id: 'cat_' + Date.now(),
+      name: name.trim(),
+      color: color || '#8AB4F8',
+      isBuiltIn: false,
+    };
+    setCategories((prev) => [...prev, newCat]);
+    setCategoryFilters((prev) => ({ ...prev, [newCat.id]: true }));
+    showToast('Tạo danh mục mới', `Đã thêm "${newCat.name}"`, 'success');
+  };
+
+  const deleteCategory = (id: string) => {
+    const target = categories.find((c) => c.id === id);
+    if (!target || target.isBuiltIn) return;
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+    setCategoryFilters((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    showToast('Đã xóa danh mục', `Đã xóa "${target.name}"`, 'info');
+  };
+
   const toggleLeftSidebar = () => setIsLeftSidebarOpen((prev) => !prev);
   const toggleRightSidebar = () => setIsRightSidebarOpen((prev) => !prev);
 
@@ -844,7 +912,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         selectedMonth,
         selectedYear,
         calendarView,
+        categories,
         categoryFilters,
+        addCategory,
+        deleteCategory,
         searchQuery,
         activeEventId,
         activeEditItem,
