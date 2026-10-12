@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { Priority } from '../../types';
@@ -47,16 +47,23 @@ export const CreateEventModal: React.FC = () => {
     activeModal,
     closeModal,
     addEvent,
+    updateEvent,
     addTask,
+    updateTask,
     openModal,
     selectedDay,
     selectedMonth,
     selectedYear,
+    selectDate,
     showToast,
+    activeEditItem,
+    eventsData,
+    tasksData,
   } = useApp();
   const { language } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<'event' | 'task' | 'appointment'>('event');
+  const [errorMsg, setErrorMsg] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [startTime, setStartTime] = useState<string>('09:00 AM');
   const [endTime, setEndTime] = useState<string>('10:00 AM');
@@ -77,7 +84,93 @@ export const CreateEventModal: React.FC = () => {
   const [subtaskList, setSubtaskList] = useState<string[]>([]);
   const [newSubtaskInput, setNewSubtaskInput] = useState<string>('');
 
-  if (activeModal !== 'create') return null;
+  useEffect(() => {
+    if (activeModal === 'edit' && activeEditItem) {
+      setErrorMsg('');
+      if (activeEditItem.type === 'task') {
+        const task = tasksData.find((t) => String(t.id) === String(activeEditItem.id));
+        if (task) {
+          setActiveTab('task');
+          setTitle(task.title);
+          setPriority(task.priority || 'medium');
+          setSelectedColor(task.colorTag || '#8AB4F8');
+          setSubtaskList((task.subtasks || []).map((st) => st.title));
+          // parse due time
+          const match = task.dueDate.match(/\d{2}:\d{2} [AP]M/);
+          if (match) setDueTime(match[0]);
+          if (task.reminders?.includes('60m') || task.reminders?.includes('Email')) {
+            setReminder('60m');
+          } else if (task.reminders?.includes('15m')) {
+            setReminder('15m');
+          } else {
+            setReminder('30m');
+          }
+        } else {
+          console.error("Task not found for editing", activeEditItem);
+          setErrorMsg(`Không tìm thấy công việc cần sửa (ID: ${activeEditItem.id})`);
+        }
+      } else {
+        const event = eventsData.find((e) => String(e.id) === String(activeEditItem.id));
+        if (event) {
+          setActiveTab('event');
+          setTitle(event.title);
+          setStartTime(event.time);
+          setEndTime(event.endTime || '10:00 AM');
+          setPriority(event.priority || 'medium');
+          setLocation(event.location || '');
+          setDescription(event.description || '');
+          setSelectedColor(event.colorTag || '#8AB4F8');
+          setStatus(event.status || 'busy');
+          if (event.attendees && event.attendees.length > 0) {
+            setGuests(event.attendees);
+          }
+          if (event.alertTime?.includes('15')) {
+            setReminder('15m');
+          } else if (event.alertTime?.includes('60') || event.alertTime?.includes('1 giờ')) {
+            setReminder('60m');
+          } else {
+            setReminder('30m');
+          }
+          if (event.frequency?.includes('ngày') || event.frequency?.includes('Daily')) {
+            setFrequency('daily');
+          } else if (event.frequency?.includes('tuần') || event.frequency?.includes('Weekly')) {
+            setFrequency('weekly');
+          } else if (event.frequency?.includes('tháng') || event.frequency?.includes('Monthly')) {
+            setFrequency('monthly');
+          } else {
+            setFrequency('none');
+          }
+          if (event.day !== undefined && event.month !== undefined && event.year !== undefined) {
+            selectDate(event.day, event.month, event.year);
+          }
+        } else {
+          setErrorMsg(`Không tìm thấy sự kiện cần sửa (ID: ${activeEditItem.id})`);
+          console.error("Event not found for editing", activeEditItem);
+        }
+      }
+    } else if (activeModal === 'create') {
+      setErrorMsg('');
+      setTitle('');
+      setStartTime('09:00 AM');
+      setEndTime('10:00 AM');
+      setDueTime('17:00 PM');
+      setPriority('medium');
+      setFrequency('none');
+      setLocation('');
+      setDescription('');
+      setGuestEmail('');
+      setGuests(['an.nguyen@routinepulse.com (Tổ chức)']);
+      setSelectedColor('#8AB4F8');
+      setStatus('busy');
+      setReminder('30m');
+      setSubtaskList([]);
+      setNewSubtaskInput('');
+    }
+  }, [activeModal, activeEditItem, eventsData, tasksData]);
+
+  console.log("RENDER CreateEventModal:", { activeModal, activeEditItem, title, errorMsg });
+
+  if (activeModal !== 'create' && activeModal !== 'edit') return null;
 
   const targetDate = new Date(selectedYear, selectedMonth, selectedDay);
   const weekdayName = targetDate.toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', { weekday: 'long' });
@@ -130,20 +223,26 @@ export const CreateEventModal: React.FC = () => {
       else if (reminder === '30m') reminderText = 'Push App • SMS';
       else if (reminder === '60m') reminderText = 'Push App • SMS • Email';
 
-      addTask({
+      const taskData = {
         title: title.trim(),
         dueDate: `${selectedDay} ${monthNames[selectedMonth]}, ${dueTime}`,
         priority,
         reminders: reminderText,
         subtasks: subtaskList.map((st) => ({ title: st, completed: false })),
         colorTag: selectedColor,
-      });
+      };
+
+      if (activeModal === 'edit' && activeEditItem) {
+        updateTask(activeEditItem.id, taskData);
+      } else {
+        addTask(taskData);
+      }
 
       showToast(
-        language === 'vi' ? 'Đã tạo việc cần làm' : 'Task created',
+        language === 'vi' ? (activeModal === 'edit' ? 'Đã cập nhật việc cần làm' : 'Đã tạo việc cần làm') : 'Task saved',
         language === 'vi'
-          ? `Đã thêm "${title}"${subtaskList.length > 0 ? ` kèm ${subtaskList.length} việc con` : ''}`
-          : `Added "${title}" to tasks`,
+          ? `Đã lưu "${title}"${subtaskList.length > 0 ? ` kèm ${subtaskList.length} việc con` : ''}`
+          : `Saved "${title}"`,
         'success'
       );
       closeModal();
@@ -163,8 +262,8 @@ export const CreateEventModal: React.FC = () => {
       freqText = language === 'vi' ? 'Hàng tháng' : 'Monthly';
     }
 
-    const success = addEvent({
-      type: 'event',
+    const eventData = {
+      type: 'event' as const,
       title: title.trim(),
       time: startTime,
       endTime,
@@ -182,18 +281,26 @@ export const CreateEventModal: React.FC = () => {
       attendees: guests,
       colorTag: selectedColor,
       status,
-    });
+    };
 
-    if (success) {
+    if (activeModal === 'edit' && activeEditItem) {
+      updateEvent(activeEditItem.id, eventData);
       showToast(
-        language === 'vi' ? 'Đã lưu lịch trình' : 'Event saved',
-        language === 'vi' ? `Đã thêm "${title}" vào ngày ${selectedDay}/${selectedMonth + 1}` : `Added "${title}" to calendar`,
+        language === 'vi' ? 'Đã lưu thay đổi' : 'Changes saved',
+        language === 'vi' ? `Đã cập nhật "${title}"` : `Updated "${title}"`,
         'success'
       );
       closeModal();
-      setTitle('');
-      setLocation('');
-      setDescription('');
+    } else {
+      const success = addEvent(eventData);
+      if (success) {
+        showToast(
+          language === 'vi' ? 'Đã lưu lịch trình' : 'Event saved',
+          language === 'vi' ? `Đã thêm "${title}" vào ngày ${selectedDay}/${selectedMonth + 1}` : `Added "${title}" to calendar`,
+          'success'
+        );
+        closeModal();
+      }
     }
   };
 
@@ -209,7 +316,9 @@ export const CreateEventModal: React.FC = () => {
           <div className="flex items-center gap-2 text-[#9AA0A6]">
             <CalendarIcon className="w-4 h-4 text-[#8AB4F8]" />
             <span className="text-[11px] uppercase tracking-wider font-semibold text-[#9AA0A6]">
-              {language === 'vi' ? 'Tạo sự kiện & công việc mới' : 'Create event or task'}
+              {activeModal === 'edit'
+                ? (language === 'vi' ? 'Chỉnh sửa chi tiết' : 'Edit details')
+                : (language === 'vi' ? 'Tạo sự kiện & công việc mới' : 'Create event or task')}
             </span>
           </div>
           <button
@@ -224,6 +333,11 @@ export const CreateEventModal: React.FC = () => {
         {/* Modal Form Body */}
         <form onSubmit={handleSubmit} className="flex flex-col">
           <div className="p-5 sm:p-6 flex flex-col gap-4.5 max-h-[78vh] overflow-y-auto custom-scrollbar">
+            {errorMsg && (
+              <div className="bg-red-500/20 text-red-200 p-3 rounded-lg border border-red-500/50 text-xs break-all">
+                {errorMsg}
+              </div>
+            )}
             {/* 1. Large Title Input */}
             <div className="relative">
               <input
@@ -629,7 +743,9 @@ export const CreateEventModal: React.FC = () => {
                 type="submit"
                 className="px-6 py-2 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] text-white text-xs font-semibold shadow-md transition-all cursor-pointer"
               >
-                {language === 'vi' ? 'Lưu' : 'Save'}
+                {activeModal === 'edit'
+                  ? (language === 'vi' ? 'Lưu thay đổi' : 'Save changes')
+                  : (language === 'vi' ? 'Lưu' : 'Save')}
               </button>
             </div>
           </div>

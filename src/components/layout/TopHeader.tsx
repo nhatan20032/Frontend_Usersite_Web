@@ -1,15 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { UserProfileDropdown } from './UserProfileDropdown';
 import {
-  Menu,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Search,
   Settings,
 } from 'lucide-react';
+
+interface CustomSelectProps {
+  value: number;
+  options: { label: string | number; value: number }[];
+  onChange: (value: number) => void;
+  className?: string;
+  isMono?: boolean;
+}
+
+const CustomSelect: React.FC<CustomSelectProps> = ({ value, options, onChange, className = '', isMono }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div className={`relative ${className}`} ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-1 bg-transparent hover:bg-[#28292A] text-sm sm:text-base font-medium text-[#E3E2E3] py-0.5 px-1.5 rounded border border-transparent hover:border-[#333538] focus:outline-none focus:border-[#8AB4F8] transition-colors ${isOpen ? 'bg-[#28292A] border-[#333538]' : ''} ${isMono ? 'font-mono px-1' : ''}`}
+      >
+        <span>{selectedOption?.label}</span>
+        <ChevronDown className="w-3.5 h-3.5 text-[#9AA0A6]" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 max-h-64 overflow-y-auto w-full bg-[#28292A] border border-[#333538] rounded-md shadow-lg z-50 py-1 custom-scrollbar">
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => {
+                onChange(opt.value);
+                setIsOpen(false);
+              }}
+              className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${value === opt.value ? 'bg-[#1A73E8] text-white' : 'text-[#E3E2E3] hover:bg-[#3C4043]'}`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const monthNamesVi = [
   'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
@@ -31,7 +87,6 @@ export const TopHeader: React.FC = () => {
     searchQuery,
     setSearchQuery,
     openModal,
-    toggleLeftSidebar,
     selectedDay,
     selectedMonth,
     selectedYear,
@@ -54,14 +109,7 @@ export const TopHeader: React.FC = () => {
     >
       {/* 1. Left: Hamburger + Logo & Navigation Controls */}
       <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
-        {/* Hamburger Drawer Toggle */}
-        <button
-          onClick={toggleLeftSidebar}
-          className="p-2 text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#28292A] rounded-full transition-colors cursor-pointer"
-          title="Thu gọn / Mở rộng bảng điều khiển"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+
 
         {/* Calendar Brand Logo */}
         <div className="flex items-center gap-2.5 mr-1 sm:mr-2">
@@ -104,29 +152,18 @@ export const TopHeader: React.FC = () => {
 
           {/* Quick Month & Year Selectors (Clean & Integrated) */}
           <div className="flex items-center gap-0.5 ml-1">
-            <select
+            <CustomSelect
               value={selectedMonth}
-              onChange={(e) => selectDate(selectedDay, Number(e.target.value), selectedYear)}
-              className="bg-transparent hover:bg-[#28292A] text-sm sm:text-base font-medium text-[#E3E2E3] py-0.5 px-1.5 rounded border border-transparent hover:border-[#333538] cursor-pointer focus:outline-none focus:border-[#8AB4F8] transition-colors"
-            >
-              {monthNames.map((name, idx) => (
-                <option key={idx} value={idx} className="bg-[#1F2021] text-[#E3E2E3]">
-                  {name}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => selectDate(selectedDay, val, selectedYear)}
+              options={monthNames.map((name, idx) => ({ label: name, value: idx }))}
+            />
 
-            <select
+            <CustomSelect
               value={selectedYear}
-              onChange={(e) => selectDate(selectedDay, selectedMonth, Number(e.target.value))}
-              className="bg-transparent hover:bg-[#28292A] text-sm sm:text-base font-medium text-[#E3E2E3] py-0.5 px-1 rounded border border-transparent hover:border-[#333538] cursor-pointer focus:outline-none focus:border-[#8AB4F8] font-mono transition-colors"
-            >
-              {yearsList.map((y) => (
-                <option key={y} value={y} className="bg-[#1F2021] text-[#E3E2E3]">
-                  {y}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => selectDate(selectedDay, selectedMonth, val)}
+              options={yearsList.map((y) => ({ label: y, value: y }))}
+              isMono
+            />
           </div>
         </div>
       </div>

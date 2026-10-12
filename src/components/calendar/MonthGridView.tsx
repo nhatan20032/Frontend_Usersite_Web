@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { X } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { X, Pencil, Trash2, Bell, Calendar as CalendarIcon } from 'lucide-react';
 
 const monthNamesShortEn = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -9,10 +10,12 @@ const monthNamesShortEn = [
 ];
 
 export const MonthGridView: React.FC = () => {
-  const { eventsData, tasksData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector } = useApp();
+  const { eventsData, tasksData, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector, deleteEvent, deleteTask } = useApp();
   const { language, t } = useLanguage();
+  const { currentUser } = useAuth();
 
   const [popoverState, setPopoverState] = useState<{ day: number, x: number, y: number, items: any[] } | null>(null);
+  const [itemDetailPopover, setItemDetailPopover] = useState<{ item: any, x: number, y: number, day: number, month: number, year: number } | null>(null);
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
   const firstDayIndex = new Date(selectedYear, selectedMonth, 1).getDay(); // 0 = Sunday
@@ -145,7 +148,8 @@ export const MonthGridView: React.FC = () => {
                         key={item.id}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (item.itemType !== 'task') openModal('detail', item.id);
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setItemDetailPopover({ item, x: rect.right, y: rect.top, day: d, month: selectedMonth, year: selectedYear });
                         }}
                         className="text-[11px] text-[#202124] truncate px-1.5 py-0.5 rounded-[3px] font-medium transition-opacity hover:opacity-90 shadow-none"
                         style={{ backgroundColor: item.colorTag || '#8AB4F8' }}
@@ -160,6 +164,8 @@ export const MonthGridView: React.FC = () => {
                         key={item.id}
                         onClick={(e) => {
                           e.stopPropagation();
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setItemDetailPopover({ item, x: rect.right, y: rect.top, day: d, month: selectedMonth, year: selectedYear });
                         }}
                         className="text-[11px] hover:bg-[#3c4043] truncate px-1.5 py-0.5 rounded-[3px] font-medium transition-colors flex items-center gap-[5px]"
                         style={{ color: item.colorTag || '#8AB4F8' }}
@@ -240,7 +246,11 @@ export const MonthGridView: React.FC = () => {
                         className="text-[11px] text-[#202124] truncate px-2 py-1 rounded-[3px] font-medium transition-opacity hover:opacity-90 cursor-pointer"
                         style={{ backgroundColor: item.colorTag || '#8AB4F8' }}
                         title={item.title}
-                        onClick={() => { setPopoverState(null); if(item.itemType !== 'task') openModal('detail', item.id); }}
+                        onClick={(e) => {
+                           e.stopPropagation(); 
+                           const rect = e.currentTarget.getBoundingClientRect();
+                           setItemDetailPopover({ item, x: rect.right, y: rect.top, day: popoverState.day, month: selectedMonth, year: selectedYear });
+                        }}
                       >
                         {item.title}
                       </div>
@@ -252,6 +262,11 @@ export const MonthGridView: React.FC = () => {
                         className="text-[11px] hover:bg-[#3c4043] truncate px-2 py-1 rounded-[3px] font-medium transition-colors cursor-pointer flex items-center gap-[5px]"
                         style={{ color: item.colorTag || '#8AB4F8' }}
                         title={item.title}
+                        onClick={(e) => {
+                           e.stopPropagation(); 
+                           const rect = e.currentTarget.getBoundingClientRect();
+                           setItemDetailPopover({ item, x: rect.right, y: rect.top, day: popoverState.day, month: selectedMonth, year: selectedYear });
+                        }}
                       >
                         <span 
                           className="w-2.5 h-2.5 rounded-full border-[1.5px] shrink-0" 
@@ -262,6 +277,101 @@ export const MonthGridView: React.FC = () => {
                     );
                   }
                 })}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Item Detail Popover */}
+        {itemDetailPopover && (
+          <>
+            <div className="fixed inset-0 z-[60]" onClick={(e) => { e.stopPropagation(); setItemDetailPopover(null); }} />
+            <div 
+              className="fixed z-[70] bg-[#28292c] rounded-lg shadow-xl w-[350px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+              style={{ 
+                top: Math.min(itemDetailPopover.y - 20, window.innerHeight - 250), 
+                left: Math.min(itemDetailPopover.x + 10, window.innerWidth - 370) 
+              }}
+            >
+              {/* Header Actions */}
+              <div className="flex items-center justify-end p-1.5 bg-[#3c4043] rounded-t-lg">
+                <button 
+                  className="p-2 text-[#9aa0a6] hover:bg-white/10 rounded-full transition-colors" 
+                  title={t('common.edit') || 'Chỉnh sửa'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectDate(itemDetailPopover.day, itemDetailPopover.month, itemDetailPopover.year);
+                    const type = itemDetailPopover.item.itemType === 'task' ? 'task' : 'event';
+                    const originalId = type === 'task' ? Number(itemDetailPopover.item.id) - 10000 : itemDetailPopover.item.id;
+                    openModal('edit', { id: originalId, type });
+                    setItemDetailPopover(null);
+                  }}
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button 
+                  className="p-2 text-[#9aa0a6] hover:bg-white/10 rounded-full transition-colors" 
+                  title={t('common.delete') || 'Xóa'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (itemDetailPopover.item.itemType === 'task') {
+                      deleteTask(itemDetailPopover.item.id - 10000);
+                    } else {
+                      deleteEvent(itemDetailPopover.item.id);
+                    }
+                    setItemDetailPopover(null);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <button 
+                  className="p-2 text-[#9aa0a6] hover:bg-white/10 rounded-full transition-colors ml-1"
+                  onClick={() => setItemDetailPopover(null)}
+                  title={t('common.close') || 'Đóng'}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="p-4 flex flex-col gap-4 bg-[#28292c] rounded-b-lg">
+                <div className="flex gap-4 items-start">
+                  <div className="mt-1.5 shrink-0">
+                    <div 
+                      className="w-[14px] h-[14px] rounded-[3px]" 
+                      style={{ backgroundColor: itemDetailPopover.item.colorTag || '#8AB4F8' }} 
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-[22px] text-[#e8eaed] font-normal leading-tight mb-1">
+                      {itemDetailPopover.item.title}
+                    </h3>
+                    <p className="text-[14px] text-[#e8eaed]">
+                      {language === 'vi' 
+                        ? `${weekdayHeaders[(firstDayIndex + itemDetailPopover.day - 1) % 7]}, ${itemDetailPopover.day} tháng ${itemDetailPopover.month + 1}`
+                        : `${weekdayHeaders[(firstDayIndex + itemDetailPopover.day - 1) % 7]}, ${itemDetailPopover.day} ${monthNamesShortEn[itemDetailPopover.month]}`
+                      }
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4 items-center">
+                  <div className="shrink-0 flex justify-center w-[14px]">
+                    <Bell className="w-5 h-5 text-[#9aa0a6]" />
+                  </div>
+                  <p className="text-[14px] text-[#e8eaed]">
+                    {language === 'vi' ? 'Ngày hôm trước lúc 5PM' : '1 day before at 5 PM'}
+                  </p>
+                </div>
+
+                <div className="flex gap-4 items-center">
+                  <div className="shrink-0 flex justify-center w-[14px]">
+                    <CalendarIcon className="w-5 h-5 text-[#9aa0a6]" />
+                  </div>
+                  <p className="text-[14px] text-[#e8eaed]">
+                    {currentUser?.displayName || 'Nhật An Nguyễn Lê'}
+                  </p>
+                </div>
               </div>
             </div>
           </>

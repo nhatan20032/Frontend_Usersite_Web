@@ -103,7 +103,7 @@ export interface ToastNotification {
   duration?: number;
 }
 
-export type ActiveModalType = 'create' | 'detail' | 'checkout' | 'limit' | 'settings' | 'upgrade' | 'recurring-action' | 'appointment-schedule' | null;
+export type ActiveModalType = 'create' | 'detail' | 'checkout' | 'limit' | 'settings' | 'upgrade' | 'recurring-action' | 'appointment-schedule' | 'edit' | null;
 
 /** Khoảng giờ rảnh, tính bằng phút kể từ 00:00 */
 export interface TimeRange {

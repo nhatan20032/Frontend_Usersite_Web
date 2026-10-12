@@ -26,7 +26,9 @@ interface AppContextType {
   categoryFilters: CategoryFilters;
   searchQuery: string;
   activeEventId: number | null;
+  activeEditItem: { id: number, type: 'task' | 'event' } | null;
   addEvent: (event: Omit<CalendarEvent, 'id'>) => boolean;
+  updateEvent: (id: number, updated: Partial<CalendarEvent>) => void;
   deleteEvent: (id: number, deleteAllSeries?: boolean) => void;
   activeRecurringEvent: CalendarEvent | null;
   recurringActionType: 'delete' | 'edit';
@@ -51,6 +53,7 @@ interface AppContextType {
   addSubtask: (taskId: number, title: string) => void;
   deleteSubtask: (taskId: number, subtaskId: number) => void;
   deleteTask: (id: number) => void;
+  updateTask: (id: number, updated: Partial<TaskItem>) => void;
   toggleTask: (id: number) => void;
   toggleSubtask: (taskId: number, subtaskId: number) => void;
 
@@ -82,7 +85,7 @@ interface AppContextType {
   // Modals & Navigation
   activeModal: ActiveModalType;
   settingsInitialTab: string;
-  openModal: (modal: ActiveModalType, param?: number | string) => void;
+  openModal: (modal: ActiveModalType, param?: any) => void;
   closeModal: () => void;
   triggerPremiumFeature: (featureName: string) => void;
 
@@ -380,6 +383,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [activeModal, setActiveModal] = useState<ActiveModalType>(null);
   const [activeEventId, setActiveEventId] = useState<number | null>(null);
+  const [activeEditItem, setActiveEditItem] = useState<{ id: number, type: 'task' | 'event' } | null>(null);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
   // Apply Theme to body class
@@ -572,6 +576,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const updateEvent = (id: number, updated: Partial<CalendarEvent>) => {
+    setEventsData((prev) => prev.map((e) => (e.id === id ? { ...e, ...updated } : e)));
+    showToast('Đã cập nhật', 'Thông tin đã được lưu lại.', 'success');
+  };
+
   const toggleCheckInRoutine = (id: number) => {
     const target = eventsData.find((e) => e.id === id);
     if (!target) return;
@@ -759,6 +768,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Đã xóa', 'Đã loại bỏ công việc khỏi danh sách.', 'info');
   };
 
+  const updateTask = (id: number, updated: Partial<TaskItem>) => {
+    setTasksData((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t)));
+    showToast('Đã cập nhật', 'Thông tin công việc đã được lưu lại.', 'success');
+  };
+
   const toggleTask = (id: number) => {
     const target = tasksData.find((t) => t.id === id);
     if (!target) return;
@@ -788,9 +802,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [settingsInitialTab, setSettingsInitialTab] = useState<string>('profile');
 
-  const openModal = (modal: ActiveModalType, param?: number | string) => {
+  const openModal = (modal: ActiveModalType, param?: any) => {
     setActiveModal(modal);
-    if (typeof param === 'number') {
+    if (modal === 'edit' && param) {
+      setActiveEditItem(param);
+    } else if (typeof param === 'number') {
       setActiveEventId(param);
     } else if (typeof param === 'string') {
       setSettingsInitialTab(param);
@@ -800,6 +816,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const closeModal = () => {
     setActiveModal(null);
     setActiveEventId(null);
+    setActiveEditItem(null);
   };
 
   const triggerPremiumFeature = (featureName: string) => {
@@ -821,7 +838,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         categoryFilters,
         searchQuery,
         activeEventId,
+        activeEditItem,
         addEvent,
+        updateEvent,
         deleteEvent,
         toggleCheckInRoutine,
         addRoutine,
@@ -840,6 +859,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addSubtask,
         deleteSubtask,
         deleteTask,
+        updateTask,
         toggleTask,
         toggleSubtask,
         isLeftSidebarOpen,
