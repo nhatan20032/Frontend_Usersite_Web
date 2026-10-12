@@ -224,7 +224,7 @@ export const SettingsModal: React.FC = () => {
                       }}
                       className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 relative ${
                         isCurrent
-                          ? 'border-[#8AB4F8] bg-[#1A73E8]/10 shadow-xs'
+                          ? 'border-[var(--google-blue)] bg-[var(--google-blue-primary)]/15 shadow-xs'
                           : isLocked
                           ? 'bg-[#18191B] border-[#2A2B2D] opacity-75 hover:opacity-100 hover:border-[#FDD663]/40'
                           : 'bg-[#18191B] border-[#2A2B2D] hover:border-[#3A3B3D]'
@@ -233,7 +233,7 @@ export const SettingsModal: React.FC = () => {
                       <div
                         className={`w-9 h-9 rounded-lg bg-gradient-to-br ${th.previewClass} border shadow-xs flex items-center justify-center shrink-0 relative`}
                       >
-                        {isCurrent && <Check className="w-4 h-4 text-[#8AB4F8]" />}
+                        {isCurrent && <Check className="w-4 h-4 text-[var(--google-blue)]" />}
                         {isLocked && !isCurrent && <Crown className="w-4 h-4 text-[#FDD663]" />}
                       </div>
                       <div className="space-y-0.5 flex-1 min-w-0">

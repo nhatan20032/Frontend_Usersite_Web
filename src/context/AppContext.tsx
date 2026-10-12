@@ -313,7 +313,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [tasksData]);
 
   const [calendarView, setCalendarViewMode] = useState<CalendarViewMode>('month');
-  const [currentTheme, setCurrentTheme] = useState<ThemeName>('default');
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>(() => {
+    const saved = localStorage.getItem('routinepulse_theme');
+    if (saved && ['default', 'dark', 'tet', 'christmas', 'sakura'].includes(saved)) {
+      return saved as ThemeName;
+    }
+    return 'default';
+  });
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilters>({ routine: true, event: true, task: true });
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -386,9 +392,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeEditItem, setActiveEditItem] = useState<{ id: number, type: 'task' | 'event' } | null>(null);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
-  // Apply Theme to body class
+  // Apply Theme to html and body class and persist to localStorage
   useEffect(() => {
+    localStorage.setItem('routinepulse_theme', currentTheme);
+    const root = document.documentElement;
     const body = document.body;
+    root.setAttribute('data-theme', currentTheme);
     body.className = body.className.replace(/theme-\w+/g, '').trim();
     if (currentTheme !== 'default') {
       body.classList.add(`theme-${currentTheme}`);

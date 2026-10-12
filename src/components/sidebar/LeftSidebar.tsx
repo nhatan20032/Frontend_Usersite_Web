@@ -39,7 +39,7 @@ export const LeftSidebar: React.FC = () => {
   return (
     <aside
       id="leftSidebar"
-      className={`w-64 border-r border-[#2A2B2D] bg-[#1F2021] p-3 space-y-4 flex-shrink-0 flex flex-col overflow-y-auto sidebar-transition select-none ${
+      className={`w-64 border-r border-[var(--border-grid)] bg-[var(--surface-container)] p-3 space-y-4 flex-shrink-0 flex flex-col overflow-y-auto sidebar-transition select-none transition-colors duration-200 ${
         !isLeftSidebarOpen ? 'sidebar-collapsed' : ''
       }`}
     >

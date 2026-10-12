@@ -44,7 +44,7 @@ export const RightSidebar: React.FC = () => {
   return (
     <aside
       id="rightSidebar"
-      className={`w-[360px] border-l border-[#2A2B2D] bg-[#121314] p-3.5 flex-shrink-0 flex flex-col overflow-hidden sidebar-transition select-none ${
+      className={`w-[360px] border-l border-[var(--border-grid)] bg-[var(--surface-container)] p-3.5 flex-shrink-0 flex flex-col overflow-hidden sidebar-transition select-none transition-colors duration-200 ${
         !isRightSidebarOpen ? 'sidebar-collapsed' : ''
       }`}
     >

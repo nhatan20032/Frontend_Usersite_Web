@@ -17,7 +17,7 @@ export const AppLayout: React.FC = () => {
   const { calendarView } = useApp();
 
   return (
-    <div className="min-h-screen h-screen font-sans antialiased flex flex-col overflow-hidden bg-[#121314] text-[#E3E2E3] selection:bg-[#1a73e8] selection:text-white relative">
+    <div className="min-h-screen h-screen font-sans antialiased flex flex-col overflow-hidden bg-[var(--surface-canvas)] text-[var(--text-primary)] selection:bg-[var(--google-blue-primary)] selection:text-white relative transition-colors duration-200">
       {/* 1. TOP APP BAR (GOOGLE CALENDAR DARK HEADER) */}
       <TopHeader />
 
@@ -30,7 +30,7 @@ export const AppLayout: React.FC = () => {
         <LeftSidebar />
 
         {/* COLUMN B: CENTER MAIN CANVAS (FULL-HEIGHT LIQUID LAYOUT) */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative bg-[#121314]">
+        <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative bg-[var(--surface-canvas)] transition-colors duration-200">
           <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             {calendarView === 'month' && <MonthGridView />}
             {calendarView === 'week' && <WeekTimelineView />}

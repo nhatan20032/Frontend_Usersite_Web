@@ -63,11 +63,11 @@ export const MonthGridView: React.FC = () => {
   const realToday = getRealToday();
 
   return (
-    <div className="w-full h-full flex flex-col select-none overflow-hidden bg-[#121314]">
+    <div className="w-full h-full flex flex-col select-none overflow-hidden bg-[var(--surface-canvas)] transition-colors duration-200">
       {/* Day of Week Headers */}
-      <div className="grid grid-cols-7 border-b border-[#2A2B2D] text-center text-[11px] font-medium text-[#9AA0A6] uppercase tracking-wider bg-[#121314] shrink-0">
+      <div className="grid grid-cols-7 border-b border-[var(--border-grid)] text-center text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wider bg-[var(--surface-canvas)] shrink-0 transition-colors duration-200">
         {weekdayHeaders.map((name, i) => (
-          <div key={i} className="py-2 px-1 truncate border-r border-[#2A2B2D] last:border-r-0">
+          <div key={i} className="py-2 px-1 truncate border-r border-[var(--border-grid)] last:border-r-0">
             {name}
           </div>
         ))}
@@ -75,7 +75,7 @@ export const MonthGridView: React.FC = () => {
 
       {/* Dynamic Month Grid (Full Height Liquid Layout) */}
       <div
-        className="grid grid-cols-7 flex-1 w-full h-full divide-x divide-y divide-[#2A2B2D] overflow-hidden relative"
+        className="grid grid-cols-7 flex-1 w-full h-full divide-x divide-y divide-[var(--border-grid)] overflow-hidden relative"
         style={{ gridAutoRows: '1fr' }}
       >
         {/* Leading padding days from previous month */}
@@ -84,7 +84,7 @@ export const MonthGridView: React.FC = () => {
             key={`grid-pad-prev-${pad}`}
             onClick={() => handleCellClick(pad, prevMonthIndex, prevYear)}
             title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
-            className="p-1 sm:p-1.5 h-full border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
+            className="p-1 sm:p-1.5 h-full border-r border-[var(--border-grid)] last:border-r-0 bg-[var(--surface-container-low)]/40 hover:bg-[var(--surface-container-high)] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
           >
             <div className="flex flex-col items-center mb-1 mt-1">
               <span className="text-[11px] font-medium text-[#4A4D51] px-1">{pad}</span>
@@ -122,14 +122,14 @@ export const MonthGridView: React.FC = () => {
               onClick={() => handleCellClick(d, selectedMonth, selectedYear)}
               onDoubleClick={() => handleCellDoubleClick(d, selectedMonth, selectedYear)}
               title={language === 'vi' ? 'Nhấp để tạo sự kiện, nhấp đúp để xem chi tiết ngày' : 'Click to create event, double-click for day details'}
-              className={`p-1 sm:p-[6px] h-full border-r border-[#2A2B2D] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-start overflow-hidden ${
-                isToday ? 'bg-[#1C1D1F]' : 'hover:bg-[#1C1D1F]'
+              className={`p-1 sm:p-[6px] h-full border-r border-[var(--border-grid)] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-start overflow-hidden ${
+                isToday ? 'bg-[var(--surface-container-high)]' : 'hover:bg-[var(--surface-container-high)]'
               }`}
             >
               {/* Day Header: Date Number */}
               <div className="flex flex-col items-center mb-1 mt-0.5">
                 {isToday ? (
-                  <span className="w-[22px] h-[22px] rounded-full bg-[#8AB4F8] text-[#202124] font-bold text-xs flex items-center justify-center">
+                  <span className="w-[22px] h-[22px] rounded-full bg-[var(--google-blue)] text-[#202124] font-bold text-xs flex items-center justify-center">
                     {d}
                   </span>
                 ) : (
@@ -369,7 +369,7 @@ export const MonthGridView: React.FC = () => {
                     <CalendarIcon className="w-5 h-5 text-[#9aa0a6]" />
                   </div>
                   <p className="text-[14px] text-[#e8eaed]">
-                    {currentUser?.displayName || 'Nhật An Nguyễn Lê'}
+                    {currentUser?.name || 'Nhật An Nguyễn Lê'}
                   </p>
                 </div>
               </div>

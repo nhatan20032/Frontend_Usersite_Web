@@ -105,7 +105,7 @@ export const TopHeader: React.FC = () => {
   return (
     <header
       id="topHeader"
-      className="h-14 border-b border-[#2A2B2D] bg-[#121314] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4 flex-shrink-0 z-30 relative select-none"
+      className="h-14 border-b border-[var(--border-grid)] bg-[var(--surface-canvas)] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4 flex-shrink-0 z-30 relative select-none transition-colors duration-200"
     >
       {/* 1. Left: Hamburger + Logo & Navigation Controls */}
       <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
