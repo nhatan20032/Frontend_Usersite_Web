@@ -11,6 +11,8 @@ export const LeftSidebar: React.FC = () => {
   const { t, language } = useLanguage();
 
   const [isCreateMenuOpen, setIsCreateMenuOpen] = React.useState(false);
+  const [isMyCalendarsOpen, setIsMyCalendarsOpen] = React.useState(true);
+  const [isOtherCalendarsOpen, setIsOtherCalendarsOpen] = React.useState(true);
   const createMenuRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -107,74 +109,92 @@ export const LeftSidebar: React.FC = () => {
 
       {/* 3. My Calendars Checklist (Semantic Color Synced) */}
       <div className="space-y-2 text-xs flex-1">
-        <div className="flex items-center justify-between text-[#9AA0A6] font-semibold text-[11px] uppercase tracking-wider px-1">
+        <div
+          onClick={() => setIsMyCalendarsOpen((prev) => !prev)}
+          className="flex items-center justify-between text-[#9AA0A6] font-semibold text-[11px] uppercase tracking-wider px-1 cursor-pointer hover:text-[#E3E2E3] transition-colors select-none"
+        >
           <span>{language === 'vi' ? 'Lịch của tôi' : 'My Calendars'}</span>
-          <ChevronDown className="w-3 h-3 cursor-pointer hover:text-white" />
+          <ChevronDown
+            className={`w-3 h-3 transition-transform duration-200 ${
+              isMyCalendarsOpen ? '' : '-rotate-90'
+            }`}
+          />
         </div>
 
-        <div className="space-y-1.5 px-1">
-          {/* Routine category */}
-          <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
-            <input
-              type="checkbox"
-              checked={categoryFilters.routine}
-              onChange={(e) => setCategoryFilters((prev) => ({ ...prev, routine: e.target.checked }))}
-              className="w-4 h-4 rounded text-[#FDD663] bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#FDD663]"
-            />
-            <span className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FDD663] flex-shrink-0" />
-              <span className="truncate">{t('sidebar.routineCategory')}</span>
-            </span>
-          </label>
-
-          {/* Event category (Google Blue #8AB4F8) */}
-          <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
-            <input
-              type="checkbox"
-              checked={categoryFilters.event}
-              onChange={(e) => setCategoryFilters((prev) => ({ ...prev, event: e.target.checked }))}
-              className="w-4 h-4 rounded text-[#1A73E8] bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1A73E8]"
-            />
-            <span className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#8AB4F8] flex-shrink-0" />
-              <span className="truncate">{t('sidebar.eventCategory')}</span>
-            </span>
-          </label>
-
-          {/* Task category (Google Green #81C995) */}
-          <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
-            <input
-              type="checkbox"
-              checked={categoryFilters.task}
-              onChange={(e) => setCategoryFilters((prev) => ({ ...prev, task: e.target.checked }))}
-              className="w-4 h-4 rounded text-[#1E8E3E] bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1E8E3E]"
-            />
-            <span className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#81C995] flex-shrink-0" />
-              <span className="truncate">{t('sidebar.taskCategory')}</span>
-            </span>
-          </label>
-        </div>
-
-        {/* Other Calendars Checklist */}
-        <div className="pt-2">
-          <div className="flex items-center justify-between text-[#9AA0A6] font-semibold text-[11px] uppercase tracking-wider px-1 pb-1">
-            <span>{language === 'vi' ? 'Lịch khác' : 'Other Calendars'}</span>
-            <ChevronDown className="w-3 h-3 cursor-pointer hover:text-white" />
-          </div>
+        {isMyCalendarsOpen && (
           <div className="space-y-1.5 px-1">
+            {/* Routine category */}
             <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
               <input
                 type="checkbox"
-                defaultChecked
-                className="w-4 h-4 rounded text-[#8430CE] bg-[#28292A] border-[#3A3B3D] cursor-pointer accent-[#8430CE]"
+                checked={categoryFilters.routine}
+                onChange={(e) => setCategoryFilters((prev) => ({ ...prev, routine: e.target.checked }))}
+                className="w-4 h-4 rounded text-[#FDD663] bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#FDD663]"
               />
               <span className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#C58AF9] flex-shrink-0" />
-                <span className="truncate text-xs">{language === 'vi' ? 'Ngày lễ tại Việt Nam' : 'Holidays in Vietnam'}</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FDD663] flex-shrink-0" />
+                <span className="truncate">{t('sidebar.routineCategory')}</span>
+              </span>
+            </label>
+
+            {/* Event category (Google Blue #8AB4F8) */}
+            <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
+              <input
+                type="checkbox"
+                checked={categoryFilters.event}
+                onChange={(e) => setCategoryFilters((prev) => ({ ...prev, event: e.target.checked }))}
+                className="w-4 h-4 rounded text-[#1A73E8] bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1A73E8]"
+              />
+              <span className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#8AB4F8] flex-shrink-0" />
+                <span className="truncate">{t('sidebar.eventCategory')}</span>
+              </span>
+            </label>
+
+            {/* Task category (Google Green #81C995) */}
+            <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
+              <input
+                type="checkbox"
+                checked={categoryFilters.task}
+                onChange={(e) => setCategoryFilters((prev) => ({ ...prev, task: e.target.checked }))}
+                className="w-4 h-4 rounded text-[#1E8E3E] bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer accent-[#1E8E3E]"
+              />
+              <span className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#81C995] flex-shrink-0" />
+                <span className="truncate">{t('sidebar.taskCategory')}</span>
               </span>
             </label>
           </div>
+        )}
+
+        {/* Other Calendars Checklist */}
+        <div className="pt-2">
+          <div
+            onClick={() => setIsOtherCalendarsOpen((prev) => !prev)}
+            className="flex items-center justify-between text-[#9AA0A6] font-semibold text-[11px] uppercase tracking-wider px-1 pb-1 cursor-pointer hover:text-[#E3E2E3] transition-colors select-none"
+          >
+            <span>{language === 'vi' ? 'Lịch khác' : 'Other Calendars'}</span>
+            <ChevronDown
+              className={`w-3 h-3 transition-transform duration-200 ${
+                isOtherCalendarsOpen ? '' : '-rotate-90'
+              }`}
+            />
+          </div>
+          {isOtherCalendarsOpen && (
+            <div className="space-y-1.5 px-1">
+              <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="w-4 h-4 rounded text-[#8430CE] bg-[#28292A] border-[#3A3B3D] cursor-pointer accent-[#8430CE]"
+                />
+                <span className="flex items-center gap-2 min-w-0 flex-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#C58AF9] flex-shrink-0" />
+                  <span className="truncate text-xs">{language === 'vi' ? 'Ngày lễ tại Việt Nam' : 'Holidays in Vietnam'}</span>
+                </span>
+              </label>
+            </div>
+          )}
         </div>
       </div>
 

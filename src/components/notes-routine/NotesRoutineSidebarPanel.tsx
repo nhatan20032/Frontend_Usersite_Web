@@ -144,7 +144,7 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-between overflow-hidden bg-[#121314] text-[#E3E2E3] select-none">
+    <div className="w-full h-full flex flex-col justify-between overflow-hidden text-[#E3E2E3] select-none">
       {/* 1. PANEL HEADER */}
       <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-3 pt-1 flex-shrink-0">
         <div className="flex items-center gap-2.5">
@@ -191,22 +191,20 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                 <button
                   type="button"
                   onClick={() => setComposerTab('note')}
-                  className={`flex-1 py-1 rounded text-center transition cursor-pointer ${
-                    composerTab === 'note'
-                      ? 'bg-[#28292A] text-[#E3E2E3] font-medium shadow-xs'
-                      : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
-                  }`}
+                  className={`flex-1 py-1 rounded text-center transition cursor-pointer ${composerTab === 'note'
+                    ? 'bg-[#28292A] text-[#E3E2E3] font-medium shadow-xs'
+                    : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+                    }`}
                 >
                   Ghi chú nhanh
                 </button>
                 <button
                   type="button"
                   onClick={() => setComposerTab('routine')}
-                  className={`flex-1 py-1 rounded text-center transition cursor-pointer ${
-                    composerTab === 'routine'
-                      ? 'bg-[#E37400] text-white font-medium shadow-xs'
-                      : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
-                  }`}
+                  className={`flex-1 py-1 rounded text-center transition cursor-pointer ${composerTab === 'routine'
+                    ? 'bg-[#E37400] text-white font-medium shadow-xs'
+                    : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+                    }`}
                 >
                   + Thói quen mới
                 </button>
@@ -236,33 +234,29 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                       <button
                         type="button"
                         onClick={() => setSelectedColor('amber')}
-                        className={`w-3.5 h-3.5 rounded-full bg-[#FDD663] ${
-                          selectedColor === 'amber' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
-                        }`}
+                        className={`w-3.5 h-3.5 rounded-full bg-[#FDD663] ${selectedColor === 'amber' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
+                          }`}
                         title="Vàng Hổ Phách (Kỷ luật)"
                       />
                       <button
                         type="button"
                         onClick={() => setSelectedColor('blue')}
-                        className={`w-3.5 h-3.5 rounded-full bg-[#8AB4F8] ${
-                          selectedColor === 'blue' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
-                        }`}
+                        className={`w-3.5 h-3.5 rounded-full bg-[#8AB4F8] ${selectedColor === 'blue' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
+                          }`}
                         title="Xanh Dương (Dự án)"
                       />
                       <button
                         type="button"
                         onClick={() => setSelectedColor('green')}
-                        className={`w-3.5 h-3.5 rounded-full bg-[#81C995] ${
-                          selectedColor === 'green' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
-                        }`}
+                        className={`w-3.5 h-3.5 rounded-full bg-[#81C995] ${selectedColor === 'green' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
+                          }`}
                         title="Xanh Lá (Sức khỏe)"
                       />
                       <button
                         type="button"
                         onClick={() => setSelectedColor('purple')}
-                        className={`w-3.5 h-3.5 rounded-full bg-[#D7AEFB] ${
-                          selectedColor === 'purple' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
-                        }`}
+                        className={`w-3.5 h-3.5 rounded-full bg-[#D7AEFB] ${selectedColor === 'purple' ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]' : ''
+                          }`}
                         title="Tím (Sáng tạo)"
                       />
                     </div>
@@ -417,13 +411,12 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                 return (
                   <div
                     key={routine.id}
-                    className={`rounded-lg border transition-all duration-150 p-2.5 space-y-2 ${
-                      routine.completed
-                        ? 'bg-[#1F2021]/60 border-[#2A2B2D] opacity-90'
-                        : isExpanded
+                    className={`rounded-lg border transition-all duration-150 p-2.5 space-y-2 ${routine.completed
+                      ? 'bg-[#1F2021]/60 border-[#2A2B2D] opacity-90'
+                      : isExpanded
                         ? 'bg-[#1F2021] border-[#E37400]/40 shadow-xs'
                         : 'bg-[#1F2021] border-[#2A2B2D] hover:border-[#3C4043]'
-                    }`}
+                      }`}
                   >
                     {/* Routine Header */}
                     <div className="flex items-start justify-between gap-2">
@@ -432,11 +425,10 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                         <button
                           type="button"
                           onClick={() => toggleCheckInRoutine(routine.id)}
-                          className={`w-4 h-4 rounded flex items-center justify-center transition-all flex-shrink-0 mt-0.5 cursor-pointer ${
-                            routine.completed
-                              ? 'bg-[#1E8E3E] text-white'
-                              : 'border border-[#70757A] hover:border-[#FDD663]'
-                          }`}
+                          className={`w-4 h-4 rounded flex items-center justify-center transition-all flex-shrink-0 mt-0.5 cursor-pointer ${routine.completed
+                            ? 'bg-[#1E8E3E] text-white'
+                            : 'border border-[#70757A] hover:border-[#FDD663]'
+                            }`}
                           title={routine.completed ? 'Đã hoàn tất thói quen' : 'Điểm danh hoàn thành thói quen'}
                         >
                           {routine.completed && <Check className="w-3 h-3 stroke-[3]" />}
@@ -447,9 +439,8 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                           onClick={() => setExpandedRoutineId(isExpanded ? null : routine.id)}
                         >
                           <h4
-                            className={`text-xs font-semibold truncate ${
-                              routine.completed ? 'line-through text-[#70757A]' : 'text-[#E3E2E3]'
-                            }`}
+                            className={`text-xs font-semibold truncate ${routine.completed ? 'line-through text-[#70757A]' : 'text-[#E3E2E3]'
+                              }`}
                             title={routine.title}
                           >
                             {routine.title}
@@ -473,11 +464,10 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         {routine.streak !== undefined && (
                           <span
-                            className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded ${
-                              routine.completed
-                                ? 'bg-[#1E8E3E]/15 text-[#81C995]'
-                                : 'bg-[#28292A] text-[#FDD663]'
-                            }`}
+                            className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded ${routine.completed
+                              ? 'bg-[#1E8E3E]/15 text-[#81C995]'
+                              : 'bg-[#28292A] text-[#FDD663]'
+                              }`}
                           >
                             {routine.completed ? '✓ ' : ''}{routine.streak} ngày
                           </span>
@@ -533,9 +523,8 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                                   className="w-3.5 h-3.5 rounded bg-[#28292A] border-[#3A3B3D] text-[#E37400] focus:ring-0 accent-[#E37400] cursor-pointer shrink-0"
                                 />
                                 <span
-                                  className={`truncate ${
-                                    st.completed ? 'line-through text-[#70757A]' : 'text-[#D0D2D5]'
-                                  }`}
+                                  className={`truncate ${st.completed ? 'line-through text-[#70757A]' : 'text-[#D0D2D5]'
+                                    }`}
                                   title={st.title}
                                 >
                                   {st.title}
@@ -625,22 +614,20 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
             <button
               type="button"
               onClick={() => setFilterTab('all')}
-              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
-                filterTab === 'all'
-                  ? 'bg-[#28292A] text-[#FDD663]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
-              }`}
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${filterTab === 'all'
+                ? 'bg-[#28292A] text-[#FDD663]'
+                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+                }`}
             >
               Tất cả ({notesData.length})
             </button>
             <button
               type="button"
               onClick={() => setFilterTab('pinned')}
-              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
-                filterTab === 'pinned'
-                  ? 'bg-[#28292A] text-[#FDD663]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
-              }`}
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${filterTab === 'pinned'
+                ? 'bg-[#28292A] text-[#FDD663]'
+                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+                }`}
             >
               Đã ghim ({pinnedNotes.length})
             </button>
@@ -693,11 +680,10 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                           className="flex items-center gap-1.5 text-[11px] text-[#C3C6D1] cursor-pointer hover:text-white"
                         >
                           <span
-                            className={`w-3 h-3 rounded flex items-center justify-center text-[8px] ${
-                              item.completed
-                                ? 'bg-[#1E8E3E] text-white'
-                                : 'border border-[#70757A]'
-                            }`}
+                            className={`w-3 h-3 rounded flex items-center justify-center text-[8px] ${item.completed
+                              ? 'bg-[#1E8E3E] text-white'
+                              : 'border border-[#70757A]'
+                              }`}
                           >
                             {item.completed && '✓'}
                           </span>
