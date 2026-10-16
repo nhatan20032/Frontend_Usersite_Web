@@ -313,3 +313,12 @@ body[class*="theme-"] [class*="hover:bg-[#333538]"]:hover {
 }
 .toast-enter { animation: toastSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .toast-exit { animation: toastFadeDown 0.2s ease-in forwards; }
+
+/* Utility: Hide Scrollbar */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

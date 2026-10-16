@@ -52,7 +52,7 @@ export const SettingsModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 select-none animate-in fade-in duration-150">
-      <div className="bg-[#1F2021] border border-[#333538] max-w-2xl w-full rounded-2xl overflow-hidden relative shadow-2xl flex flex-col md:flex-row max-h-[85vh] text-[#E3E2E3]">
+      <div className="bg-[#1F2021] border border-[#333538] max-w-3xl lg:max-w-4xl w-full rounded-2xl overflow-hidden relative shadow-2xl flex flex-col md:flex-row h-[560px] md:h-[580px] max-h-[90vh] text-[#E3E2E3]">
         <button
           onClick={closeModal}
           className="absolute top-4 right-4 text-[#9AA0A6] hover:text-[#E3E2E3] p-1.5 rounded-full hover:bg-[#28292A] z-20 transition-colors cursor-pointer"
@@ -61,19 +61,19 @@ export const SettingsModal: React.FC = () => {
         </button>
 
         {/* Settings Left Tabs */}
-        <div className="w-full md:w-56 bg-[#18191B] border-r border-[#2A2B2D] p-4 space-y-2 flex-shrink-0">
-          <div className="flex items-center gap-2 pb-2.5 border-b border-[#2A2B2D]">
+        <div className="w-full md:w-56 bg-[#18191B] border-b md:border-b-0 md:border-r border-[#2A2B2D] p-3.5 sm:p-4 space-y-2 flex-shrink-0 md:h-full">
+          <div className="flex items-center gap-2 pb-2 md:pb-2.5 border-b border-[#2A2B2D]">
             <Settings className="w-4 h-4 text-[#8AB4F8]" />
             <h3 className="font-semibold text-sm text-[#E3E2E3]">{t('modals.settings.title')}</h3>
           </div>
 
-          <nav className="space-y-1 text-xs">
+          <nav className="flex flex-row md:flex-col gap-1 overflow-x-auto no-scrollbar text-xs">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
+              className={`w-auto md:w-full text-left px-3 py-2 md:p-2 rounded-lg flex items-center gap-2 border transition-colors cursor-pointer font-medium whitespace-nowrap shrink-0 md:shrink ${
                 activeTab === 'profile'
-                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123] border-transparent'
               }`}
             >
               <User className="w-4 h-4 shrink-0" />
@@ -82,10 +82,10 @@ export const SettingsModal: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('appearance')}
-              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
+              className={`w-auto md:w-full text-left px-3 py-2 md:p-2 rounded-lg flex items-center gap-2 border transition-colors cursor-pointer font-medium whitespace-nowrap shrink-0 md:shrink ${
                 activeTab === 'appearance'
-                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123] border-transparent'
               }`}
             >
               <Palette className="w-4 h-4 shrink-0" />
@@ -94,10 +94,10 @@ export const SettingsModal: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('language')}
-              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
+              className={`w-auto md:w-full text-left px-3 py-2 md:p-2 rounded-lg flex items-center gap-2 border transition-colors cursor-pointer font-medium whitespace-nowrap shrink-0 md:shrink ${
                 activeTab === 'language'
-                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123] border-transparent'
               }`}
             >
               <Globe className="w-4 h-4 shrink-0" />
@@ -106,10 +106,10 @@ export const SettingsModal: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('notifications')}
-              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
+              className={`w-auto md:w-full text-left px-3 py-2 md:p-2 rounded-lg flex items-center gap-2 border transition-colors cursor-pointer font-medium whitespace-nowrap shrink-0 md:shrink ${
                 activeTab === 'notifications'
-                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123] border-transparent'
               }`}
             >
               <Bell className="w-4 h-4 shrink-0" />
@@ -118,10 +118,10 @@ export const SettingsModal: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('devices')}
-              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
+              className={`w-auto md:w-full text-left px-3 py-2 md:p-2 rounded-lg flex items-center gap-2 border transition-colors cursor-pointer font-medium whitespace-nowrap shrink-0 md:shrink ${
                 activeTab === 'devices'
-                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123] border-transparent'
               }`}
             >
               <Smartphone className="w-4 h-4 shrink-0" />
@@ -130,10 +130,10 @@ export const SettingsModal: React.FC = () => {
 
             <button
               onClick={() => setActiveTab('billing')}
-              className={`w-full text-left p-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer font-medium ${
+              className={`w-auto md:w-full text-left px-3 py-2 md:p-2 rounded-lg flex items-center gap-2 border transition-colors cursor-pointer font-medium whitespace-nowrap shrink-0 md:shrink ${
                 activeTab === 'billing'
-                  ? 'bg-[#28292A] text-[#8AB4F8] border border-[#3A3B3D]'
-                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123]'
+                  ? 'bg-[#28292A] text-[#8AB4F8] border-[#3A3B3D]'
+                  : 'text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#202123] border-transparent'
               }`}
             >
               <CreditCard className="w-4 h-4 shrink-0" />
@@ -143,11 +143,11 @@ export const SettingsModal: React.FC = () => {
         </div>
 
         {/* Settings Right Content Viewport */}
-        <div className="flex-1 p-5 sm:p-6 overflow-y-auto bg-[#1F2021] text-[#E3E2E3] custom-scrollbar">
+        <div className="flex-1 min-h-0 md:h-full p-5 sm:p-6 overflow-y-auto bg-[#1F2021] text-[#E3E2E3] custom-scrollbar [scrollbar-gutter:stable]">
           {/* Tab 1: Profile */}
           {activeTab === 'profile' && (
             <div className="space-y-4 text-xs">
-              <div>
+              <div className="pr-10">
                 <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.profileTitle')}</h4>
                 <p className="text-xs text-[#9AA0A6]">{t('modals.settings.profileSubtitle')}</p>
               </div>
@@ -198,14 +198,14 @@ export const SettingsModal: React.FC = () => {
           {/* Tab 2: Appearance */}
           {activeTab === 'appearance' && (
             <div className="space-y-4">
-              <div>
+              <div className="pr-10">
                 <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.themeTitle')}</h4>
-                <p className="text-xs text-[#9AA0A6]">
+                <p className="text-xs text-[#9AA0A6] leading-relaxed">
                   {t('modals.settings.themeSubtitle')}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                 {themes.map((th) => {
                   const isCurrent = currentTheme === th.id;
                   const isVipTheme = th.id !== 'default' && th.id !== 'dark';
@@ -222,7 +222,7 @@ export const SettingsModal: React.FC = () => {
                         setTheme(th.id);
                         showToast(t('toasts.themeChangedTitle'), t('toasts.themeChangedDesc'), 'success');
                       }}
-                      className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 relative ${
+                      className={`p-3.5 rounded-xl border cursor-pointer transition-colors flex items-start gap-3 relative ${
                         isCurrent
                           ? 'border-[var(--google-blue)] bg-[var(--google-blue-primary)]/15 shadow-xs'
                           : isLocked
@@ -231,25 +231,27 @@ export const SettingsModal: React.FC = () => {
                       }`}
                     >
                       <div
-                        className={`w-9 h-9 rounded-lg bg-gradient-to-br ${th.previewClass} border shadow-xs flex items-center justify-center shrink-0 relative`}
+                        className={`w-10 h-10 rounded-lg bg-gradient-to-br ${th.previewClass} border shadow-xs flex items-center justify-center shrink-0 relative`}
                       >
                         {isCurrent && <Check className="w-4 h-4 text-[var(--google-blue)]" />}
                         {isLocked && !isCurrent && <Crown className="w-4 h-4 text-[#FDD663]" />}
                       </div>
-                      <div className="space-y-0.5 flex-1 min-w-0">
-                        <div className="font-semibold text-[#E3E2E3] flex items-center justify-between">
-                          <span className="truncate">{th.name}</span>
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1.5 min-w-0">
+                          <span className="font-semibold text-[#E3E2E3] truncate text-xs sm:text-[13px]" title={th.name}>
+                            {th.name}
+                          </span>
                           {isVipTheme && (
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 flex items-center gap-0.5 ${
                               isLocked
-                                ? 'bg-[#FDD663]/15 text-[#FDD663]'
-                                : 'bg-[#81C995]/15 text-[#81C995]'
+                                ? 'bg-[#FDD663]/15 text-[#FDD663] border border-[#FDD663]/30'
+                                : 'bg-[#81C995]/15 text-[#81C995] border border-[#81C995]/30'
                             }`}>
-                              {isLocked ? 'PRO' : '✓'}
+                              {isLocked ? 'PRO' : '✓ VIP'}
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] text-[#9AA0A6] leading-tight line-clamp-2">{th.desc}</p>
+                        <p className="text-[11px] text-[#9AA0A6] leading-relaxed line-clamp-2">{th.desc}</p>
                       </div>
                     </div>
                   );
@@ -260,34 +262,34 @@ export const SettingsModal: React.FC = () => {
 
           {/* Tab 3: Language & Region */}
           {activeTab === 'language' && (
-            <div className="space-y-4 text-xs">
-              <div>
+            <div className="space-y-5 text-xs">
+              <div className="pr-10 space-y-1">
                 <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.langTitle')}</h4>
-                <p className="text-xs text-[#9AA0A6]">{t('modals.settings.langSubtitle')}</p>
+                <p className="text-xs text-[#9AA0A6] leading-relaxed">{t('modals.settings.langSubtitle')}</p>
               </div>
 
-              <div className="space-y-2">
-                <label className="font-medium text-[#9AA0A6]">{t('modals.settings.selectLang')}</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-3">
+                <label className="font-medium text-[#9AA0A6] block">{t('modals.settings.selectLang')}</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div
                     onClick={() => {
                       setLanguage('vi');
                       showToast('Ngôn ngữ', 'Giao diện đã chuyển sang Tiếng Việt.', 'success');
                     }}
-                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-colors flex items-center justify-between ${
                       language === 'vi'
-                        ? 'border-[#8AB4F8] bg-[#1A73E8]/10 shadow-xs'
+                        ? 'border-[var(--google-blue)] bg-[var(--google-blue-primary)]/15 shadow-xs'
                         : 'bg-[#18191B] border-[#2A2B2D] hover:border-[#3A3B3D]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🇻🇳</span>
-                      <div>
+                    <div className="flex items-center gap-3.5">
+                      <span className="text-2xl select-none">🇻🇳</span>
+                      <div className="space-y-0.5">
                         <div className="font-semibold text-sm text-[#E3E2E3]">Tiếng Việt</div>
                         <div className="text-[11px] text-[#9AA0A6]">Mặc định (Vietnamese)</div>
                       </div>
                     </div>
-                    {language === 'vi' && <Check className="w-5 h-5 text-[#8AB4F8]" />}
+                    {language === 'vi' && <Check className="w-5 h-5 text-[var(--google-blue)] shrink-0" />}
                   </div>
 
                   <div
@@ -295,27 +297,27 @@ export const SettingsModal: React.FC = () => {
                       setLanguage('en');
                       showToast('Language', 'Interface language changed to English.', 'success');
                     }}
-                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-colors flex items-center justify-between ${
                       language === 'en'
-                        ? 'border-[#8AB4F8] bg-[#1A73E8]/10 shadow-xs'
+                        ? 'border-[var(--google-blue)] bg-[var(--google-blue-primary)]/15 shadow-xs'
                         : 'bg-[#18191B] border-[#2A2B2D] hover:border-[#3A3B3D]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🇬🇧</span>
-                      <div>
+                    <div className="flex items-center gap-3.5">
+                      <span className="text-2xl select-none">🇬🇧</span>
+                      <div className="space-y-0.5">
                         <div className="font-semibold text-sm text-[#E3E2E3]">English</div>
                         <div className="text-[11px] text-[#9AA0A6]">International English</div>
                       </div>
                     </div>
-                    {language === 'en' && <Check className="w-5 h-5 text-[#8AB4F8]" />}
+                    {language === 'en' && <Check className="w-5 h-5 text-[var(--google-blue)] shrink-0" />}
                   </div>
                 </div>
               </div>
 
               {/* Typography Spec Info */}
-              <div className="bg-[#18191B] p-3.5 rounded-xl space-y-2 border border-[#2A2B2D]">
-                <div className="flex items-center gap-2 font-medium text-[#8AB4F8]">
+              <div className="bg-[#18191B] p-4 rounded-xl space-y-2.5 border border-[#2A2B2D]">
+                <div className="flex items-center gap-2 font-medium text-[var(--google-blue)]">
                   <Type className="w-4 h-4" />
                   <span>{t('modals.settings.fontSyncTitle')}</span>
                 </div>
@@ -323,9 +325,9 @@ export const SettingsModal: React.FC = () => {
                   {t('modals.settings.fontSyncDesc')}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1 font-mono text-[10px]">
-                  <span className="px-2 py-0.5 rounded bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Geist Sans</span>
-                  <span className="px-2 py-0.5 rounded bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Plus Jakarta Sans</span>
-                  <span className="px-2 py-0.5 rounded bg-[#28292A] text-[#E3E2E3] border border-[#333538]">JetBrains Mono</span>
+                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Geist Sans</span>
+                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Plus Jakarta Sans</span>
+                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">JetBrains Mono</span>
                 </div>
               </div>
             </div>
@@ -334,7 +336,7 @@ export const SettingsModal: React.FC = () => {
           {/* Tab 4: Notifications */}
           {activeTab === 'notifications' && (
             <div className="space-y-4 text-xs">
-              <div>
+              <div className="pr-10">
                 <h4 className="text-base font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Kênh thông báo & Nhắc nhở' : 'Notification Channels & Alerts'}</h4>
                 <p className="text-xs text-[#9AA0A6]">{language === 'vi' ? 'Quản lý cách nhận thông báo sự kiện và công việc' : 'Manage how you receive alerts'}</p>
               </div>
@@ -370,7 +372,7 @@ export const SettingsModal: React.FC = () => {
           {/* Tab 5: Devices */}
           {activeTab === 'devices' && (
             <div className="space-y-4 text-xs">
-              <div>
+              <div className="pr-10">
                 <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.devicesTitle')}</h4>
                 <p className="text-xs text-[#9AA0A6]">{t('modals.settings.devicesSubtitle')}</p>
               </div>
@@ -406,7 +408,7 @@ export const SettingsModal: React.FC = () => {
           {/* Tab 6: Billing */}
           {activeTab === 'billing' && (
             <div className="space-y-4 text-xs">
-              <div>
+              <div className="pr-10">
                 <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.billingTitle')}</h4>
                 <p className="text-xs text-[#9AA0A6]">{t('modals.settings.billingSubtitle')}</p>
               </div>
