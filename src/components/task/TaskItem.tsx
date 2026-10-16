@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import type { TaskItem as TaskItemType } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { SubtaskList } from './SubtaskList';
-import { Clock, Bell, Trash2, Plus } from 'lucide-react';
+import { Clock, Bell, Trash2, Plus, Pencil } from 'lucide-react';
 
 interface TaskItemProps {
   task: TaskItemType;
   onToggleTask: (id: number) => void;
   onToggleSubtask: (taskId: number, subtaskId: number) => void;
   onDeleteTask: (id: number) => void;
+  onEditTask?: (id: number) => void;
   onAddSubtask?: (taskId: number, title: string) => void;
   onDeleteSubtask?: (taskId: number, subtaskId: number) => void;
 }
@@ -18,6 +19,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
   onToggleTask,
   onToggleSubtask,
   onDeleteTask,
+  onEditTask,
   onAddSubtask,
   onDeleteSubtask,
 }) => {
@@ -30,7 +32,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
   const progressPercent = subtaskCount > 0 ? Math.round((subtaskDone / subtaskCount) * 100) : 0;
 
   return (
-    <div className="bg-[#1F2021] hover:bg-[#232426] border border-[#2A2B2D] hover:border-[#333538] p-3 rounded-lg space-y-2 transition-colors">
+    <div className="bg-[#1F2021] hover:bg-[#232426] border border-[#2A2B2D] hover:border-[#333538] p-3 rounded-lg space-y-2 transition-colors group relative">
       <div className="flex items-start gap-2.5">
         {/* Round Task Checkbox */}
         <input
@@ -50,16 +52,38 @@ export const TaskItem: React.FC<TaskItemProps> = ({
             >
               {task.title}
             </h4>
-            {task.priority === 'high' && (
-              <span className="text-[9px] bg-[#D93025] text-white font-bold px-1.5 py-0.5 rounded shadow-xs shrink-0">
-                {language === 'vi' ? 'GẤP' : 'URGENT'}
-              </span>
-            )}
-            {task.priority === 'medium' && (
-              <span className="text-[9px] bg-[#E37400] text-white font-semibold px-1.5 py-0.5 rounded shadow-xs shrink-0">
-                {language === 'vi' ? 'TB' : 'MED'}
-              </span>
-            )}
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {task.priority === 'high' && (
+                <span className="text-[9px] bg-[#D93025] text-white font-bold px-1.5 py-0.5 rounded shadow-xs">
+                  {language === 'vi' ? 'GẤP' : 'URGENT'}
+                </span>
+              )}
+              {task.priority === 'medium' && (
+                <span className="text-[9px] bg-[#E37400] text-white font-semibold px-1.5 py-0.5 rounded shadow-xs">
+                  {language === 'vi' ? 'TB' : 'MED'}
+                </span>
+              )}
+
+              <div className="hidden group-hover:flex items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => onEditTask?.(task.id)}
+                  className="text-[#70757A] hover:text-[#8AB4F8] p-1 rounded-full hover:bg-[#28292A] cursor-pointer transition-colors"
+                  title={t('common.edit') || 'Chỉnh sửa'}
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDeleteTask(task.id)}
+                  className="text-[#70757A] hover:text-[#F28B82] p-1 rounded-full hover:bg-[#28292A] cursor-pointer transition-colors"
+                  title={t('common.delete') || 'Xóa'}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="text-[10px] text-[#F28B82] font-medium flex items-center gap-1 font-mono flex-shrink-0">
@@ -157,14 +181,6 @@ export const TaskItem: React.FC<TaskItemProps> = ({
             <span>{task.reminders || 'Push App'}</span>
           </div>
         </div>
-
-        <button
-          onClick={() => onDeleteTask(task.id)}
-          className="text-[#70757A] hover:text-[#F28B82] p-1 rounded-full hover:bg-[#28292A] cursor-pointer transition-colors"
-          title={t('common.delete')}
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
       </div>
     </div>
   );

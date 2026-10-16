@@ -73,6 +73,7 @@ interface AppContextType {
   // Keep Notes
   notesData: KeepNote[];
   addNote: (note: Omit<KeepNote, 'id' | 'updatedAt'>) => void;
+  updateNote: (id: string, updated: Partial<Omit<KeepNote, 'id'>>) => void;
   toggleNotePin: (id: string) => void;
   deleteNote: (id: string) => void;
   toggleNoteChecklistItem: (noteId: string, itemId: string) => void;
@@ -413,6 +414,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const deleteNote = (id: string) => {
     setNotesData((prev) => prev.filter((n) => n.id !== id));
     showToast('Đã xóa', 'Ghi chú đã được xóa', 'info');
+  };
+
+  const updateNote = (id: string, updated: Partial<Omit<KeepNote, 'id'>>) => {
+    setNotesData((prev) =>
+      prev.map((n) =>
+        n.id === id
+          ? {
+              ...n,
+              ...updated,
+              updatedAt: 'Vừa xong',
+            }
+          : n
+      )
+    );
+    showToast('Đã cập nhật', 'Ghi chú đã được lưu thay đổi', 'success');
   };
 
   const toggleNoteChecklistItem = (noteId: string, itemId: string) => {
@@ -951,6 +967,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         openRightSidebarTab,
         notesData,
         addNote,
+        updateNote,
         toggleNotePin,
         deleteNote,
         toggleNoteChecklistItem,

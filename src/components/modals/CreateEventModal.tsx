@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { Priority } from '../../types';
@@ -11,6 +11,7 @@ import {
   Palette,
   Bell,
   Check,
+  ChevronDown,
   Calendar as CalendarIcon,
   CheckCircle2,
   CalendarPlus,
@@ -41,6 +42,163 @@ const colorPalette = [
   { id: 'yellow', color: '#F6BF26', name: 'Banana' },
   { id: 'purple', color: '#B39DDB', name: 'Amethyst' },
 ];
+
+const dueTimeOptions = [
+  { value: '09:00 AM', label: '09:00 AM' },
+  { value: '12:00 PM', label: '12:00 PM' },
+  { value: '15:00 PM', label: '15:00 PM' },
+  { value: '17:00 PM', label: '17:00 PM' },
+  { value: '18:00 PM', label: '18:00 PM' },
+  { value: '20:00 PM', label: '20:00 PM' },
+  { value: '23:59 PM', label: '23:59 PM' },
+];
+
+const timeOptions = [
+  { value: '08:00 AM', label: '08:00 AM' },
+  { value: '09:00 AM', label: '09:00 AM' },
+  { value: '10:00 AM', label: '10:00 AM' },
+  { value: '11:00 AM', label: '11:00 AM' },
+  { value: '12:00 PM', label: '12:00 PM' },
+  { value: '01:00 PM', label: '01:00 PM' },
+  { value: '02:00 PM', label: '02:00 PM' },
+  { value: '03:00 PM', label: '03:00 PM' },
+  { value: '04:00 PM', label: '04:00 PM' },
+  { value: '05:00 PM', label: '05:00 PM' },
+  { value: '06:00 PM', label: '06:00 PM' },
+];
+
+interface CustomSelectOption<T = string> {
+  value: T;
+  label: string;
+  icon?: React.ReactNode;
+  colorDot?: string;
+}
+
+interface CustomDropdownProps<T = string> {
+  value: T;
+  options: CustomSelectOption<T>[];
+  onChange: (value: T) => void;
+  className?: string;
+  buttonClassName?: string;
+  menuClassName?: string;
+  prefixIcon?: React.ReactNode;
+  isMono?: boolean;
+  align?: 'left' | 'right';
+  openDirection?: 'auto' | 'down' | 'up';
+}
+
+function CustomDropdown<T extends string | number>({
+  value,
+  options,
+  onChange,
+  className = '',
+  buttonClassName = '',
+  menuClassName = '',
+  prefixIcon,
+  isMono = false,
+  align = 'left',
+  openDirection = 'auto',
+}: CustomDropdownProps<T>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const handleToggle = () => {
+    if (!isOpen && buttonRef.current) {
+      if (openDirection === 'up') {
+        setDropUp(true);
+      } else if (openDirection === 'down') {
+        setDropUp(false);
+      } else {
+        const rect = buttonRef.current.getBoundingClientRect();
+        const container = dropdownRef.current?.closest('.overflow-y-auto');
+        const containerBottom = container ? container.getBoundingClientRect().bottom : window.innerHeight;
+        const spaceBelow = containerBottom - rect.bottom;
+        setDropUp(spaceBelow < 180);
+      }
+    }
+    setIsOpen(!isOpen);
+  };
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div className={`relative inline-block ${className}`} ref={dropdownRef}>
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={handleToggle}
+        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] text-xs hover:bg-[#28292A] hover:border-[#4B4D50] focus:outline-none focus:border-[#8AB4F8] transition-colors cursor-pointer select-none ${
+          isOpen ? 'bg-[#28292A] border-[#8AB4F8]' : ''
+        } ${isMono ? 'font-mono' : ''} ${buttonClassName}`}
+      >
+        {prefixIcon && <span className="shrink-0">{prefixIcon}</span>}
+        {selectedOption?.colorDot && (
+          <span
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{ backgroundColor: selectedOption.colorDot }}
+          />
+        )}
+        <span className="truncate">{selectedOption?.label ?? value}</span>
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-[#9AA0A6] shrink-0 transition-transform duration-200 ${
+            isOpen ? 'rotate-180 text-[#8AB4F8]' : ''
+          }`}
+        />
+      </button>
+
+      {isOpen && (
+        <div
+          className={`absolute ${dropUp ? 'bottom-full mb-1.5 origin-bottom-left' : 'top-full mt-1.5 origin-top-left'} ${
+            align === 'right' ? 'right-0' : 'left-0'
+          } min-w-full w-max max-h-56 overflow-y-auto custom-scrollbar bg-[#242527] border border-[#333538] rounded-xl shadow-2xl shadow-black/80 p-1 z-50 space-y-0.5 animate-in fade-in zoom-in-95 duration-150 ${menuClassName}`}
+        >
+          {options.map((opt) => {
+            const isSelected = opt.value === value;
+            return (
+              <button
+                key={String(opt.value)}
+                type="button"
+                onClick={() => {
+                  onChange(opt.value);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 rounded-lg cursor-pointer select-none ${
+                  isSelected
+                    ? 'bg-[#1A73E8] text-white font-medium'
+                    : 'text-[#E3E2E3] hover:bg-[#3C4043]'
+                }`}
+              >
+                {opt.icon && <span className="shrink-0">{opt.icon}</span>}
+                {opt.colorDot && (
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/20"
+                    style={{ backgroundColor: opt.colorDot }}
+                  />
+                )}
+                <span className="truncate flex-1">{opt.label}</span>
+                {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-white ml-2" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export const CreateEventModal: React.FC = () => {
   const {
@@ -422,54 +580,30 @@ export const CreateEventModal: React.FC = () => {
                     {activeTab === 'task' ? (
                       <div className="flex items-center gap-2">
                         <span className="text-[#9AA0A6]">{language === 'vi' ? 'Hạn chót:' : 'Due:'}</span>
-                        <select
+                        <CustomDropdown
                           value={dueTime}
-                          onChange={(e) => setDueTime(e.target.value)}
-                          className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer font-mono"
-                        >
-                          <option value="09:00 AM">09:00 AM</option>
-                          <option value="12:00 PM">12:00 PM</option>
-                          <option value="15:00 PM">15:00 PM</option>
-                          <option value="17:00 PM">17:00 PM</option>
-                          <option value="18:00 PM">18:00 PM</option>
-                          <option value="20:00 PM">20:00 PM</option>
-                          <option value="23:59 PM">23:59 PM</option>
-                        </select>
+                          onChange={setDueTime}
+                          options={dueTimeOptions}
+                          isMono
+                          buttonClassName="py-1.5 px-2.5 font-mono"
+                        />
                       </div>
                     ) : (
                       <>
                         <span className="text-[#9AA0A6]">•</span>
-                        <select
+                        <CustomDropdown
                           value={startTime}
-                          onChange={(e) => setStartTime(e.target.value)}
-                          className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
-                        >
-                          <option value="08:00 AM">08:00 AM</option>
-                          <option value="09:00 AM">09:00 AM</option>
-                          <option value="10:00 AM">10:00 AM</option>
-                          <option value="11:00 AM">11:00 AM</option>
-                          <option value="01:00 PM">01:00 PM</option>
-                          <option value="02:00 PM">02:00 PM</option>
-                          <option value="03:00 PM">03:00 PM</option>
-                          <option value="04:00 PM">04:00 PM</option>
-                          <option value="05:00 PM">05:00 PM</option>
-                        </select>
+                          onChange={setStartTime}
+                          options={timeOptions}
+                          buttonClassName="py-1.5 px-2.5"
+                        />
                         <span className="text-[#9AA0A6]">–</span>
-                        <select
+                        <CustomDropdown
                           value={endTime}
-                          onChange={(e) => setEndTime(e.target.value)}
-                          className="px-2.5 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
-                        >
-                          <option value="09:00 AM">09:00 AM</option>
-                          <option value="10:00 AM">10:00 AM</option>
-                          <option value="11:00 AM">11:00 AM</option>
-                          <option value="12:00 PM">12:00 PM</option>
-                          <option value="02:00 PM">02:00 PM</option>
-                          <option value="03:00 PM">03:00 PM</option>
-                          <option value="04:00 PM">04:00 PM</option>
-                          <option value="05:00 PM">05:00 PM</option>
-                          <option value="06:00 PM">06:00 PM</option>
-                        </select>
+                          onChange={setEndTime}
+                          options={timeOptions}
+                          buttonClassName="py-1.5 px-2.5"
+                        />
                       </>
                     )}
                   </div>
@@ -478,24 +612,17 @@ export const CreateEventModal: React.FC = () => {
                     <div className="flex items-center gap-3 text-[11px] text-[#9AA0A6]">
                       <span>GMT+7 Giờ Đông Dương</span>
                       <span>•</span>
-                      <select
+                      <CustomDropdown
                         value={frequency}
-                        onChange={(e) => setFrequency(e.target.value)}
-                        className="bg-transparent border-0 text-[#8AB4F8] hover:underline focus:outline-none cursor-pointer p-0"
-                      >
-                        <option value="none" className="bg-[#242628] text-[#E3E2E3]">
-                          {language === 'vi' ? 'Không lặp lại' : 'Does not repeat'}
-                        </option>
-                        <option value="daily" className="bg-[#242628] text-[#E3E2E3]">
-                          {language === 'vi' ? 'Hàng ngày' : 'Daily'}
-                        </option>
-                        <option value="weekly" className="bg-[#242628] text-[#E3E2E3]">
-                          {language === 'vi' ? 'Hàng tuần' : 'Weekly'}
-                        </option>
-                        <option value="monthly" className="bg-[#242628] text-[#E3E2E3]">
-                          {language === 'vi' ? 'Hàng tháng' : 'Monthly'}
-                        </option>
-                      </select>
+                        onChange={setFrequency}
+                        options={[
+                          { value: 'none', label: language === 'vi' ? 'Không lặp lại' : 'Does not repeat' },
+                          { value: 'daily', label: language === 'vi' ? 'Hàng ngày' : 'Daily' },
+                          { value: 'weekly', label: language === 'vi' ? 'Hàng tuần' : 'Weekly' },
+                          { value: 'monthly', label: language === 'vi' ? 'Hàng tháng' : 'Monthly' },
+                        ]}
+                        buttonClassName="bg-transparent border-transparent hover:border-[#333538] text-[#8AB4F8] hover:text-[#A8C7FA] py-0.5 px-1.5"
+                      />
                     </div>
                   )}
                 </div>
@@ -680,25 +807,27 @@ export const CreateEventModal: React.FC = () => {
                     {/* Category Selector */}
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Danh mục / Tag:' : 'Category:'}</span>
-                      <select
+                      <CustomDropdown
                         value={selectedCategory}
-                        onChange={(e) => {
-                          const catId = e.target.value;
+                        onChange={(catId) => {
                           setSelectedCategory(catId);
                           const cat = categories.find((c) => c.id === catId);
                           if (cat) setSelectedColor(cat.color);
                         }}
-                        className="px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] text-xs focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
-                      >
-                        {categories.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.id === 'routine' ? (language === 'vi' ? 'Thói quen hằng ngày' : 'Daily Routine')
-                              : c.id === 'event' ? (language === 'vi' ? 'Sự kiện & Hội thảo' : 'Events')
-                              : c.id === 'task' ? (language === 'vi' ? 'Nhiệm vụ & Deadline' : 'Tasks')
-                              : c.name}
-                          </option>
-                        ))}
-                      </select>
+                        options={categories.map((c) => ({
+                          value: c.id,
+                          label:
+                            c.id === 'routine'
+                              ? (language === 'vi' ? 'Thói quen hằng ngày' : 'Daily Routine')
+                              : c.id === 'event'
+                              ? (language === 'vi' ? 'Sự kiện & Hội thảo' : 'Events')
+                              : c.id === 'task'
+                              ? (language === 'vi' ? 'Nhiệm vụ & Deadline' : 'Tasks')
+                              : c.name,
+                          colorDot: c.color,
+                        }))}
+                        buttonClassName="px-2.5 py-1 text-xs"
+                      />
                     </div>
 
                     {/* Color Swatches & Native Color Picker */}
@@ -737,39 +866,41 @@ export const CreateEventModal: React.FC = () => {
 
                   {/* Priority & Status (nếu có) & Reminder Badges */}
                   <div className="flex items-center gap-2 text-[11px]">
-                    <select
+                    <CustomDropdown
                       value={priority}
-                      onChange={(e) => setPriority(e.target.value as Priority)}
-                      className="px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#9AA0A6] focus:outline-none cursor-pointer"
-                    >
-                      <option value="high">{language === 'vi' ? 'Ưu tiên cao' : 'High'}</option>
-                      <option value="medium">{language === 'vi' ? 'Ưu tiên TB' : 'Medium'}</option>
-                      <option value="low">{language === 'vi' ? 'Ưu tiên thấp' : 'Low'}</option>
-                    </select>
+                      onChange={(val) => setPriority(val as Priority)}
+                      options={[
+                        { value: 'high', label: language === 'vi' ? 'Ưu tiên cao' : 'High' },
+                        { value: 'medium', label: language === 'vi' ? 'Ưu tiên TB' : 'Medium' },
+                        { value: 'low', label: language === 'vi' ? 'Ưu tiên thấp' : 'Low' },
+                      ]}
+                      buttonClassName="px-2 py-1 text-[11px] text-[#9AA0A6] hover:text-[#E3E2E3]"
+                    />
 
                     {activeTab === 'event' && (
-                      <select
+                      <CustomDropdown
                         value={status}
-                        onChange={(e) => setStatus(e.target.value as 'busy' | 'free')}
-                        className="px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#9AA0A6] focus:outline-none cursor-pointer"
-                      >
-                        <option value="busy">{language === 'vi' ? 'Bận' : 'Busy'}</option>
-                        <option value="free">{language === 'vi' ? 'Rảnh' : 'Free'}</option>
-                      </select>
+                        onChange={(val) => setStatus(val as 'busy' | 'free')}
+                        options={[
+                          { value: 'busy', label: language === 'vi' ? 'Bận' : 'Busy' },
+                          { value: 'free', label: language === 'vi' ? 'Rảnh' : 'Free' },
+                        ]}
+                        buttonClassName="px-2 py-1 text-[11px] text-[#9AA0A6] hover:text-[#E3E2E3]"
+                      />
                     )}
 
-                    <div className="flex items-center gap-1 px-2 py-1 rounded bg-[#1E1F20] border border-[#333538] text-[#9AA0A6]">
-                      <Bell className="w-3 h-3 text-[#8AB4F8]" />
-                      <select
-                        value={reminder}
-                        onChange={(e) => setReminder(e.target.value)}
-                        className="bg-transparent border-0 text-[#9AA0A6] focus:outline-none cursor-pointer p-0"
-                      >
-                        <option value="15m" className="bg-[#242628]">{language === 'vi' ? '15 phút trước' : '15 min before'}</option>
-                        <option value="30m" className="bg-[#242628]">{language === 'vi' ? '30 phút trước' : '30 min before'}</option>
-                        <option value="60m" className="bg-[#242628]">{language === 'vi' ? '1 giờ trước' : '1 hour before'}</option>
-                      </select>
-                    </div>
+                    <CustomDropdown
+                      value={reminder}
+                      onChange={setReminder}
+                      options={[
+                        { value: '15m', label: language === 'vi' ? '15 phút trước' : '15 min before' },
+                        { value: '30m', label: language === 'vi' ? '30 phút trước' : '30 min before' },
+                        { value: '60m', label: language === 'vi' ? '1 giờ trước' : '1 hour before' },
+                        { value: '1d', label: language === 'vi' ? '1 ngày trước' : '1 day before' },
+                      ]}
+                      prefixIcon={<Bell className="w-3 h-3 text-[#8AB4F8]" />}
+                      buttonClassName="px-2 py-1 text-[11px] text-[#9AA0A6] hover:text-[#E3E2E3]"
+                    />
                   </div>
                 </div>
               </div>

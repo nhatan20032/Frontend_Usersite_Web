@@ -6,6 +6,7 @@ import {
   X,
   Pin,
   Trash2,
+  Pencil,
   Flame,
   Check,
   Clock,
@@ -29,8 +30,11 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
     addSubroutine,
     toggleSubroutine,
     deleteSubroutine,
+    updateEvent,
+    deleteEvent,
     notesData,
     addNote,
+    updateNote,
     toggleNotePin,
     deleteNote,
     toggleNoteChecklistItem,
@@ -44,6 +48,18 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
   const [quickContent, setQuickContent] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<'amber' | 'blue' | 'green' | 'purple'>('amber');
   const [filterTab, setFilterTab] = useState<'all' | 'pinned' | 'notes'>('all');
+
+  // State for Editing Note
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editNoteTitle, setEditNoteTitle] = useState<string>('');
+  const [editNoteContent, setEditNoteContent] = useState<string>('');
+  const [editNoteColor, setEditNoteColor] = useState<'amber' | 'blue' | 'green' | 'purple'>('amber');
+
+  // State for Editing Routine
+  const [editingRoutineId, setEditingRoutineId] = useState<number | null>(null);
+  const [editRoutineTitle, setEditRoutineTitle] = useState<string>('');
+  const [editRoutineTime, setEditRoutineTime] = useState<string>('07:00 AM');
+  const [editRoutineFreq, setEditRoutineFreq] = useState<string>('Hàng ngày');
 
   // Quick Routine Creation State
   const [routineTitle, setRoutineTitle] = useState<string>('');
@@ -93,6 +109,48 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
     setQuickTitle('');
     setQuickContent('');
     setIsComposerExpanded(false);
+  };
+
+  const handleStartEditNote = (note: any) => {
+    setEditingNoteId(note.id);
+    setEditNoteTitle(note.title || '');
+    setEditNoteContent(note.content || '');
+    setEditNoteColor(note.color || 'blue');
+  };
+
+  const handleSaveEditNote = (id: string) => {
+    if (!editNoteTitle.trim() && !editNoteContent.trim()) return;
+    updateNote(id, {
+      title: editNoteTitle.trim() || 'Ghi chú',
+      content: editNoteContent.trim(),
+      color: editNoteColor,
+    });
+    setEditingNoteId(null);
+  };
+
+  const handleCancelEditNote = () => {
+    setEditingNoteId(null);
+  };
+
+  const handleStartEditRoutine = (routine: any) => {
+    setEditingRoutineId(routine.id);
+    setEditRoutineTitle(routine.title || '');
+    setEditRoutineTime(routine.time || '07:00 AM');
+    setEditRoutineFreq(routine.frequency || 'Hàng ngày');
+  };
+
+  const handleSaveEditRoutine = (id: number) => {
+    if (!editRoutineTitle.trim()) return;
+    updateEvent(id, {
+      title: editRoutineTitle.trim(),
+      time: editRoutineTime,
+      frequency: editRoutineFreq,
+    });
+    setEditingRoutineId(null);
+  };
+
+  const handleCancelEditRoutine = () => {
+    setEditingRoutineId(null);
   };
 
   const handleSaveQuickRoutine = (e: React.FormEvent) => {
@@ -155,17 +213,6 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
             <h3 className="font-semibold text-sm text-[#E3E2E3] tracking-tight">Ghi chú & Routine</h3>
             <p className="text-[11px] text-[#70757A]">Kỷ luật & Ghi chép nhanh</p>
           </div>
-        </div>
-        <div className="flex items-center gap-1">
-          {onOpenCreateModal && (
-            <button
-              onClick={onOpenCreateModal}
-              className="p-1.5 hover:bg-[#28292A] rounded-full text-[#9AA0A6] hover:text-[#FDD663] transition-colors cursor-pointer"
-              title="Tạo routine hoặc sự kiện mới"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </div>
 
@@ -411,7 +458,7 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                 return (
                   <div
                     key={routine.id}
-                    className={`rounded-lg border transition-all duration-150 p-2.5 space-y-2 ${routine.completed
+                    className={`rounded-lg border transition-all duration-150 p-2.5 space-y-2 group relative ${routine.completed
                       ? 'bg-[#1F2021]/60 border-[#2A2B2D] opacity-90'
                       : isExpanded
                         ? 'bg-[#1F2021] border-[#E37400]/40 shadow-xs'
@@ -460,8 +507,32 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                         </div>
                       </div>
 
-                      {/* Streak badge & Accordion toggle */}
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {/* Streak badge, Edit, Delete & Accordion toggle */}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStartEditRoutine(routine);
+                            }}
+                            className="p-1 text-[#9AA0A6] hover:text-[#8AB4F8] hover:bg-[#28292A] rounded transition cursor-pointer"
+                            title="Chỉnh sửa thói quen"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteEvent(routine.id);
+                            }}
+                            className="p-1 text-[#70757A] hover:text-[#EA4335] hover:bg-[#28292A] rounded transition cursor-pointer"
+                            title="Xóa thói quen"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                         {routine.streak !== undefined && (
                           <span
                             className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded ${routine.completed
@@ -486,6 +557,70 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                         </button>
                       </div>
                     </div>
+
+                    {/* Inline Edit Form for Routine */}
+                    {editingRoutineId === routine.id && (
+                      <div className="pt-2 border-t border-[#2A2B2D] space-y-2 text-xs">
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-[#9AA0A6]">Tên thói quen</label>
+                          <input
+                            type="text"
+                            value={editRoutineTitle}
+                            onChange={(e) => setEditRoutineTitle(e.target.value)}
+                            placeholder="Tên thói quen kỷ luật..."
+                            className="w-full bg-[#161718] border border-[#3C4043] focus:border-[#E37400] rounded px-2.5 py-1 text-xs font-medium text-[#E3E2E3] placeholder-[#70757A] focus:outline-none"
+                            autoFocus
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-[#9AA0A6]">Thời gian</label>
+                            <div className="flex items-center gap-1 bg-[#161718] border border-[#3C4043] rounded px-2 py-1">
+                              <Clock className="w-3 h-3 text-[#70757A]" />
+                              <input
+                                type="text"
+                                value={editRoutineTime}
+                                onChange={(e) => setEditRoutineTime(e.target.value)}
+                                placeholder="07:00 AM"
+                                className="w-full bg-transparent text-xs text-[#E3E2E3] font-mono focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-[#9AA0A6]">Tần suất</label>
+                            <select
+                              value={editRoutineFreq}
+                              onChange={(e) => setEditRoutineFreq(e.target.value)}
+                              className="w-full bg-[#161718] border border-[#3C4043] rounded px-2 py-1 text-xs text-[#E3E2E3] focus:outline-none focus:border-[#E37400]"
+                            >
+                              <option value="Hàng ngày">Hàng ngày</option>
+                              <option value="Cứ 3 ngày 1 lần">Cứ 3 ngày 1 lần</option>
+                              <option value="Thứ 2, 4, 6">Thứ 2, 4, 6</option>
+                              <option value="Thứ 3, 5, 7">Thứ 3, 5, 7</option>
+                              <option value="Cuối tuần">Cuối tuần</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-1.5 pt-1">
+                          <button
+                            type="button"
+                            onClick={handleCancelEditRoutine}
+                            className="px-2.5 py-1 rounded hover:bg-[#28292A] text-[#9AA0A6] hover:text-[#E3E2E3] text-[11px] transition cursor-pointer"
+                          >
+                            Hủy
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveEditRoutine(routine.id)}
+                            className="px-3 py-1 rounded bg-[#E37400] hover:bg-[#C26200] text-white font-medium text-[11px] transition shadow-xs cursor-pointer"
+                          >
+                            Lưu thay đổi
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     {/* EXPANDED CONTENT: Progress bar & Sub-routines Checklist */}
                     {isExpanded && (
@@ -646,7 +781,7 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                 <div
                   key={note.id}
                   className={`p-3 rounded-lg border transition-all duration-150 relative group ${getColorClasses(
-                    note.color,
+                    editingNoteId === note.id ? editNoteColor : note.color,
                     true
                   )}`}
                 >
@@ -654,68 +789,142 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                     <h4 className="text-xs font-semibold text-[#E3E2E3] flex-1 leading-snug">
                       {note.title}
                     </h4>
-                    <button
-                      type="button"
-                      onClick={() => toggleNotePin(note.id)}
-                      className="text-[#FDD663] hover:text-white p-0.5 rounded cursor-pointer transition-colors"
-                      title="Bỏ ghim"
-                    >
-                      <Pin className="w-3.5 h-3.5 fill-[#FDD663]" />
-                    </button>
-                  </div>
-
-                  {note.content && (
-                    <p className="text-[11px] text-[#C3C6D1] mt-1.5 whitespace-pre-line leading-relaxed">
-                      {note.content}
-                    </p>
-                  )}
-
-                  {/* Checklist if present */}
-                  {note.checklist && note.checklist.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {note.checklist.map((item) => (
-                        <div
-                          key={item.id}
-                          onClick={() => toggleNoteChecklistItem(note.id, item.id)}
-                          className="flex items-center gap-1.5 text-[11px] text-[#C3C6D1] cursor-pointer hover:text-white"
-                        >
-                          <span
-                            className={`w-3 h-3 rounded flex items-center justify-center text-[8px] ${item.completed
-                              ? 'bg-[#1E8E3E] text-white'
-                              : 'border border-[#70757A]'
-                              }`}
-                          >
-                            {item.completed && '✓'}
-                          </span>
-                          <span className={item.completed ? 'line-through text-[#70757A]' : ''}>
-                            {item.text}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Tags and timestamp */}
-                  <div className="flex items-center justify-between mt-2.5 pt-1.5 border-t border-[#2A2B2D]/60 text-[10px] text-[#70757A]">
-                    <div className="flex items-center gap-1">
-                      {note.tags?.map((tag) => (
-                        <span key={tag} className="text-[#8AB4F8] hover:underline cursor-pointer">
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span>{note.updatedAt}</span>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() => handleStartEditNote(note)}
+                        className="text-[#9AA0A6] hover:text-[#8AB4F8] p-0.5 rounded cursor-pointer transition-colors"
+                        title="Chỉnh sửa ghi chú"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => toggleNotePin(note.id)}
+                        className="text-[#FDD663] hover:text-white p-0.5 rounded cursor-pointer transition-colors"
+                        title="Bỏ ghim"
+                      >
+                        <Pin className="w-3.5 h-3.5 fill-[#FDD663]" />
+                      </button>
                       <button
                         type="button"
                         onClick={() => deleteNote(note.id)}
-                        className="opacity-0 group-hover:opacity-100 text-[#70757A] hover:text-[#EA4335] transition-opacity cursor-pointer"
+                        className="text-[#70757A] hover:text-[#EA4335] p-0.5 rounded cursor-pointer transition-colors"
                         title="Xóa ghi chú"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
+
+                  {editingNoteId === note.id ? (
+                    <div className="space-y-2 text-xs pt-1.5">
+                      <input
+                        type="text"
+                        value={editNoteTitle}
+                        onChange={(e) => setEditNoteTitle(e.target.value)}
+                        placeholder="Tiêu đề ghi chú..."
+                        className="w-full bg-[#161718] border border-[#3C4043] focus:border-[#8AB4F8] rounded px-2 py-1 text-xs font-medium text-[#E3E2E3] placeholder-[#70757A] focus:outline-none"
+                        autoFocus
+                      />
+                      <textarea
+                        value={editNoteContent}
+                        onChange={(e) => setEditNoteContent(e.target.value)}
+                        placeholder="Nội dung ghi chú..."
+                        rows={3}
+                        className="w-full bg-[#161718] border border-[#3C4043] focus:border-[#8AB4F8] rounded px-2 py-1 text-[11px] text-[#C3C6D1] placeholder-[#70757A] focus:outline-none resize-none"
+                      />
+                      <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center gap-1.5">
+                          {(['amber', 'blue', 'green', 'purple'] as const).map((color) => {
+                            const bg =
+                              color === 'amber'
+                                ? 'bg-[#FDD663]'
+                                : color === 'blue'
+                                  ? 'bg-[#8AB4F8]'
+                                  : color === 'green'
+                                    ? 'bg-[#81C995]'
+                                    : 'bg-[#C58AF9]';
+                            return (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() => setEditNoteColor(color)}
+                                className={`w-3.5 h-3.5 rounded-full cursor-pointer transition ${bg} ${editNoteColor === color
+                                  ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]'
+                                  : 'opacity-70 hover:opacity-100'
+                                  }`}
+                                title={`Màu ${color}`}
+                              />
+                            );
+                          })}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={handleCancelEditNote}
+                            className="px-2 py-0.5 rounded hover:bg-[#28292A] text-[#9AA0A6] text-[11px] transition cursor-pointer"
+                          >
+                            Hủy
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveEditNote(note.id)}
+                            className="px-2.5 py-0.5 rounded bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-medium text-[11px] transition cursor-pointer"
+                          >
+                            Lưu
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {note.content && (
+                        <p className="text-[11px] text-[#C3C6D1] mt-1.5 whitespace-pre-line leading-relaxed">
+                          {note.content}
+                        </p>
+                      )}
+
+                      {/* Checklist if present */}
+                      {note.checklist && note.checklist.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {note.checklist.map((item) => (
+                            <div
+                              key={item.id}
+                              onClick={() => toggleNoteChecklistItem(note.id, item.id)}
+                              className="flex items-center gap-1.5 text-[11px] text-[#C3C6D1] cursor-pointer hover:text-white"
+                            >
+                              <span
+                                className={`w-3 h-3 rounded flex items-center justify-center text-[8px] ${item.completed
+                                  ? 'bg-[#1E8E3E] text-white'
+                                  : 'border border-[#70757A]'
+                                  }`}
+                              >
+                                {item.completed && '✓'}
+                              </span>
+                              <span className={item.completed ? 'line-through text-[#70757A]' : ''}>
+                                {item.text}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Tags and timestamp */}
+                      <div className="flex items-center justify-between mt-2.5 pt-1.5 border-t border-[#2A2B2D]/60 text-[10px] text-[#70757A]">
+                        <div className="flex items-center gap-1">
+                          {note.tags?.map((tag) => (
+                            <span key={tag} className="text-[#8AB4F8] hover:underline cursor-pointer">
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>{note.updatedAt}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -726,7 +935,7 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
             <div
               key={note.id}
               className={`p-3 rounded-lg border transition-all duration-150 relative group ${getColorClasses(
-                note.color,
+                editingNoteId === note.id ? editNoteColor : note.color,
                 false
               )}`}
             >
@@ -735,6 +944,14 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                   {note.title}
                 </h4>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    type="button"
+                    onClick={() => handleStartEditNote(note)}
+                    className="text-[#9AA0A6] hover:text-[#8AB4F8] p-0.5 rounded cursor-pointer transition-colors"
+                    title="Chỉnh sửa ghi chú"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => toggleNotePin(note.id)}
@@ -754,23 +971,87 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
                 </div>
               </div>
 
-              {note.content && (
-                <p className="text-[11px] text-[#C3C6D1] mt-1.5 whitespace-pre-line leading-relaxed">
-                  {note.content}
-                </p>
-              )}
-
-              {/* Tags & footer */}
-              <div className="flex items-center justify-between mt-2.5 pt-1.5 border-t border-[#2A2B2D]/60 text-[10px] text-[#70757A]">
-                <div className="flex items-center gap-1">
-                  {note.tags?.map((tag) => (
-                    <span key={tag} className="text-[#8AB4F8] hover:underline cursor-pointer">
-                      #{tag}
-                    </span>
-                  ))}
+              {editingNoteId === note.id ? (
+                <div className="space-y-2 text-xs pt-1.5">
+                  <input
+                    type="text"
+                    value={editNoteTitle}
+                    onChange={(e) => setEditNoteTitle(e.target.value)}
+                    placeholder="Tiêu đề ghi chú..."
+                    className="w-full bg-[#161718] border border-[#3C4043] focus:border-[#8AB4F8] rounded px-2 py-1 text-xs font-medium text-[#E3E2E3] placeholder-[#70757A] focus:outline-none"
+                    autoFocus
+                  />
+                  <textarea
+                    value={editNoteContent}
+                    onChange={(e) => setEditNoteContent(e.target.value)}
+                    placeholder="Nội dung ghi chú..."
+                    rows={3}
+                    className="w-full bg-[#161718] border border-[#3C4043] focus:border-[#8AB4F8] rounded px-2 py-1 text-[11px] text-[#C3C6D1] placeholder-[#70757A] focus:outline-none resize-none"
+                  />
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-1.5">
+                      {(['amber', 'blue', 'green', 'purple'] as const).map((color) => {
+                        const bg =
+                          color === 'amber'
+                            ? 'bg-[#FDD663]'
+                            : color === 'blue'
+                              ? 'bg-[#8AB4F8]'
+                              : color === 'green'
+                                ? 'bg-[#81C995]'
+                                : 'bg-[#C58AF9]';
+                        return (
+                          <button
+                            key={color}
+                            type="button"
+                            onClick={() => setEditNoteColor(color)}
+                            className={`w-3.5 h-3.5 rounded-full cursor-pointer transition ${bg} ${editNoteColor === color
+                              ? 'ring-2 ring-white ring-offset-1 ring-offset-[#1F2021]'
+                              : 'opacity-70 hover:opacity-100'
+                              }`}
+                            title={`Màu ${color}`}
+                          />
+                        );
+                      })}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={handleCancelEditNote}
+                        className="px-2 py-0.5 rounded hover:bg-[#28292A] text-[#9AA0A6] text-[11px] transition cursor-pointer"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveEditNote(note.id)}
+                        className="px-2.5 py-0.5 rounded bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-medium text-[11px] transition cursor-pointer"
+                      >
+                        Lưu
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <span>{note.updatedAt}</span>
-              </div>
+              ) : (
+                <>
+                  {note.content && (
+                    <p className="text-[11px] text-[#C3C6D1] mt-1.5 whitespace-pre-line leading-relaxed">
+                      {note.content}
+                    </p>
+                  )}
+
+                  {/* Tags & footer */}
+                  <div className="flex items-center justify-between mt-2.5 pt-1.5 border-t border-[#2A2B2D]/60 text-[10px] text-[#70757A]">
+                    <div className="flex items-center gap-1">
+                      {note.tags?.map((tag) => (
+                        <span key={tag} className="text-[#8AB4F8] hover:underline cursor-pointer">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    <span>{note.updatedAt}</span>
+                  </div>
+                </>
+              )}
             </div>
           ))}
 

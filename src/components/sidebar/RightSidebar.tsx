@@ -12,7 +12,6 @@ export const RightSidebar: React.FC = () => {
     isRightSidebarOpen,
     toggleRightSidebar,
     rightSidebarTab,
-    addTask,
     addSubtask,
     deleteSubtask,
     deleteTask,
@@ -22,7 +21,6 @@ export const RightSidebar: React.FC = () => {
   } = useApp();
   const { t, language } = useLanguage();
 
-  const [quickInput, setQuickInput] = useState<string>('');
   const [filterTab, setFilterTab] = useState<'all' | 'pending' | 'high'>('all');
 
   const pendingTaskCount = tasksData.filter((t) => !t.completed).length;
@@ -33,13 +31,6 @@ export const RightSidebar: React.FC = () => {
     if (filterTab === 'high' && t.priority !== 'high') return false;
     return true;
   });
-
-  const handleQuickSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!quickInput.trim()) return;
-    addTask(quickInput.trim());
-    setQuickInput('');
-  };
 
   return (
     <aside
@@ -95,22 +86,6 @@ export const RightSidebar: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. Quick Add Task Form */}
-          <form onSubmit={handleQuickSubmit} className="flex gap-1.5 text-xs flex-shrink-0">
-            <input
-              type="text"
-              value={quickInput}
-              onChange={(e) => setQuickInput(e.target.value)}
-              placeholder={t('sidebar.quickTaskPlaceholder') || '+ Thêm một việc cần làm'}
-              className="flex-1 min-w-0 bg-[#1F2021] border border-[#333538] focus:border-[#8AB4F8] text-[#E3E2E3] px-3 py-2 rounded-md placeholder-[#70757A] text-xs font-sans transition-all focus:outline-none focus:bg-[#28292A]"
-            />
-            <button
-              type="submit"
-              className="bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-medium px-3.5 py-2 rounded-md transition-colors min-w-[60px] text-center flex-shrink-0 cursor-pointer text-xs"
-            >
-              {t('common.createNew') || 'Thêm'}
-            </button>
-          </form>
 
           {/* 3. Filter Tabs */}
           <div className="flex items-center gap-1 text-xs border-b border-[#2A2B2D] pb-2 flex-shrink-0">
@@ -168,6 +143,7 @@ export const RightSidebar: React.FC = () => {
                   onToggleTask={toggleTask}
                   onToggleSubtask={toggleSubtask}
                   onDeleteTask={deleteTask}
+                  onEditTask={(id) => openModal('edit', { id, type: 'task' })}
                   onAddSubtask={addSubtask}
                   onDeleteSubtask={deleteSubtask}
                 />
