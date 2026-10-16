@@ -400,7 +400,7 @@ export const CreateEventModal: React.FC = () => {
         dueDate: `${selectedDay} ${monthNames[selectedMonth]}, ${dueTime}`,
         priority,
         reminders: reminderText,
-        subtasks: subtaskList.map((st) => ({ title: st, completed: false })),
+        subtasks: subtaskList.map((st, idx) => ({ id: idx + 1, title: st, completed: false })),
         colorTag: selectedColor,
         categoryId: selectedCategory || 'task',
       };

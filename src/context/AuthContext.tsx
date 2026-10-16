@@ -15,7 +15,7 @@ interface AuthContextType {
   logout: () => void;
   setRole: (role: AccountRole) => void;
   upgradeToTier: (tier: SubscriptionTier, planName?: string) => void;
-  updateProfile: (name: string, email: string, phone: string) => void;
+  updateProfile: (name: string, email: string, phone: string, birthday?: string) => void;
   activateFreeTrial: () => void;
   hasFeature: (featureCode: string) => boolean;
 }
@@ -25,6 +25,7 @@ const defaultFreeUser: User = {
   name: 'Nguyễn Văn An',
   email: 'an.nguyen@routinepulse.com',
   phone: '0987 654 321',
+  birthday: '1998-05-18',
   role: 'FREE_USER',
   subscriptionTier: 'FREE',
   isPremium: false,
@@ -185,7 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateProfile = (name: string, email: string, phone: string) => {
+  const updateProfile = (name: string, email: string, phone: string, birthday?: string) => {
     if (currentUser) {
       const nameParts = name.trim().split(' ');
       const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
@@ -194,6 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name,
         email,
         phone,
+        birthday: birthday ?? currentUser.birthday,
         avatarInitial,
       });
     }

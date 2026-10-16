@@ -14,6 +14,7 @@ import {
   CreditCard,
   Check,
   Crown,
+  Download,
 } from 'lucide-react';
 
 export const SettingsModal: React.FC = () => {
@@ -25,9 +26,19 @@ export const SettingsModal: React.FC = () => {
   const [name, setName] = useState<string>(currentUser?.name || 'Nguyễn Văn An');
   const [email, setEmail] = useState<string>(currentUser?.email || 'an.nguyen@routinepulse.com');
   const [phone, setPhone] = useState<string>(currentUser?.phone || '0987 654 321');
+  const [birthday, setBirthday] = useState<string>(currentUser?.birthday || '1998-05-18');
   const [pushEnabled, setPushEnabled] = useState<boolean>(true);
   const [smsEnabled, setSmsEnabled] = useState<boolean>(false);
   const [emailEnabled, setEmailEnabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.name || 'Nguyễn Văn An');
+      setEmail(currentUser.email || 'an.nguyen@routinepulse.com');
+      setPhone(currentUser.phone || '0987 654 321');
+      setBirthday(currentUser.birthday || '1998-05-18');
+    }
+  }, [currentUser, activeModal]);
 
   useEffect(() => {
     if (settingsInitialTab && ['profile', 'appearance', 'language', 'notifications', 'devices', 'billing'].includes(settingsInitialTab)) {
@@ -39,7 +50,7 @@ export const SettingsModal: React.FC = () => {
 
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile(name, email, phone);
+    updateProfile(name, email, phone, birthday);
     closeModal();
     showToast(t('toasts.profileSavedTitle'), t('toasts.profileSavedDesc'), 'success');
   };
@@ -183,6 +194,24 @@ export const SettingsModal: React.FC = () => {
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full bg-[#18191B] border border-[#333538] text-[#E3E2E3] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[#8AB4F8]"
                   />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="font-medium text-[#9AA0A6]">{t('modals.settings.birthdayLabel')}</label>
+                    <span className="text-[10px] text-[#FF7597] flex items-center gap-1 font-medium bg-[#FF7597]/10 px-1.5 py-0.5 rounded border border-[#FF7597]/20">
+                      <span>🎂</span> Tự động đồng bộ Lịch
+                    </span>
+                  </div>
+                  <input
+                    type="date"
+                    value={birthday}
+                    onChange={(e) => setBirthday(e.target.value)}
+                    className="w-full bg-[#18191B] border border-[#333538] text-[#E3E2E3] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[#8AB4F8] cursor-pointer"
+                  />
+                  <p className="text-[10px] text-[#9AA0A6] leading-tight pt-0.5">
+                    {t('modals.settings.birthdayHint')}
+                  </p>
                 </div>
 
                 <div className="pt-3">
@@ -441,11 +470,17 @@ export const SettingsModal: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Smartphone className="w-5 h-5 text-[#70757A]" />
                     <div>
-                      <div className="font-semibold text-[#E3E2E3]">Mobile App Companion</div>
-                      <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Đồng bộ hóa đám mây' : 'Cloud Synchronized'}</div>
+                      <div className="font-semibold text-[#E3E2E3]">Mobile App Companion (iPhone 15 Pro)</div>
+                      <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Đã đồng bộ 2 giờ trước' : 'Synced 2 hours ago'}</div>
                     </div>
                   </div>
-                  <span className="text-[10px] text-[#70757A] font-mono">iOS / Android</span>
+                  <button
+                    type="button"
+                    onClick={() => showToast('Đăng xuất thiết bị', 'Đã hủy phiên làm việc trên iPhone 15 Pro thành công.', 'info')}
+                    className="text-[11px] text-[#F28B82] hover:bg-[#F28B82]/10 px-2 py-1 rounded border border-[#F28B82]/30 transition-colors cursor-pointer"
+                  >
+                    Đăng xuất
+                  </button>
                 </div>
               </div>
             </div>
@@ -453,12 +488,13 @@ export const SettingsModal: React.FC = () => {
 
           {/* Tab 6: Billing */}
           {activeTab === 'billing' && (
-            <div className="space-y-4 text-xs">
+            <div className="space-y-4 text-xs overflow-y-auto pr-1 max-h-[460px] custom-scrollbar">
               <div className="pr-10">
                 <h4 className="text-base font-semibold text-[#E3E2E3]">{t('modals.settings.billingTitle')}</h4>
                 <p className="text-xs text-[#9AA0A6]">{t('modals.settings.billingSubtitle')}</p>
               </div>
 
+              {/* Current Plan Banner */}
               <div className="bg-[#18191B] border border-[#2A2B2D] p-4 rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
@@ -484,9 +520,78 @@ export const SettingsModal: React.FC = () => {
                 </div>
                 <p className="text-[11px] text-[#9AA0A6] leading-relaxed">
                   {currentRole === 'FREE'
-                    ? (language === 'vi' ? 'Gói miễn phí: Lưu trữ cơ bản 7 ngày gần nhất.' : 'Free tier: basic 7-day retention.')
-                    : (language === 'vi' ? 'Không giới hạn thiết bị, mở khóa toàn bộ kho theme và lưu trữ dữ liệu trọn đời.' : 'Unlimited devices, all themes, and lifetime sync.')}
+                    ? (language === 'vi' ? 'Gói miễn phí: Lưu trữ cơ bản 7 ngày gần nhất, giới hạn 10 thói quen.' : 'Free tier: basic 7-day retention, max 10 habits.')
+                    : (language === 'vi' ? 'Không giới hạn thiết bị, mở khóa toàn bộ kho theme OLED/Tết, AI Assistant và lưu trữ dữ liệu trọn đời.' : 'Unlimited devices, all themes, AI Assistant, and lifetime sync.')}
                 </p>
+              </div>
+
+              {/* Billing History / Invoices */}
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-[#E3E2E3] uppercase tracking-wider">
+                    {language === 'vi' ? 'Lịch sử hóa đơn giao dịch' : 'Billing & Invoice History'}
+                  </span>
+                  <span className="text-[10px] text-[#70757A]">2 hóa đơn</span>
+                </div>
+
+                <div className="border border-[#2A2B2D] rounded-xl overflow-hidden bg-[#18191B]">
+                  <table className="w-full text-left text-[11px]">
+                    <thead className="bg-[#202123] text-[#9AA0A6] border-b border-[#2A2B2D]">
+                      <tr>
+                        <th className="p-2.5 font-medium">Mã HĐ</th>
+                        <th className="p-2.5 font-medium">Gói dịch vụ</th>
+                        <th className="p-2.5 font-medium">Ngày</th>
+                        <th className="p-2.5 font-medium">Số tiền</th>
+                        <th className="p-2.5 font-medium">Trạng thái</th>
+                        <th className="p-2.5 font-medium text-right">Tải về</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#2A2B2D]/60 text-[#E3E2E3]">
+                      <tr className="hover:bg-[#202123]/50 transition-colors">
+                        <td className="p-2.5 font-mono text-[#8AB4F8]">INV-2026-001</td>
+                        <td className="p-2.5 font-medium">VIP Trọn Đời (1 Năm)</td>
+                        <td className="p-2.5 text-[#9AA0A6]">15/01/2026</td>
+                        <td className="p-2.5 font-mono font-semibold text-[#81C995]">179.000đ</td>
+                        <td className="p-2.5">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] bg-[#1E8E3E]/20 text-[#81C995] font-semibold border border-[#1E8E3E]/30">
+                            Thành công
+                          </span>
+                        </td>
+                        <td className="p-2.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => showToast('Tải hóa đơn VAT', 'Hóa đơn điện tử PDF INV-2026-001 đã được tải xuống.', 'success')}
+                            className="text-[#8AB4F8] hover:text-[#AECBFA] p-1 rounded hover:bg-[#28292A] transition-colors cursor-pointer"
+                            title="Tải hóa đơn PDF"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                      <tr className="hover:bg-[#202123]/50 transition-colors">
+                        <td className="p-2.5 font-mono text-[#8AB4F8]">INV-2025-089</td>
+                        <td className="p-2.5 font-medium">Pro Tiêu Chuẩn (1 Tháng)</td>
+                        <td className="p-2.5 text-[#9AA0A6]">15/12/2025</td>
+                        <td className="p-2.5 font-mono font-semibold text-[#81C995]">49.000đ</td>
+                        <td className="p-2.5">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] bg-[#1E8E3E]/20 text-[#81C995] font-semibold border border-[#1E8E3E]/30">
+                            Thành công
+                          </span>
+                        </td>
+                        <td className="p-2.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => showToast('Tải hóa đơn VAT', 'Hóa đơn điện tử PDF INV-2025-089 đã được tải xuống.', 'success')}
+                            className="text-[#8AB4F8] hover:text-[#AECBFA] p-1 rounded hover:bg-[#28292A] transition-colors cursor-pointer"
+                            title="Tải hóa đơn PDF"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

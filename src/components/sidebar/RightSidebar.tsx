@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { TaskItem } from '../task/TaskItem';
-import { CheckSquare, Plus, PanelRightClose, Users } from 'lucide-react';
+import { CheckSquare, Plus } from 'lucide-react';
 import { NotesRoutineSidebarPanel } from '../notes-routine/NotesRoutineSidebarPanel';
+import { ContactsCompanionPanel } from './ContactsCompanionPanel';
 
 export const RightSidebar: React.FC = () => {
   const {
@@ -44,22 +45,7 @@ export const RightSidebar: React.FC = () => {
           onOpenCreateModal={() => openModal('create')}
         />
       ) : rightSidebarTab === 'contacts' ? (
-        <div className="w-full h-full flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#81C995]/20 text-[#81C995] flex items-center justify-center">
-                <Users className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm text-[#E3E2E3]">Danh bạ & Nhóm</h3>
-                <p className="text-[10px] text-[#70757A]">Liên hệ & Thành viên</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex-1 flex items-center justify-center text-center p-4">
-            <p className="text-xs text-[#70757A]">Tính năng đồng bộ danh bạ Google Contacts đang chuẩn bị kết nối.</p>
-          </div>
-        </div>
+        <ContactsCompanionPanel onClose={toggleRightSidebar} />
       ) : (
         <div className="w-full h-full flex flex-col space-y-3.5 overflow-y-auto">
 

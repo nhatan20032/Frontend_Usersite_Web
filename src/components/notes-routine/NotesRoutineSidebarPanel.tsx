@@ -13,7 +13,9 @@ import {
   ChevronDown,
   ChevronUp,
   Repeat,
+  Sparkles,
 } from 'lucide-react';
+import { ROUTINE_TEMPLATES, type RoutineTemplate } from '../../data/routineTemplates';
 
 interface NotesRoutineSidebarPanelProps {
   onClose?: () => void;
@@ -21,9 +23,12 @@ interface NotesRoutineSidebarPanelProps {
 }
 
 export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> = ({
-  onOpenCreateModal,
+  onOpenCreateModal: _onOpenCreateModal,
 }) => {
   const {
+    selectedYear,
+    selectedMonth,
+    selectedDay,
     eventsData,
     toggleCheckInRoutine,
     addRoutine,
@@ -39,7 +44,11 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
     deleteNote,
     toggleNoteChecklistItem,
     searchQuery,
+    addEvent,
+    showToast,
   } = useApp();
+
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState<boolean>(false);
 
   // State for Quick Composer
   const [isComposerExpanded, setIsComposerExpanded] = useState<boolean>(false);
@@ -77,6 +86,28 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
   const routines = eventsData.filter((e) => e.type === 'routine');
   const completedRoutinesCount = routines.filter((r) => r.completed).length;
   const maxStreak = routines.reduce((max, r) => Math.max(max, r.streak || 0), 0);
+
+  const handleApplyTemplate = (tpl: RoutineTemplate) => {
+    addEvent({
+      type: 'routine',
+      title: tpl.title,
+      time: tpl.time,
+      priority: 'high',
+      streak: 1,
+      completed: false,
+      year: selectedYear,
+      month: selectedMonth,
+      day: selectedDay,
+      frequency: tpl.frequency,
+      subroutines: tpl.subroutines.map((title, idx) => ({
+        id: idx + 1,
+        title,
+        completed: false,
+      })),
+    });
+    setIsTemplateModalOpen(false);
+    showToast('Áp dụng mẫu thói quen', `Đã thêm "${tpl.title}" vào lịch trình kỷ luật!`, 'success');
+  };
 
   // Filtered Notes
   const filteredNotes = notesData.filter((note) => {
@@ -426,8 +457,17 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
         {/* 3. SECTION A: KỶ LUẬT HÔM NAY (ROUTINES) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-[11px] text-[#9AA0A6] px-0.5">
-            <span className="font-semibold tracking-wider text-[10px] text-[#9AA0A6] uppercase">
-              Kỷ luật hôm nay ({routines.length})
+            <span className="font-semibold tracking-wider text-[10px] text-[#9AA0A6] uppercase flex items-center gap-1.5">
+              <span>Kỷ luật hôm nay ({routines.length})</span>
+              <button
+                type="button"
+                onClick={() => setIsTemplateModalOpen(true)}
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#E37400]/20 text-[#FDD663] border border-[#E37400]/40 hover:bg-[#E37400]/30 transition-colors cursor-pointer"
+                title="Khám phá các mẫu thói quen thành công"
+              >
+                <Sparkles className="w-2.5 h-2.5" />
+                <span>Mẫu</span>
+              </button>
             </span>
             <div className="flex items-center gap-2">
               <span className="bg-[#1E8E3E] text-white font-medium px-2 py-0.5 rounded text-[10px] shadow-xs">
@@ -1073,6 +1113,87 @@ export const NotesRoutineSidebarPanel: React.FC<NotesRoutineSidebarPanelProps> =
           {routines.length} thói quen, {notesData.length} ghi chú
         </span>
       </div>
+
+      {/* 7. ROUTINE TEMPLATES LIBRARY MODAL */}
+      {isTemplateModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-[#1F2021] border border-[#333538] max-w-lg w-full rounded-2xl p-5 space-y-4 shadow-2xl text-[#E3E2E3] max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#E37400]/20 text-[#FDD663] flex items-center justify-center">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-[#E3E2E3]">Thư Viện Mẫu Thói Quen (Routine Templates)</h3>
+                  <p className="text-[11px] text-[#9AA0A6]">Chọn mẫu chuẩn hóa để áp dụng ngay vào lịch trình cá nhân</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsTemplateModalOpen(false)}
+                className="p-1 rounded-full text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#28292A] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+              {ROUTINE_TEMPLATES.map((tpl) => (
+                <div
+                  key={tpl.id}
+                  className="bg-[#161718] border border-[#2A2B2D] hover:border-[#E37400]/50 p-3.5 rounded-xl space-y-2.5 transition-all group"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold text-xs text-[#E3E2E3]">{tpl.title}</h4>
+                        <span
+                          className="text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs text-white"
+                          style={{ backgroundColor: tpl.badgeColor }}
+                        >
+                          {tpl.badge}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-[#70757A] mt-1">
+                        <span className="flex items-center gap-1 font-mono text-[#FDD663]">
+                          <Clock className="w-3 h-3" />
+                          {tpl.time}
+                        </span>
+                        <span>• Tần suất: {tpl.frequency}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleApplyTemplate(tpl)}
+                      className="px-3 py-1.5 bg-[#E37400] hover:bg-[#FF8C00] text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center gap-1 cursor-pointer flex-shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Áp dụng</span>
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-[#9AA0A6] leading-relaxed">{tpl.description}</p>
+
+                  <div className="bg-[#1F2021] border border-[#2A2B2D] p-2.5 rounded-lg space-y-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#70757A] block">
+                      Các bước hành động ({tpl.subroutines.length}):
+                    </span>
+                    <ul className="space-y-1">
+                      {tpl.subroutines.map((sub, sIdx) => (
+                        <li key={sIdx} className="flex items-center gap-2 text-[11px] text-[#E3E2E3]">
+                          <Check className="w-3 h-3 text-[#1E8E3E] flex-shrink-0" />
+                          <span>{sub}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

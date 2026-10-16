@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Search,
   Settings,
+  Bell,
 } from 'lucide-react';
 
 interface CustomSelectProps {
@@ -99,6 +100,57 @@ export const TopHeader: React.FC = () => {
   } = useApp();
   const { t, language } = useLanguage();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [isNotifOpen, setIsNotifOpen] = useState<boolean>(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      type: 'alert',
+      title: 'Sắp diễn ra cuộc hẹn',
+      desc: 'Hội thảo Công Nghệ & AI Summit trong 25 phút nữa (TT Hội nghị Quốc gia)',
+      time: '10 phút trước',
+      read: false,
+    },
+    {
+      id: 2,
+      type: 'streak',
+      title: 'Chúc mừng Streak 14 ngày! 🔥',
+      desc: 'Bạn đã hoàn thành thói quen chạy bộ liên tục trong 2 tuần.',
+      time: '1 giờ trước',
+      read: false,
+    },
+    {
+      id: 3,
+      type: 'billing',
+      title: 'Nâng cấp RoutinePulse VIP',
+      desc: 'Tài khoản của bạn đã được kích hoạt đặc quyền VIP trọn năm.',
+      time: 'Hôm qua',
+      read: true,
+    },
+  ]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setIsNotifOpen(false);
+      }
+    };
+    if (isNotifOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isNotifOpen]);
+
+  const markAllAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
 
   const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
 
@@ -216,6 +268,85 @@ export const TopHeader: React.FC = () => {
           >
             {language === 'vi' ? 'Lịch biểu' : 'Schedule'}
           </button>
+        </div>
+
+        {/* Notification Center Bell */}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setIsNotifOpen((prev) => !prev)}
+            className="p-2 text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#28292A] rounded-full transition-colors cursor-pointer relative"
+            title="Trung tâm thông báo"
+          >
+            <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#EA4335] ring-2 ring-[#1F2021]" />
+            )}
+          </button>
+
+          {isNotifOpen && (
+            <div className="absolute right-0 mt-2 w-80 bg-[#1F2021] border border-[#333538] rounded-xl shadow-2xl p-3 space-y-3 z-50 text-[#E3E2E3] animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-xs text-[#E3E2E3]">Thông báo hệ thống</span>
+                  {unreadCount > 0 && (
+                    <span className="text-[10px] bg-[#1A73E8] text-white px-1.5 py-0.2 rounded-full font-bold">
+                      {unreadCount} mới
+                    </span>
+                  )}
+                </div>
+                {notifications.length > 0 && (
+                  <div className="flex items-center gap-2 text-[10px]">
+                    <button
+                      onClick={markAllAsRead}
+                      className="text-[#8AB4F8] hover:underline cursor-pointer"
+                    >
+                      Đã đọc hết
+                    </button>
+                    <button
+                      onClick={clearAllNotifications}
+                      className="text-[#70757A] hover:text-[#F28B82] cursor-pointer"
+                      title="Xóa tất cả"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5 custom-scrollbar">
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-[#70757A]">
+                    Bạn không có thông báo mới nào
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={() => {
+                        setNotifications((prev) =>
+                          prev.map((item) => (item.id === n.id ? { ...item, read: true } : item))
+                        );
+                      }}
+                      className={`p-2.5 rounded-lg border transition-all cursor-pointer space-y-1 ${
+                        n.read
+                          ? 'bg-[#18191A] border-[#2A2B2D] opacity-75'
+                          : 'bg-[#242527] border-[#3A3B3D] hover:border-[#8AB4F8]/50 shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-1.5">
+                        <span className="font-semibold text-xs text-[#E3E2E3] flex items-center gap-1.5">
+                          {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-[#8AB4F8]" />}
+                          <span>{n.title}</span>
+                        </span>
+                        <span className="text-[9px] text-[#70757A] font-mono shrink-0">{n.time}</span>
+                      </div>
+                      <p className="text-[11px] text-[#9AA0A6] leading-relaxed">{n.desc}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Settings Button */}

@@ -247,48 +247,51 @@ export const LeftSidebar: React.FC = () => {
 
         {isMyCalendarsOpen && (
           <div className="space-y-1.5 px-1">
-            {categories.map((cat) => {
-              const isChecked = categoryFilters[cat.id] !== false;
-              let displayName = cat.name;
-              if (cat.id === 'routine') displayName = t('sidebar.routineCategory');
-              else if (cat.id === 'event') displayName = t('sidebar.eventCategory');
-              else if (cat.id === 'task') displayName = t('sidebar.taskCategory');
+            {categories
+              .filter((cat) => cat.id !== 'holiday')
+              .map((cat) => {
+                const isChecked = categoryFilters[cat.id] !== false;
+                let displayName = cat.name;
+                if (cat.id === 'routine') displayName = t('sidebar.routineCategory');
+                else if (cat.id === 'event') displayName = t('sidebar.eventCategory');
+                else if (cat.id === 'task') displayName = t('sidebar.taskCategory');
+                else if (cat.id === 'birthday') displayName = language === 'vi' ? 'Sinh nhật cá nhân' : 'Personal Birthday';
 
-              return (
-                <div
-                  key={cat.id}
-                  className="group flex items-center justify-between text-[#E3E2E3] py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors"
-                >
-                  <label className="flex items-center gap-3 cursor-pointer min-w-0 flex-1">
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={(e) =>
-                        setCategoryFilters((prev) => ({ ...prev, [cat.id]: e.target.checked }))
-                      }
-                      className="w-4 h-4 rounded bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                      style={{ accentColor: cat.color }}
-                    />
-                    <span className="flex items-center gap-2 min-w-0 flex-1">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: cat.color }}
+                return (
+                  <div
+                    key={cat.id}
+                    className="group flex items-center justify-between text-[#E3E2E3] py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors"
+                  >
+                    <label className="flex items-center gap-3 cursor-pointer min-w-0 flex-1">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) =>
+                          setCategoryFilters((prev) => ({ ...prev, [cat.id]: e.target.checked }))
+                        }
+                        className="w-4 h-4 rounded bg-[#28292A] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                        style={{ accentColor: cat.color }}
                       />
-                      <span className="truncate text-xs">{displayName}</span>
-                    </span>
-                  </label>
-                  {!cat.isBuiltIn && (
-                    <button
-                      onClick={() => deleteCategory(cat.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-[#9AA0A6] hover:text-[#F28B82] rounded transition-opacity cursor-pointer"
-                      title={language === 'vi' ? 'Xóa danh mục này' : 'Delete category'}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+                      <span className="flex items-center gap-2 min-w-0 flex-1">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: cat.color }}
+                        />
+                        <span className="truncate text-xs">{displayName}</span>
+                      </span>
+                    </label>
+                    {!cat.isBuiltIn && (
+                      <button
+                        onClick={() => deleteCategory(cat.id)}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-[#9AA0A6] hover:text-[#F28B82] rounded transition-opacity cursor-pointer"
+                        title={language === 'vi' ? 'Xóa danh mục này' : 'Delete category'}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         )}
 
@@ -310,8 +313,11 @@ export const LeftSidebar: React.FC = () => {
               <label className="flex items-center gap-3 text-[#E3E2E3] cursor-pointer py-1 px-1.5 rounded hover:bg-[#28292A] transition-colors">
                 <input
                   type="checkbox"
-                  defaultChecked
-                  className="w-4 h-4 rounded text-[#8430CE] bg-[#28292A] border-[#3A3B3D] cursor-pointer accent-[#8430CE]"
+                  checked={categoryFilters['holiday'] !== false}
+                  onChange={(e) =>
+                    setCategoryFilters((prev) => ({ ...prev, holiday: e.target.checked }))
+                  }
+                  className="w-4 h-4 rounded text-[#C58AF9] bg-[#28292A] border-[#3A3B3D] cursor-pointer accent-[#C58AF9]"
                 />
                 <span className="flex items-center gap-2 min-w-0 flex-1">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#C58AF9] flex-shrink-0" />

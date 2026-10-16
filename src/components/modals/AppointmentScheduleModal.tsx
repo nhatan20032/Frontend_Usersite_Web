@@ -446,17 +446,12 @@ export const AppointmentScheduleModal: React.FC = () => {
       isToday: d.toDateString() === now.toDateString(),
     };
   });
-  const first = weekDays[0].date;
-  const last = weekDays[6].date;
-  const weekLabel = `${first.getDate()}/${first.getMonth() + 1} – ${last.getDate()}/${last.getMonth() + 1}/${last.getFullYear()}`;
-
   const tzShort = (() => {
     const m = timezone.match(/GMT([+-])(\d{2})/);
     return m ? `GMT${m[1]}${Number(m[2])}` : timezone;
   })();
   const nowMin = now.getHours() * 60 + now.getMinutes();
   const showNow = nowMin >= MIN_START && nowMin <= MAX_END;
-  const slotPx = (HOUR_PX * duration) / 60;
   const gridCols = 'grid grid-cols-[56px_repeat(7,minmax(0,1fr))]';
 
   return (
@@ -763,7 +758,6 @@ export const AppointmentScheduleModal: React.FC = () => {
                         const en = live ? live.end : r.end;
                         const h = minToPx(en) - minToPx(s);
                         const isSel = selected?.day === wd.dayIndex && selected.id === r.id;
-                        const slots = Math.floor((en - s) / duration);
                         return (
                           <div
                             key={r.id}

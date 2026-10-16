@@ -16,6 +16,7 @@ import type {
   KeepNote,
 } from '../types';
 import { useAuth } from './AuthContext';
+import { getVietnamHolidays } from '../utils/vietnamHolidays';
 
 interface AppContextType {
   // Calendar & Events
@@ -200,6 +201,97 @@ const getInitialSampleEvents = (year: number, month: number, day: number): Calen
       { id: 3, title: 'Đặt 5 câu ví dụ thực tế', completed: true },
     ],
   },
+  {
+    id: 7,
+    type: 'event',
+    title: 'Sprint Planning & Khởi động Mục tiêu Tháng',
+    time: '09:00 AM',
+    priority: 'high',
+    colorTag: '#8AB4F8',
+    location: 'Phòng họp Tầng 4 / Trực tuyến',
+    year,
+    month,
+    day: 4,
+    description: 'Rà soát backlog, phân bổ task công việc và chốt KPI quý.',
+    attendees: ['hoang.tran@bachkhoa.edu.vn', 'trang.le@routinepulse.com'],
+  },
+  {
+    id: 8,
+    type: 'event',
+    title: 'Phỏng vấn Người dùng AlphaTech (Google Meet)',
+    time: '15:30 PM',
+    priority: 'medium',
+    colorTag: '#81C995',
+    year,
+    month,
+    day: 8,
+    hasMeet: true,
+    description: 'Khảo sát trải nghiệm tính năng Companion Dock và Mini Calendar.',
+    attendees: ['khoa.nd@alphatech.vn'],
+  },
+  {
+    id: 9,
+    type: 'event',
+    title: 'Khám sức khỏe tổng quát định kỳ',
+    time: '08:30 AM',
+    priority: 'medium',
+    location: 'Bệnh viện Đa khoa Quốc tế Vinmec',
+    travelTime: '30 phút',
+    alertTime: '08:00 AM',
+    year,
+    month,
+    day: 12,
+  },
+  {
+    id: 10,
+    type: 'event',
+    title: 'Review Tiến độ & Demo sản phẩm nội bộ',
+    time: '14:30 PM',
+    priority: 'high',
+    colorTag: '#FCAD70',
+    year,
+    month,
+    day: 16,
+    description: 'Chạy thử nghiệm bản release v2.4 trước toàn thể team.',
+    attendees: ['trang.le@routinepulse.com', 'yen.vu@creativestudio.com'],
+  },
+  {
+    id: 11,
+    type: 'event',
+    title: 'Họp 1:1 Định hướng Phát triển & Mentoring',
+    time: '10:00 AM',
+    priority: 'medium',
+    colorTag: '#8AB4F8',
+    year,
+    month,
+    day: 20,
+    attendees: ['hoang.tran@bachkhoa.edu.vn'],
+  },
+  {
+    id: 12,
+    type: 'event',
+    title: 'Team Building Dinner & Tổng kết Sprint',
+    time: '18:30 PM',
+    priority: 'low',
+    colorTag: '#FF8BCB',
+    location: 'Nhà hàng Sen Tây Hồ, Hà Nội',
+    travelTime: '20 phút',
+    year,
+    month,
+    day: 24,
+  },
+  {
+    id: 13,
+    type: 'event',
+    title: 'Chốt Sổ Báo Cáo & Đóng Milestone Cuối Tháng',
+    time: '17:00 PM',
+    priority: 'high',
+    colorTag: '#F28B82',
+    year,
+    month,
+    day: 27,
+    description: 'Xuất báo cáo năng suất 30 ngày và đối soát số liệu.',
+  },
 ];
 
 const getInitialSampleTasks = (): TaskItem[] => [
@@ -277,12 +369,14 @@ const defaultCategories: CalendarCategory[] = [
   { id: 'routine', name: 'Thói quen hằng ngày', color: '#FDD663', isBuiltIn: true },
   { id: 'event', name: 'Sự kiện & Hội thảo', color: '#8AB4F8', isBuiltIn: true },
   { id: 'task', name: 'Nhiệm vụ & Deadline', color: '#81C995', isBuiltIn: true },
+  { id: 'birthday', name: 'Sinh nhật cá nhân', color: '#FF7597', isBuiltIn: true },
+  { id: 'holiday', name: 'Ngày lễ tại Việt Nam', color: '#C58AF9', isBuiltIn: true },
 ];
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { currentRole } = useAuth();
+  const { currentRole, currentUser } = useAuth();
 
   // Dynamic real system date initialization
   const now = new Date();
@@ -329,6 +423,67 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return getInitialSampleEvents(now.getFullYear(), now.getMonth(), now.getDate());
   });
 
+  // Real-time Vietnam Holidays Sync: Automatically fetches public holidays & integrates into eventsData
+  useEffect(() => {
+    let isMounted = true;
+    getVietnamHolidays(selectedYear).then((holidays) => {
+      if (!isMounted) return;
+      setEventsData((prev) => {
+        // Retain user custom events and replace previous holidays for the current year
+        const nonHolidays = prev.filter(
+          (e) => !(e.categoryId === 'holiday' && e.year === selectedYear)
+        );
+        return [...nonHolidays, ...holidays];
+      });
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedYear]);
+
+  // Real-time Personal Birthday Event Sync onto Calendar
+  useEffect(() => {
+    if (!currentUser?.birthday) {
+      setEventsData((prev) => prev.filter((e) => e.id !== 888888 && e.categoryId !== 'birthday'));
+      return;
+    }
+
+    try {
+      const [bYearStr, bMonthStr, bDayStr] = currentUser.birthday.split('-');
+      if (!bMonthStr || !bDayStr) return;
+      const bMonth = parseInt(bMonthStr, 10) - 1; // 0-indexed
+      const bDay = parseInt(bDayStr, 10);
+      const bYear = parseInt(bYearStr, 10);
+      const age = selectedYear - bYear;
+
+      const birthdayTitle = age > 0
+        ? `🎂 Sinh nhật ${currentUser.name || 'bạn'} (${age} tuổi)`
+        : `🎂 Sinh nhật ${currentUser.name || 'bạn'}`;
+
+      const birthdayEvent: CalendarEvent = {
+        id: 888888,
+        type: 'event',
+        title: birthdayTitle,
+        time: 'Cả ngày',
+        priority: 'high',
+        year: selectedYear,
+        month: bMonth,
+        day: bDay,
+        colorTag: '#FF7597',
+        categoryId: 'birthday',
+        status: 'free',
+        description: `Chúc mừng sinh nhật ${currentUser.name || 'bạn'}! Chúc bạn tuổi mới nhiều sức khỏe, may mắn và hạnh phúc! 🎉🎂🎈`,
+      };
+
+      setEventsData((prev) => {
+        const withoutOld = prev.filter((e) => e.id !== 888888 && e.categoryId !== 'birthday');
+        return [birthdayEvent, ...withoutOld];
+      });
+    } catch (err) {
+      console.warn('Lỗi xử lý ngày sinh nhật:', err);
+    }
+  }, [currentUser?.birthday, currentUser?.name, selectedYear]);
+
   const [tasksData, setTasksData] = useState<TaskItem[]>(() => {
     const saved = localStorage.getItem('routinepulse_tasks');
     if (saved) {
@@ -358,7 +513,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return 'default';
   });
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilters>(() => {
-    const initial: CategoryFilters = { routine: true, event: true, task: true };
+    const initial: CategoryFilters = { routine: true, event: true, task: true, holiday: true };
     categories.forEach((cat) => {
       initial[cat.id] = true;
     });

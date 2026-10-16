@@ -8,6 +8,7 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  birthday?: string; // Format: YYYY-MM-DD
   role: AccountRole;
   subscriptionTier: SubscriptionTier;
   isPremium: boolean;
