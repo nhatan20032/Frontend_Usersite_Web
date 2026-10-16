@@ -43,9 +43,9 @@ export const TaskItem: React.FC<TaskItemProps> = ({
         />
 
         <div className="space-y-1.5 flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 min-h-[22px]">
             <h4
-              className={`font-medium text-xs text-[#E3E2E3] truncate ${
+              className={`font-medium text-xs text-[#E3E2E3] truncate min-w-0 flex-1 ${
                 task.completed ? 'line-through text-[#70757A]' : ''
               }`}
               title={task.title}
@@ -65,7 +65,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
                 </span>
               )}
 
-              <div className="hidden group-hover:flex items-center gap-0.5">
+              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
                 <button
                   type="button"
                   onClick={() => onEditTask?.(task.id)}
