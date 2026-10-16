@@ -14,7 +14,6 @@ import {
   CreditCard,
   Check,
   Crown,
-  Type,
 } from 'lucide-react';
 
 export const SettingsModal: React.FC = () => {
@@ -26,6 +25,9 @@ export const SettingsModal: React.FC = () => {
   const [name, setName] = useState<string>(currentUser?.name || 'Nguyễn Văn An');
   const [email, setEmail] = useState<string>(currentUser?.email || 'an.nguyen@routinepulse.com');
   const [phone, setPhone] = useState<string>(currentUser?.phone || '0987 654 321');
+  const [pushEnabled, setPushEnabled] = useState<boolean>(true);
+  const [smsEnabled, setSmsEnabled] = useState<boolean>(false);
+  const [emailEnabled, setEmailEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     if (settingsInitialTab && ['profile', 'appearance', 'language', 'notifications', 'devices', 'billing'].includes(settingsInitialTab)) {
@@ -314,22 +316,6 @@ export const SettingsModal: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Typography Spec Info */}
-              <div className="bg-[#18191B] p-4 rounded-xl space-y-2.5 border border-[#2A2B2D]">
-                <div className="flex items-center gap-2 font-medium text-[var(--google-blue)]">
-                  <Type className="w-4 h-4" />
-                  <span>{t('modals.settings.fontSyncTitle')}</span>
-                </div>
-                <p className="text-[11px] text-[#9AA0A6] leading-relaxed">
-                  {t('modals.settings.fontSyncDesc')}
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1 font-mono text-[10px]">
-                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#8AB4F8] border border-[#8AB4F8]/40 font-semibold">Be Vietnam Pro (Chính)</span>
-                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Plus Jakarta Sans</span>
-                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">JetBrains Mono</span>
-                </div>
-              </div>
             </div>
           )}
 
@@ -342,29 +328,89 @@ export const SettingsModal: React.FC = () => {
               </div>
 
               <div className="space-y-2.5">
-                <label className="flex items-center justify-between p-3 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D]">
-                  <div className="space-y-0.5">
+                <div
+                  onClick={() => setPushEnabled(!pushEnabled)}
+                  className="flex items-center justify-between p-3.5 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D] transition-colors select-none"
+                >
+                  <div className="space-y-0.5 pr-4">
                     <div className="font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Push Notification trên App' : 'In-App Push Notifications'}</div>
                     <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Nhận thông báo tức thì trên thiết bị' : 'Instant notifications on active devices'}</div>
                   </div>
-                  <input type="checkbox" defaultChecked disabled className="w-4 h-4 text-[#1A73E8] rounded bg-[#28292A]" />
-                </label>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={pushEnabled}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPushEnabled(!pushEnabled);
+                    }}
+                    className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-200 cursor-pointer flex-shrink-0 relative focus:outline-none ${
+                      pushEnabled ? 'bg-[#1A73E8]' : 'bg-[#333538]'
+                    }`}
+                  >
+                    <span
+                      className={`block w-5 h-5 rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
+                        pushEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
 
-                <label className="flex items-center justify-between p-3 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D]">
-                  <div className="space-y-0.5">
+                <div
+                  onClick={() => setSmsEnabled(!smsEnabled)}
+                  className="flex items-center justify-between p-3.5 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D] transition-colors select-none"
+                >
+                  <div className="space-y-0.5 pr-4">
                     <div className="font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Tin nhắn SMS nhắc giờ' : 'SMS Reminder'}</div>
                     <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Nhắn tin khi sắp đến giờ sự kiện quan trọng' : 'Receive SMS for urgent meetings'}</div>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-4 h-4 text-[#1A73E8] rounded bg-[#28292A]" />
-                </label>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={smsEnabled}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSmsEnabled(!smsEnabled);
+                    }}
+                    className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-200 cursor-pointer flex-shrink-0 relative focus:outline-none ${
+                      smsEnabled ? 'bg-[#1A73E8]' : 'bg-[#333538]'
+                    }`}
+                  >
+                    <span
+                      className={`block w-5 h-5 rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
+                        smsEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
 
-                <label className="flex items-center justify-between p-3 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D]">
-                  <div className="space-y-0.5">
+                <div
+                  onClick={() => setEmailEnabled(!emailEnabled)}
+                  className="flex items-center justify-between p-3.5 bg-[#18191B] border border-[#2A2B2D] rounded-xl cursor-pointer hover:border-[#3A3B3D] transition-colors select-none"
+                >
+                  <div className="space-y-0.5 pr-4">
                     <div className="font-semibold text-[#E3E2E3]">{language === 'vi' ? 'Thông báo qua Email' : 'Email Alerts'}</div>
                     <div className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Gửi tóm tắt lịch trình buổi sáng vào hộp thư' : 'Daily morning schedule summary'}</div>
                   </div>
-                  <input type="checkbox" defaultChecked className="w-4 h-4 text-[#1A73E8] rounded bg-[#28292A]" />
-                </label>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={emailEnabled}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEmailEnabled(!emailEnabled);
+                    }}
+                    className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-200 cursor-pointer flex-shrink-0 relative focus:outline-none ${
+                      emailEnabled ? 'bg-[#1A73E8]' : 'bg-[#333538]'
+                    }`}
+                  >
+                    <span
+                      className={`block w-5 h-5 rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out ${
+                        emailEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
           )}
