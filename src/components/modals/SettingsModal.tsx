@@ -325,7 +325,7 @@ export const SettingsModal: React.FC = () => {
                   {t('modals.settings.fontSyncDesc')}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1 font-mono text-[10px]">
-                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Geist Sans</span>
+                  <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#8AB4F8] border border-[#8AB4F8]/40 font-semibold">Be Vietnam Pro (Chính)</span>
                   <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">Plus Jakarta Sans</span>
                   <span className="px-2.5 py-1 rounded-md bg-[#28292A] text-[#E3E2E3] border border-[#333538]">JetBrains Mono</span>
                 </div>
