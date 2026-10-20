@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>RoutinePulse Mobile - Ghi Chú Kỷ Luật (Keep Notes)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#121314",
+            "surface-container": "#1f2021",
+            "outline-subtle": "#2a2b2d",
+            "text-primary": "#e3e2e3",
+            "text-secondary": "#9aa0a6",
+            "google-blue": "#8ab4f8",
+            "habit-amber": "#fdd663",
+            "task-green": "#81c995",
+            "note-purple": "#c58af9"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { background-color: #0d0e0f; min-height: 100vh; font-family: 'Inter', sans-serif; }
+    .mobile-shell { width: 100%; max-width: 412px; height: 844px; margin: 0 auto; background: #121314; border-radius: 40px; border: 1px solid #2a2b2d; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+  </style>
+</head>
+<body class="text-text-primary flex justify-center p-0 sm:py-6">
+<div class="mobile-shell shadow-2xl pb-20">
+  <header class="h-14 w-full sticky top-0 z-30 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-note-purple text-xl">sticky_note_2</span>
+      <h1 class="text-sm font-semibold text-text-primary">Ghi chú (Keep Notes)</h1>
+    </div>
+    <button class="w-8 h-8 rounded-lg bg-note-purple/20 text-note-purple flex items-center justify-center font-bold">
+      <span class="material-symbols-outlined text-lg">add</span>
+    </button>
+  </header>
+
+  <main class="flex-1 overflow-y-auto p-4 space-y-3.5">
+    <!-- Search Bar -->
+    <div class="flex items-center gap-2 bg-surface-container border border-outline-subtle rounded-xl px-3 py-2">
+      <span class="material-symbols-outlined text-text-secondary text-base">search</span>
+      <input type="text" placeholder="Tìm kiếm ghi chú & thẻ tag..." class="w-full bg-transparent border-0 text-xs text-white focus:outline-none placeholder:text-text-secondary"/>
+    </div>
+
+    <!-- Notes Cards -->
+    <div class="space-y-3">
+      <!-- Amber Pinned Note with Checklist -->
+      <article class="bg-surface-container border border-habit-amber/50 rounded-2xl p-4 space-y-2.5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-white">
+            <span class="material-symbols-outlined text-habit-amber text-sm" style="font-variation-settings: 'FILL' 1;">push_pin</span>
+            <span>Kỷ luật & Thói quen cốt lõi</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-habit-amber/20 text-habit-amber font-semibold">#KỷLuật</span>
+        </div>
+        <div class="space-y-1.5 text-xs text-text-secondary">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-task-green text-sm" style="font-variation-settings: 'FILL' 1;">check_box</span>
+            <span class="line-through text-text-secondary">Ngủ trước 23:00, không màn hình xanh</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-task-green text-sm" style="font-variation-settings: 'FILL' 1;">check_box</span>
+            <span class="line-through text-text-secondary">Review tiến độ qua checklist mỗi 17:30</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Blue Project Note -->
+      <article class="bg-surface-container border border-outline-subtle rounded-2xl p-4 space-y-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-bold text-white">Kế hoạch Release v2.4 RoutinePulse</h2>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-google-blue/20 text-google-blue font-semibold">#DựÁnQ4</span>
+        </div>
+        <p class="text-xs text-text-secondary leading-relaxed">
+          Đồng bộ thiết kế UI Mobile toàn diện đạt 100% tính năng bản web. Chuyển đổi 5-tab navigation và tích hợp thanh toán VietQR.
+        </p>
+        <div class="text-[10px] text-text-secondary font-mono pt-1 border-t border-outline-subtle/50">Cập nhật: 10:30 Hôm nay</div>
+      </article>
+
+      <!-- Purple Idea Note -->
+      <article class="bg-surface-container border border-note-purple/40 rounded-2xl p-4 space-y-2 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-bold text-white">Ý tưởng Tính năng Mới</h2>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-note-purple/20 text-note-purple font-semibold">#ÝTưởng</span>
+        </div>
+        <p class="text-xs text-text-secondary">
+          Tích hợp tiện ích Widget màn hình khóa iOS/Android cho chuỗi streak và lịch hẹn tiếp theo.
+        </p>
+      </article>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="absolute bottom-0 left-0 w-full h-16 bg-surface-container border-t border-outline-subtle flex items-center justify-around px-2">
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">calendar_today</span><span class="text-[10px] mt-0.5">Lịch</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">local_fire_department</span><span class="text-[10px] mt-0.5">Kỷ luật</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">task_alt</span><span class="text-[10px] mt-0.5">Việc làm</span></button>
+    <button class="flex flex-col items-center justify-center text-note-purple font-semibold flex-1 py-1"><span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">sticky_note_2</span><span class="text-[10px] mt-0.5">Ghi chú</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">person</span><span class="text-[10px] mt-0.5">Cá nhân</span></button>
+  </nav>
+</div>
+</body>
+</html>

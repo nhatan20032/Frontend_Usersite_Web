@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>RoutinePulse Mobile - Cổng Đăng Nhập & Đăng Ký</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#121314",
+            "surface-container": "#1f2021",
+            "surface-container-high": "#28292a",
+            "outline-subtle": "#2a2b2d",
+            "text-primary": "#e3e2e3",
+            "text-secondary": "#9aa0a6",
+            "google-blue": "#8ab4f8"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { background-color: #0d0e0f; min-height: 100vh; font-family: 'Inter', sans-serif; }
+    .mobile-shell { width: 100%; max-width: 412px; height: 844px; margin: 0 auto; background: #121314; border-radius: 40px; border: 1px solid #2a2b2d; position: relative; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: 24px; }
+  </style>
+</head>
+<body class="text-text-primary flex justify-center p-0 sm:py-6">
+<div class="mobile-shell shadow-2xl">
+  <!-- Brand Logo -->
+  <div class="w-14 h-14 rounded-2xl bg-google-blue text-surface flex items-center justify-center font-bold text-2xl mb-6 shadow-xl">
+    <span class="material-symbols-outlined text-3xl font-bold">calendar_today</span>
+  </div>
+
+  <h1 class="text-2xl font-bold text-white tracking-tight">RoutinePulse Mobile</h1>
+  <p class="text-xs text-text-secondary mt-1 mb-8">Không gian làm việc & Kỷ luật hiệu suất cao</p>
+
+  <!-- Login Form -->
+  <form onsubmit="event.preventDefault(); alert('Đăng nhập thành công!');" class="space-y-4">
+    <div>
+      <label class="block text-xs text-text-secondary mb-1.5 font-medium">Email tài khoản</label>
+      <input type="email" value="nhatan.developer@gmail.com" class="w-full bg-surface-container border border-outline-subtle rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-google-blue"/>
+    </div>
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label class="block text-xs text-text-secondary font-medium">Mật khẩu</label>
+        <a href="#" class="text-[11px] text-google-blue hover:underline">Quên mật khẩu?</a>
+      </div>
+      <input type="password" value="••••••••••••" class="w-full bg-surface-container border border-outline-subtle rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-google-blue"/>
+    </div>
+
+    <button type="submit" class="w-full py-3.5 rounded-xl bg-google-blue hover:brightness-105 text-surface font-semibold text-xs shadow-lg transition-all active:scale-95">
+      Đăng nhập ngay
+    </button>
+  </form>
+
+  <div class="my-6 flex items-center gap-3 text-text-secondary text-xs">
+    <div class="flex-1 h-px bg-outline-subtle"></div>
+    <span>hoặc tiếp tục với</span>
+    <div class="flex-1 h-px bg-outline-subtle"></div>
+  </div>
+
+  <button onclick="alert('Đang kết nối Google Workspace...')" class="w-full py-3 rounded-xl bg-surface-container border border-outline-subtle hover:bg-surface-container-high text-white font-medium text-xs flex items-center justify-center gap-2.5 transition-colors">
+    <span class="material-symbols-outlined text-base text-google-blue">domain</span>
+    <span>Google Workspace</span>
+  </button>
+
+  <p class="text-center text-xs text-text-secondary mt-8">
+    Chưa có tài khoản? <a href="#" class="text-google-blue font-semibold hover:underline">Đăng ký dùng thử 14 ngày</a>
+  </p>
+</div>
+</body>
+</html>

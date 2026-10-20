@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>RoutinePulse Mobile - Việc Cần Làm (Tasks & Subtasks)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto+Flex:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#121314",
+            "surface-container": "#1f2021",
+            "surface-container-high": "#28292a",
+            "outline-subtle": "#2a2b2d",
+            "text-primary": "#e3e2e3",
+            "text-secondary": "#9aa0a6",
+            "google-blue": "#8ab4f8",
+            "task-green": "#81c995",
+            "danger-coral": "#f28b82",
+            "habit-amber": "#fdd663"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { background-color: #0d0e0f; min-height: 100vh; font-family: 'Inter', sans-serif; }
+    .mobile-shell { width: 100%; max-width: 412px; height: 844px; margin: 0 auto; background: #121314; border-radius: 40px; border: 1px solid #2a2b2d; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+  </style>
+</head>
+<body class="text-text-primary flex justify-center p-0 sm:py-6">
+<div class="mobile-shell shadow-2xl pb-20">
+  <!-- Top App Bar -->
+  <header class="h-14 w-full sticky top-0 z-30 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-task-green text-xl">task_alt</span>
+      <h1 class="text-sm font-semibold text-text-primary">Việc cần làm (Tasks)</h1>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button class="w-8 h-8 rounded-lg bg-surface-container text-text-secondary hover:text-white flex items-center justify-center">
+        <span class="material-symbols-outlined text-lg">filter_list</span>
+      </button>
+      <button class="w-8 h-8 rounded-lg bg-task-green/20 text-task-green flex items-center justify-center font-bold">
+        <span class="material-symbols-outlined text-lg">add</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Canvas -->
+  <main class="flex-1 overflow-y-auto p-4 space-y-3.5">
+    <!-- Quick Add Input -->
+    <div class="flex items-center gap-2 bg-surface-container border border-outline-subtle rounded-xl px-3 py-2">
+      <span class="material-symbols-outlined text-text-secondary text-lg">add_task</span>
+      <input type="text" placeholder="Thêm công việc mới nhanh..." class="w-full bg-transparent border-0 text-xs text-white focus:outline-none placeholder:text-text-secondary"/>
+    </div>
+
+    <!-- Filter Segmented Chips -->
+    <div class="flex items-center gap-1.5 text-xs">
+      <button class="px-3 py-1 rounded-full bg-task-green/20 text-task-green font-semibold border border-task-green/40">Tất cả (3)</button>
+      <button class="px-3 py-1 rounded-full bg-surface-container text-text-secondary border border-outline-subtle">Hôm nay (2)</button>
+      <button class="px-3 py-1 rounded-full bg-surface-container text-text-secondary border border-outline-subtle">Ưu tiên cao (1)</button>
+    </div>
+
+    <!-- Task Items -->
+    <div class="space-y-2.5">
+      <!-- Item 1: High Priority with Subtasks -->
+      <article class="bg-surface-container border border-outline-subtle rounded-xl p-3 flex flex-col gap-2.5 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-2.5">
+            <button class="w-6 h-6 mt-0.5 rounded-md border border-outline-subtle flex items-center justify-center text-transparent hover:border-task-green">
+              <span class="material-symbols-outlined text-xs">check</span>
+            </button>
+            <div>
+              <h2 class="text-xs font-semibold text-white">Review PR Subroutine Engine</h2>
+              <div class="flex items-center gap-2 mt-1 text-[11px] text-text-secondary font-mono">
+                <span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[13px] text-danger-coral">schedule</span> Hôm nay, 17:00</span>
+                <span>•</span>
+                <span>Sprint Core</span>
+              </div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-danger-coral/20 text-danger-coral border border-danger-coral/30">Cao</span>
+        </div>
+        <!-- Subtasks list -->
+        <div class="pl-8 pt-2 border-t border-outline-subtle/50 space-y-1.5 text-xs">
+          <div class="flex items-center justify-between text-text-secondary">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-task-green text-sm">check_circle</span> <span class="line-through">Kiểm thử logic streak</span></span>
+            <span class="text-[10px] font-mono text-task-green">Xong</span>
+          </div>
+          <div class="flex items-center justify-between text-text-secondary">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-text-secondary text-sm">radio_button_unchecked</span> <span>Kiểm tra độ tương thích mobile</span></span>
+            <span class="text-[10px] font-mono text-habit-amber">Chờ</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 2: Medium Priority -->
+      <article class="bg-surface-container border border-outline-subtle rounded-xl p-3 flex flex-col gap-2 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-2.5">
+            <button class="w-6 h-6 mt-0.5 rounded-md border border-outline-subtle flex items-center justify-center text-transparent hover:border-task-green">
+              <span class="material-symbols-outlined text-xs">check</span>
+            </button>
+            <div>
+              <h2 class="text-xs font-semibold text-white">Chuẩn bị slide báo cáo Sprint Q4</h2>
+              <p class="text-[11px] text-text-secondary font-mono mt-0.5">Ngày mai, 10:00</p>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-habit-amber/20 text-habit-amber border border-habit-amber/30">Vừa</span>
+        </div>
+      </article>
+
+      <!-- Item 3: Completed Task -->
+      <article class="bg-surface-container/60 border border-outline-subtle/40 rounded-xl p-3 flex items-center justify-between opacity-75">
+        <div class="flex items-center gap-2.5">
+          <div class="w-6 h-6 rounded-md bg-task-green text-surface flex items-center justify-center font-bold">
+            <span class="material-symbols-outlined text-xs font-bold">check</span>
+          </div>
+          <h2 class="text-xs font-medium text-text-secondary line-through">Cập nhật tài liệu API v2 Lịch Hẹn</h2>
+        </div>
+        <span class="text-[10px] text-task-green font-bold">Hoàn tất</span>
+      </article>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="absolute bottom-0 left-0 w-full h-16 bg-surface-container border-t border-outline-subtle flex items-center justify-around px-2">
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">calendar_today</span><span class="text-[10px] mt-0.5">Lịch</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">local_fire_department</span><span class="text-[10px] mt-0.5">Kỷ luật</span></button>
+    <button class="flex flex-col items-center justify-center text-task-green font-semibold flex-1 py-1"><span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">task_alt</span><span class="text-[10px] mt-0.5">Việc làm</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">sticky_note_2</span><span class="text-[10px] mt-0.5">Ghi chú</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">person</span><span class="text-[10px] mt-0.5">Cá nhân</span></button>
+  </nav>
+</div>
+</body>
+</html>

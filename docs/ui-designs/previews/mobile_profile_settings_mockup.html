@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>RoutinePulse Mobile - Cá Nhân, Cài Đặt & Nâng Cấp Gói VIP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#121314",
+            "surface-container": "#1f2021",
+            "surface-container-high": "#28292a",
+            "outline-subtle": "#2a2b2d",
+            "text-primary": "#e3e2e3",
+            "text-secondary": "#9aa0a6",
+            "google-blue": "#8ab4f8",
+            "habit-amber": "#fdd663",
+            "task-green": "#81c995",
+            "danger-coral": "#f28b82"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { background-color: #0d0e0f; min-height: 100vh; font-family: 'Inter', sans-serif; }
+    .mobile-shell { width: 100%; max-width: 412px; height: 844px; margin: 0 auto; background: #121314; border-radius: 40px; border: 1px solid #2a2b2d; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+  </style>
+</head>
+<body class="text-text-primary flex justify-center p-0 sm:py-6">
+<div class="mobile-shell shadow-2xl pb-20">
+  <header class="h-14 w-full sticky top-0 z-30 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-4 flex items-center justify-between">
+    <h1 class="text-sm font-semibold text-text-primary">Hồ sơ & Trung tâm điều khiển</h1>
+    <span class="text-xs px-2 py-0.5 rounded-full bg-habit-amber/20 text-habit-amber font-bold border border-habit-amber/30">VIP PRO</span>
+  </header>
+
+  <main class="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
+    <!-- User Card -->
+    <div class="bg-surface-container border border-outline-subtle rounded-2xl p-4 flex items-center gap-3.5">
+      <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-google-blue to-habit-amber text-surface font-bold text-lg flex items-center justify-center shrink-0 shadow-md">
+        NA
+      </div>
+      <div class="flex-1 min-w-0">
+        <h2 class="text-sm font-bold text-white truncate">Nguyễn Nhật An</h2>
+        <p class="text-text-secondary truncate text-[11px] mt-0.5">nhatan.developer@gmail.com</p>
+        <span class="inline-block mt-1 text-[10px] text-task-green font-mono">Đã kích hoạt Google Calendar Sync</span>
+      </div>
+    </div>
+
+    <!-- Upgrade / VietQR Box -->
+    <div class="bg-gradient-to-b from-surface-container to-surface-container-high border-2 border-habit-amber/60 rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-habit-amber tracking-wider">Gói cước VIP Doanh Nhân</span>
+          <div class="text-base font-bold text-white mt-0.5">Không Giới Hạn Tính Năng</div>
+        </div>
+        <span class="material-symbols-outlined text-habit-amber text-2xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+      </div>
+      <ul class="space-y-1.5 text-[11px] text-text-secondary">
+        <li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-task-green text-xs">check</span> Không giới hạn số lượng Lịch Hẹn Đặt Trước</li>
+        <li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-task-green text-xs">check</span> Đồng bộ 2 chiều tức thời với Google Meet & Google Calendar</li>
+        <li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-task-green text-xs">check</span> Mở khóa toàn bộ Theme và phân tích chuỗi Streak AI</li>
+      </ul>
+      <div class="pt-2 border-t border-outline-subtle/60 flex items-center justify-between">
+        <span class="text-sm font-bold text-habit-amber font-mono">699.000đ / Năm</span>
+        <button onclick="alert('Mở cổng quét mã VietQR MB Bank: 99998888899')" class="px-3 py-1.5 rounded-lg bg-habit-amber text-surface font-bold text-xs shadow-md">
+          Quét mã VietQR
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="bg-surface-container border border-outline-subtle rounded-2xl overflow-hidden divide-y divide-outline-subtle/50">
+      <div class="p-3.5 flex items-center justify-between hover:bg-surface-container-high cursor-pointer">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-google-blue text-lg">calendar_month</span>
+          <span class="text-white font-medium">Lịch hẹn đặt trước (Appointment Hub)</span>
+        </div>
+        <span class="material-symbols-outlined text-text-secondary text-sm">chevron_right</span>
+      </div>
+      <div class="p-3.5 flex items-center justify-between hover:bg-surface-container-high cursor-pointer">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-task-green text-lg">palette</span>
+          <span class="text-white font-medium">Chủ đề giao diện (5 Themes Obsidian/Tet)</span>
+        </div>
+        <span class="material-symbols-outlined text-text-secondary text-sm">chevron_right</span>
+      </div>
+      <div class="p-3.5 flex items-center justify-between hover:bg-surface-container-high cursor-pointer">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-habit-amber text-lg">translate</span>
+          <span class="text-white font-medium">Ngôn ngữ: Tiếng Việt</span>
+        </div>
+        <span class="material-symbols-outlined text-text-secondary text-sm">chevron_right</span>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <button class="w-full py-2.5 rounded-xl bg-danger-coral/10 border border-danger-coral/30 text-danger-coral font-semibold text-xs flex items-center justify-center gap-1.5">
+      <span class="material-symbols-outlined text-base">logout</span> Đăng xuất
+    </button>
+  </main>
+
+  <nav class="absolute bottom-0 left-0 w-full h-16 bg-surface-container border-t border-outline-subtle flex items-center justify-around px-2">
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">calendar_today</span><span class="text-[10px] mt-0.5">Lịch</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">local_fire_department</span><span class="text-[10px] mt-0.5">Kỷ luật</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">task_alt</span><span class="text-[10px] mt-0.5">Việc làm</span></button>
+    <button class="flex flex-col items-center justify-center text-text-secondary flex-1 py-1"><span class="material-symbols-outlined text-xl">sticky_note_2</span><span class="text-[10px] mt-0.5">Ghi chú</span></button>
+    <button class="flex flex-col items-center justify-center text-google-blue font-semibold flex-1 py-1"><span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">person</span><span class="text-[10px] mt-0.5">Cá nhân</span></button>
+  </nav>
+</div>
+</body>
+</html>
