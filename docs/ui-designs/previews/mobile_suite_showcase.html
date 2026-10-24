@@ -1,132 +1,155 @@
 <!DOCTYPE html>
-<html class="dark" lang="vi">
+<html lang="vi">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>RoutinePulse Mobile App Suite - Prototype Tương Tác Đầy Đủ 100% Tính Năng</title>
-  <!-- Material Symbols Outlined -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <!-- Fonts: Inter & Roboto Flex -->
+  <title>RoutinePulse Mobile - Giao Diện Lịch Biểu & Kỷ Luật</title>
+  <!-- Material Symbols Outlined with full variable axes -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+  <!-- Fonts: Roboto & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Flex:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            surface: '#121314',
-            'surface-container-low': '#1b1c1d',
-            'surface-container': '#1f2021',
-            'surface-container-high': '#28292a',
-            'surface-container-highest': '#343536',
-            'outline-subtle': '#2a2b2d',
-            'outline-muted': '#424750',
-            'text-primary': '#e3e2e3',
-            'text-secondary': '#9aa0a6',
-            'text-muted': '#5f6368',
-            'google-blue': '#8ab4f8',
-            'habit-amber': '#fdd663',
-            'task-green': '#81c995',
-            'danger-coral': '#f28b82',
-            'note-purple': '#c58af9'
+            'g-bg': '#FFFFFF',
+            'g-surface': '#F8F9FA',
+            'g-surface-variant': '#F1F3F4',
+            'g-border': '#DADCE0',
+            'g-border-subtle': '#E8EAED',
+            'g-text-primary': '#202124',
+            'g-text-secondary': '#3C4043',
+            'g-text-muted': '#5F6368',
+            // Authentic Semantic Solid Palette
+            'g-blue': '#1A73E8',
+            'g-blue-light': '#E8F0FE',
+            'g-blue-container': '#C2E7FF',
+            'g-blue-dark': '#001D35',
+            'g-red': '#D93025',
+            'g-flamingo': '#E67C73',
+            'g-green': '#0B8043',
+            'g-green-light': '#E6F4EA',
+            'g-sage': '#7CB342',
+            'g-amber': '#F4511E',
+            'g-banana': '#F6BF26',
+            'g-banana-light': '#FEF7E0',
+            'g-lavender': '#7986CB',
+            'g-grape': '#8E24AA',
+            'g-grape-light': '#F3E8FD',
+            'g-peacock': '#039BE5'
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['Roboto Flex', 'monospace']
+            sans: ['Roboto', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['Roboto', 'monospace']
           }
         }
       }
     }
   </script>
   <style>
-    /* Tabular numbers for clean timers and counters */
     .tabular-nums { font-variant-numeric: tabular-nums; }
-    /* Hide scrollbars */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Ensure Material Symbols are strictly rendered as icon glyphs */
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined' !important;
+      font-weight: normal !important;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: 'liga' 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    
     /* Mobile frame simulator */
     .mobile-viewport {
       width: 100%;
       max-width: 412px;
       height: 870px;
-      background-color: #121314;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 0 12px #1f2021, 0 0 0 14px #2a2b2d;
-      border-radius: 46px;
+      background-color: #FFFFFF;
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.25), 0 0 0 12px #202124, 0 0 0 14px #5F6368;
+      border-radius: 44px;
       position: relative;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      display: inline-block;
-      line-height: 1;
+    /* Material Switch */
+    .toggle-checkbox:checked {
+      right: 0;
+      border-color: #1A73E8;
+      background-color: #1A73E8;
     }
-    .material-symbols-outlined.fill {
-      font-variation-settings: 'FILL' 1;
+    .toggle-checkbox:checked + .toggle-label {
+      background-color: #C2E7FF;
     }
   </style>
 </head>
-<body class="bg-[#090a0f] text-text-primary min-h-screen flex flex-col items-center py-6 px-3 select-none">
+<body class="bg-[#F1F3F4] text-g-text-primary min-h-screen flex flex-col items-center py-6 px-3 select-none">
 
   <!-- TOP SHOWCASE HEADER (DESKTOP CONTROLS) -->
   <header class="text-center max-w-3xl mb-5">
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-google-blue/10 border border-google-blue/30 text-google-blue text-xs font-semibold mb-2">
-      <span class="material-symbols-outlined text-sm">touch_app</span>
-      <span>RoutinePulse Mobile - Bản Prototype Tương Tác 100% Tính Năng</span>
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-g-border text-g-blue text-xs font-medium shadow-sm mb-2">
+      <span class="material-symbols-outlined text-sm text-g-blue">verified</span>
+      <span>RoutinePulse Mobile - Giao Diện Lịch Biểu Tươi Sáng (Flat Solid Color)</span>
     </div>
-    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-1.5">
-      Mô Phỏng Trực Tiếp Giao Diện Di Động (Interactive Mobile Suite)
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-g-text-primary mb-1">
+      Mô Phỏng Trực Tiếp Ứng Dụng Di Động
     </h1>
-    <p class="text-xs sm:text-sm text-text-secondary max-w-2xl mx-auto">
-      Bạn có thể <strong class="text-white">chuyển tab</strong>, <strong class="text-white">đổi view lịch (Tháng/Tuần/Biểu)</strong>, <strong class="text-white">bấm tick thói quen</strong>, <strong class="text-white">mở tạo mới (+)</strong>, <strong class="text-white">cài đặt lịch hẹn</strong>, <strong class="text-white">quét mã VietQR</strong> và <strong class="text-white">đăng xuất/đăng nhập</strong> trực tiếp bên dưới!
+    <p class="text-xs sm:text-sm text-g-text-muted max-w-xl mx-auto">
+      Giao diện nền sáng tinh khiết, màu sắc đơn sắc tươi tắn, không lạm dụng gradient, thân thiện và trực quan.
     </p>
   </header>
 
   <!-- QUICK SCREEN JUMP SELECTOR -->
   <div class="flex flex-wrap justify-center gap-1.5 max-w-3xl mb-5">
-    <button onclick="setScreenTab('calendar', 'agenda')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-google-blue transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-google-blue">view_agenda</span> Lịch biểu (Agenda)
+    <button onclick="setScreenTab('calendar', 'agenda')" class="px-3 py-1.5 rounded-full bg-white border border-g-border text-xs text-g-text-secondary hover:text-g-blue hover:border-g-blue shadow-sm transition-all flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm text-g-blue">view_agenda</span> Lịch biểu (Schedule)
     </button>
-    <button onclick="setScreenTab('calendar', 'month')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-google-blue transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-google-blue">calendar_month</span> Lưới Tháng (Month Grid)
+    <button onclick="setScreenTab('calendar', 'month')" class="px-3 py-1.5 rounded-full bg-white border border-g-border text-xs text-g-text-secondary hover:text-g-blue hover:border-g-blue shadow-sm transition-all flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm text-g-blue">calendar_month</span> Lưới Tháng (Month Grid)
     </button>
-    <button onclick="setScreenTab('calendar', 'week')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-google-blue transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-google-blue">view_week</span> Lịch Tuần (Timeline)
+    <button onclick="setScreenTab('calendar', 'week')" class="px-3 py-1.5 rounded-full bg-white border border-g-border text-xs text-g-text-secondary hover:text-g-blue hover:border-g-blue shadow-sm transition-all flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm text-g-blue">view_week</span> Lịch Tuần (Timeline)
     </button>
-    <button onclick="setScreenTab('routines')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-habit-amber transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-habit-amber">local_fire_department</span> Kỷ luật Thói quen
+    <button onclick="setScreenTab('routines')" class="px-3 py-1.5 rounded-full bg-white border border-g-border text-xs text-g-text-secondary hover:text-g-amber hover:border-g-amber shadow-sm transition-all flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm text-g-amber">local_fire_department</span> Kỷ luật Thói quen
     </button>
-    <button onclick="setScreenTab('tasks')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-task-green transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-task-green">task_alt</span> Việc làm (Tasks)
+    <button onclick="setScreenTab('tasks')" class="px-3 py-1.5 rounded-full bg-white border border-g-border text-xs text-g-text-secondary hover:text-g-green hover:border-g-green shadow-sm transition-all flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm text-g-green">task_alt</span> Việc cần làm (Tasks)
     </button>
-    <button onclick="setScreenTab('notes')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-note-purple transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-note-purple">sticky_note_2</span> Keep Notes
+    <button onclick="setScreenTab('notes')" class="px-3 py-1.5 rounded-full bg-white border border-g-border text-xs text-g-text-secondary hover:text-g-grape hover:border-g-grape shadow-sm transition-all flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm text-g-grape">sticky_note_2</span> Sổ tay Ghi chú
     </button>
-    <button onclick="openModal('appointment')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-google-blue transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-google-blue">more_time</span> Lịch hẹn đặt trước
-    </button>
-    <button onclick="openModal('checkout')" class="px-2.5 py-1 rounded-lg bg-surface-container border border-outline-subtle text-xs text-text-secondary hover:text-white hover:border-habit-amber transition-colors flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm text-habit-amber">qr_code_2</span> Nâng cấp VietQR
+    <button onclick="openModal('appointment')" class="px-3 py-1.5 rounded-full bg-white border border-g-border text-xs text-g-text-secondary hover:text-g-blue hover:border-g-blue shadow-sm transition-all flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-sm text-g-blue">more_time</span> Lịch hẹn đặt trước
     </button>
   </div>
 
   <!-- THE MOBILE PHONE SIMULATOR -->
   <div class="mobile-viewport" id="mobile-app">
 
-    <!-- 0. PHONE HARDWARE STATUS BAR (Dynamic Island + Time + Battery) -->
-    <div class="w-full h-11 shrink-0 flex items-center justify-between px-6 z-50 text-xs font-semibold text-text-primary bg-surface select-none">
-      <span id="current-clock" class="tabular-nums font-mono text-[13px]">09:41</span>
-      <!-- Dynamic Island Capsule -->
-      <div class="w-24 h-5 bg-[#000000] rounded-full flex items-center justify-center gap-2 border border-white/5">
-        <div class="w-2.5 h-2.5 rounded-full bg-surface-container-high"></div>
-        <div class="w-8 h-1 rounded-full bg-surface-container-high/60"></div>
-      </div>
-      <div class="flex items-center gap-1.5 text-text-secondary">
+    <!-- 0. PHONE HARDWARE STATUS BAR -->
+    <div class="w-full h-8 shrink-0 flex items-center justify-between px-6 z-50 text-xs font-semibold text-g-text-primary bg-white select-none pt-1">
+      <span id="current-clock" class="tabular-nums font-mono text-[13px] font-bold">11:58</span>
+      <div class="w-3.5 h-3.5 bg-black rounded-full"></div>
+      <div class="flex items-center gap-1.5 text-g-text-secondary">
         <span class="material-symbols-outlined text-sm">signal_cellular_4_bar</span>
         <span class="material-symbols-outlined text-sm">wifi</span>
         <span class="material-symbols-outlined text-sm">battery_full</span>
@@ -134,62 +157,55 @@
     </div>
 
     <!-- MAIN APP CANVAS (Dynamically Switched By Tab) -->
-    <div class="flex-1 flex flex-col min-h-0 overflow-hidden relative" id="mobile-canvas">
+    <div class="flex-1 flex flex-col min-h-0 overflow-hidden relative bg-white" id="mobile-canvas">
 
       <!-- ============================================================== -->
       <!-- SCREEN 1: TAB LỊCH (CALENDAR HUB: AGENDA, MONTH, WEEK)        -->
       <!-- ============================================================== -->
-      <div id="view-calendar" class="screen-view flex-1 flex flex-col min-h-0">
-        <!-- 1.1 Sticky Header with Progressive Blur -->
-        <header class="h-14 w-full shrink-0 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-3 flex items-center justify-between z-30">
-          <div class="flex items-center gap-1.5">
-            <button onclick="toggleMonthPicker()" class="flex items-center gap-1 py-1 px-1.5 rounded-lg hover:bg-surface-container-high transition-colors">
-              <span id="header-month-text" class="text-sm font-semibold text-text-primary">Tháng 10, 2026</span>
-              <span class="material-symbols-outlined text-[18px] text-text-secondary">expand_more</span>
-            </button>
-          </div>
-          <!-- View Switcher Segmented Control -->
-          <div class="flex items-center bg-surface-container p-0.5 rounded-full border border-outline-subtle text-xs">
-            <button onclick="setCalendarMode('month')" id="btn-mode-month" class="px-2.5 py-1 text-text-secondary rounded-full transition-all">Tháng</button>
-            <button onclick="setCalendarMode('week')" id="btn-mode-week" class="px-2.5 py-1 text-text-secondary rounded-full transition-all">Tuần</button>
-            <button onclick="setCalendarMode('agenda')" id="btn-mode-agenda" class="px-3 py-1 bg-surface-container-high text-google-blue font-semibold rounded-full border border-outline-subtle shadow-sm transition-all">Biểu</button>
-          </div>
+      <div id="view-calendar" class="screen-view flex-1 flex flex-col min-h-0 bg-white">
+        <!-- 1.1 Top App Bar -->
+        <header class="h-14 w-full shrink-0 bg-white border-b border-g-border-subtle px-3 flex items-center justify-between z-30">
           <div class="flex items-center gap-1">
-            <button onclick="openModal('contacts')" title="Danh bạ" class="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:text-white hover:bg-surface-container transition-colors">
-              <span class="material-symbols-outlined text-lg">contacts</span>
+            <button onclick="toggleSideMenu()" class="w-10 h-10 rounded-full flex items-center justify-center text-g-text-secondary hover:bg-g-surface active:bg-g-surface-variant transition-colors" title="Menu">
+              <span class="material-symbols-outlined text-[22px]">menu</span>
             </button>
-            <button onclick="setScreenTab('profile')" class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-subtle flex items-center justify-center text-xs font-semibold text-google-blue">
-              RP
+            <!-- Month Dropdown Title -->
+            <button onclick="toggleMonthPicker()" class="flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-g-surface transition-colors">
+              <span id="header-month-text" class="text-base font-semibold text-g-text-primary">Tháng 10</span>
+              <span id="header-month-arrow" class="material-symbols-outlined text-[20px] text-g-text-muted transition-transform">arrow_drop_down</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-0.5">
+            <button onclick="filterSearchPrompt()" class="w-9 h-9 rounded-full flex items-center justify-center text-g-text-secondary hover:bg-g-surface transition-colors" title="Tìm kiếm">
+              <span class="material-symbols-outlined text-[20px]">search</span>
+            </button>
+            <button onclick="goToToday()" class="w-9 h-9 rounded-full flex items-center justify-center text-g-text-secondary hover:bg-g-surface transition-colors" title="Hôm nay">
+              <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+            </button>
+            <!-- View Mode Switcher Dropdown Button -->
+            <button onclick="cycleCalendarView()" id="btn-view-mode-badge" class="px-2.5 py-1 text-xs font-semibold rounded-full bg-g-surface text-g-blue border border-g-border-subtle hover:bg-g-blue-light transition-colors ml-1">
+              Biểu
+            </button>
+            <!-- Profile Avatar -->
+            <button onclick="setScreenTab('profile')" class="w-8 h-8 rounded-full bg-g-blue text-white flex items-center justify-center text-xs font-bold shadow-sm ml-1">
+              A
             </button>
           </div>
         </header>
 
-        <!-- 1.2 Mini Sticky Week Strip -->
-        <section class="bg-surface border-b border-outline-subtle px-3 py-2 shrink-0">
-          <div class="grid grid-cols-7 gap-1 text-center" id="week-strip-container">
-            <!-- Rendered dynamically in JS -->
+        <!-- 1.2 MINI MONTH DROPDOWN CALENDAR -->
+        <section id="mini-month-dropdown" class="bg-white border-b border-g-border px-4 py-3 shrink-0 hidden shadow-sm transition-all">
+          <div class="grid grid-cols-7 text-center text-xs font-medium text-g-text-muted mb-2">
+            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+          </div>
+          <div class="grid grid-cols-7 gap-y-2 text-center text-xs" id="mini-month-grid">
+            <!-- Rendered in JS -->
           </div>
         </section>
 
-        <!-- 1.3 Habit Telemetry Strip (Dynamic KPI Metric) -->
-        <section class="px-3.5 pt-2.5 shrink-0">
-          <div onclick="setScreenTab('routines')" class="bg-surface-container border border-outline-subtle hover:border-habit-amber/50 rounded-xl p-3 flex flex-col gap-2 cursor-pointer transition-colors shadow-sm">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <span class="text-xs font-semibold text-text-primary">Hiệu suất hôm nay: <span id="kpi-percent-badge" class="text-google-blue font-bold">75%</span></span>
-              </div>
-              <div class="inline-flex items-center gap-1 bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-subtle text-xs text-habit-amber font-bold">
-                <span>Chuỗi 14 ngày 🔥</span>
-              </div>
-            </div>
-            <div class="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
-              <div id="kpi-progress-bar" class="h-full bg-gradient-to-r from-google-blue to-task-green rounded-full transition-all duration-300" style="width: 75%;"></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- 1.4 Mode Sub-Canvas (Agenda vs Month vs Week) -->
-        <div class="flex-1 overflow-y-auto no-scrollbar px-3.5 pt-3 pb-24" id="calendar-content-canvas">
+        <!-- 1.3 Mode Sub-Canvas (Agenda vs Month vs Week) -->
+        <div class="flex-1 overflow-y-auto no-scrollbar pb-24" id="calendar-content-canvas">
           <!-- Rendered in JS based on calendarMode -->
         </div>
       </div>
@@ -197,53 +213,52 @@
       <!-- ============================================================== -->
       <!-- SCREEN 2: TAB KỶ LUẬT THÓI QUEN (ROUTINE & HABIT TRACKER)     -->
       <!-- ============================================================== -->
-      <div id="view-routines" class="screen-view flex-1 flex flex-col min-h-0 hidden">
-        <header class="h-14 w-full shrink-0 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-4 flex items-center justify-between z-30">
+      <div id="view-routines" class="screen-view flex-1 flex flex-col min-h-0 bg-white hidden">
+        <header class="h-14 w-full shrink-0 bg-white border-b border-g-border-subtle px-4 flex items-center justify-between z-30">
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-habit-amber text-xl">local_fire_department</span>
+            <span class="material-symbols-outlined text-g-amber text-2xl fill">local_fire_department</span>
             <div>
-              <h1 class="text-sm font-semibold text-text-primary leading-tight">Kỷ luật & Thói quen</h1>
-              <p class="text-[11px] text-text-secondary">Hôm nay, 20 Tháng 10</p>
+              <h1 class="text-sm font-bold text-g-text-primary leading-tight">Kỷ luật & Thói quen</h1>
+              <p class="text-[11px] text-g-text-muted">Hôm nay, Thứ Ba 20 Tháng 10</p>
             </div>
           </div>
-          <button onclick="openModal('create', 'routine')" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-habit-amber border border-outline-subtle flex items-center justify-center transition-colors">
+          <button onclick="openModal('create', 'routine')" class="w-9 h-9 rounded-full bg-g-surface hover:bg-g-surface-variant text-g-text-primary flex items-center justify-center transition-colors">
             <span class="material-symbols-outlined text-xl">add</span>
           </button>
         </header>
 
-        <div class="flex-1 overflow-y-auto no-scrollbar px-3.5 pt-3 pb-24 space-y-3.5">
-          <!-- Filter Shift Chips -->
-          <section class="flex items-center gap-1.5 overflow-x-auto no-scrollbar -mx-3.5 px-3.5 py-0.5">
-            <button onclick="filterRoutineShift('all')" id="rf-all" class="h-7 px-3 rounded-full bg-habit-amber/20 border border-habit-amber/50 text-habit-amber text-xs font-semibold shrink-0">Tất cả (4)</button>
-            <button onclick="filterRoutineShift('morning')" id="rf-morning" class="h-7 px-3 rounded-full bg-surface-container border border-outline-subtle text-text-secondary text-xs hover:text-white shrink-0">Buổi sáng (2)</button>
-            <button onclick="filterRoutineShift('afternoon')" id="rf-afternoon" class="h-7 px-3 rounded-full bg-surface-container border border-outline-subtle text-text-secondary text-xs hover:text-white shrink-0">Buổi chiều (1)</button>
-            <button onclick="filterRoutineShift('evening')" id="rf-evening" class="h-7 px-3 rounded-full bg-surface-container border border-outline-subtle text-text-secondary text-xs hover:text-white shrink-0">Buổi tối (1)</button>
+        <div class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-24 space-y-3.5 bg-g-surface">
+          <!-- Habit Shift Filter Chips -->
+          <section class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            <button onclick="filterRoutineShift('all')" id="rf-all" class="h-7 px-3.5 rounded-full bg-g-blue text-white text-xs font-medium shrink-0 shadow-sm">Tất cả (4)</button>
+            <button onclick="filterRoutineShift('morning')" id="rf-morning" class="h-7 px-3.5 rounded-full bg-white border border-g-border text-g-text-secondary text-xs hover:border-g-blue shrink-0">Buổi sáng (2)</button>
+            <button onclick="filterRoutineShift('afternoon')" id="rf-afternoon" class="h-7 px-3.5 rounded-full bg-white border border-g-border text-g-text-secondary text-xs hover:border-g-blue shrink-0">Buổi chiều (1)</button>
+            <button onclick="filterRoutineShift('evening')" id="rf-evening" class="h-7 px-3.5 rounded-full bg-white border border-g-border text-g-text-secondary text-xs hover:border-g-blue shrink-0">Buổi tối (1)</button>
           </section>
 
-          <!-- Habit Telemetry Hero Card with 7-Day Heatmap -->
-          <section class="bg-surface-container border border-outline-subtle rounded-xl p-3.5 flex flex-col gap-3">
-            <div class="flex items-start justify-between">
+          <!-- Clean Material Card: Streak & 7-Day Performance -->
+          <section class="bg-white border border-g-border rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
+            <div class="flex items-center justify-between">
               <div>
-                <div class="flex items-center gap-1.5 text-habit-amber">
-                  <span class="material-symbols-outlined text-base fill">local_fire_department</span>
-                  <span class="text-sm font-bold">Chuỗi kỷ luật: 14 ngày</span>
+                <div class="flex items-center gap-1.5 text-g-amber">
+                  <span class="material-symbols-outlined text-lg fill">local_fire_department</span>
+                  <span class="text-sm font-bold text-g-text-primary">Chuỗi kỷ luật: 14 ngày</span>
                 </div>
-                <p id="habit-stat-summary" class="text-xs text-text-secondary mt-0.5">3/4 thói quen hoàn thành</p>
+                <p id="habit-stat-summary" class="text-xs text-g-text-muted mt-0.5">Đã xong 3/4 thói quen hôm nay</p>
               </div>
               <div class="text-right">
-                <span id="habit-stat-percent" class="text-lg font-bold text-task-green tabular-nums">75%</span>
-                <span class="block text-[10px] text-text-muted uppercase">Tỷ lệ ngày</span>
+                <span id="habit-stat-percent" class="text-xl font-bold text-g-green tabular-nums">75%</span>
               </div>
             </div>
-            <!-- Heatmap 7 Days -->
-            <div class="pt-2 border-t border-outline-subtle/60 flex justify-between text-center">
-              <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-text-muted">T2</span><div class="w-6 h-6 rounded bg-task-green/20 text-task-green text-xs flex items-center justify-center font-bold">✓</div></div>
-              <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-text-muted">T3</span><div class="w-6 h-6 rounded bg-task-green/20 text-task-green text-xs flex items-center justify-center font-bold">✓</div></div>
-              <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-text-muted">T4</span><div class="w-6 h-6 rounded bg-task-green/20 text-task-green text-xs flex items-center justify-center font-bold">✓</div></div>
-              <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-text-muted">T5</span><div class="w-6 h-6 rounded bg-task-green/20 text-task-green text-xs flex items-center justify-center font-bold">✓</div></div>
-              <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-text-muted">T6</span><div class="w-6 h-6 rounded bg-task-green/20 text-task-green text-xs flex items-center justify-center font-bold">✓</div></div>
-              <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-text-muted">T7</span><div class="w-6 h-6 rounded bg-task-green/20 text-task-green text-xs flex items-center justify-center font-bold">✓</div></div>
-              <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-habit-amber font-bold">CN</span><div class="w-6 h-6 rounded bg-habit-amber/20 border border-habit-amber text-habit-amber text-[10px] flex items-center justify-center font-bold">75%</div></div>
+            <!-- Heatmap 7 Days Dots -->
+            <div class="pt-2.5 border-t border-g-border-subtle flex justify-between text-center">
+              <div class="flex flex-col items-center gap-1.5"><span class="text-[11px] text-g-text-muted font-medium">T2</span><div class="w-6 h-6 rounded-full bg-g-green text-white text-xs flex items-center justify-center font-bold">✓</div></div>
+              <div class="flex flex-col items-center gap-1.5"><span class="text-[11px] text-g-text-muted font-medium">T3</span><div class="w-6 h-6 rounded-full bg-g-green text-white text-xs flex items-center justify-center font-bold">✓</div></div>
+              <div class="flex flex-col items-center gap-1.5"><span class="text-[11px] text-g-text-muted font-medium">T4</span><div class="w-6 h-6 rounded-full bg-g-green text-white text-xs flex items-center justify-center font-bold">✓</div></div>
+              <div class="flex flex-col items-center gap-1.5"><span class="text-[11px] text-g-text-muted font-medium">T5</span><div class="w-6 h-6 rounded-full bg-g-green text-white text-xs flex items-center justify-center font-bold">✓</div></div>
+              <div class="flex flex-col items-center gap-1.5"><span class="text-[11px] text-g-text-muted font-medium">T6</span><div class="w-6 h-6 rounded-full bg-g-green text-white text-xs flex items-center justify-center font-bold">✓</div></div>
+              <div class="flex flex-col items-center gap-1.5"><span class="text-[11px] text-g-text-muted font-medium">T7</span><div class="w-6 h-6 rounded-full bg-g-green text-white text-xs flex items-center justify-center font-bold">✓</div></div>
+              <div class="flex flex-col items-center gap-1.5"><span class="text-[11px] text-g-blue font-bold">CN</span><div class="w-6 h-6 rounded-full bg-g-blue-light border-2 border-g-blue text-g-blue text-[10px] flex items-center justify-center font-bold">75%</div></div>
             </div>
           </section>
 
@@ -255,62 +270,62 @@
       </div>
 
       <!-- ============================================================== -->
-      <!-- SCREEN 3: TAB VIỆC LÀM (TASKS & SUBTASKS BOARD)               -->
+      <!-- SCREEN 3: TAB VIỆC LÀM (TASKS & SUBTASKS)                     -->
       <!-- ============================================================== -->
-      <div id="view-tasks" class="screen-view flex-1 flex flex-col min-h-0 hidden">
-        <header class="h-14 w-full shrink-0 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-4 flex items-center justify-between z-30">
+      <div id="view-tasks" class="screen-view flex-1 flex flex-col min-h-0 bg-white hidden">
+        <header class="h-14 w-full shrink-0 bg-white border-b border-g-border-subtle px-4 flex items-center justify-between z-30">
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-task-green text-xl">task_alt</span>
-            <h1 class="text-sm font-semibold text-text-primary">Việc cần làm (Tasks)</h1>
+            <span class="material-symbols-outlined text-g-blue text-2xl fill">check_circle</span>
+            <h1 class="text-base font-bold text-g-text-primary">Việc cần làm</h1>
           </div>
-          <button onclick="openModal('create', 'task')" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-task-green border border-outline-subtle flex items-center justify-center transition-colors">
-            <span class="material-symbols-outlined text-xl">add</span>
+          <button onclick="openModal('create', 'task')" class="w-9 h-9 rounded-full bg-g-surface hover:bg-g-surface-variant text-g-blue flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-xl font-bold">add</span>
           </button>
         </header>
 
-        <div class="flex-1 overflow-y-auto no-scrollbar px-3.5 pt-3 pb-24 space-y-3">
+        <div class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-24 space-y-3 bg-white">
           <!-- Quick Add Input Bar -->
-          <div class="flex items-center gap-2 bg-surface-container border border-outline-subtle rounded-xl px-3 py-1.5">
-            <span class="material-symbols-outlined text-text-muted text-lg">add_task</span>
-            <input id="quick-task-input" onkeydown="handleQuickTaskAdd(event)" type="text" placeholder="Thêm việc nhanh & bấm Enter..." class="w-full bg-transparent border-0 text-xs text-text-primary placeholder:text-text-muted focus:ring-0 focus:outline-none"/>
+          <div class="flex items-center gap-2 bg-g-surface border border-g-border rounded-xl px-3.5 py-2.5">
+            <span class="material-symbols-outlined text-g-text-muted text-xl">add</span>
+            <input id="quick-task-input" onkeydown="handleQuickTaskAdd(event)" type="text" placeholder="Thêm việc cần làm mới..." class="w-full bg-transparent border-0 text-xs text-g-text-primary placeholder:text-g-text-muted focus:ring-0 focus:outline-none"/>
           </div>
 
           <!-- Filter Priority Chips -->
-          <div class="flex items-center gap-1.5">
-            <button onclick="filterTasks('all')" id="tf-all" class="h-6 px-2.5 rounded-full bg-task-green/20 border border-task-green/40 text-task-green text-[11px] font-semibold">Tất cả (3)</button>
-            <button onclick="filterTasks('high')" id="tf-high" class="h-6 px-2.5 rounded-full bg-surface-container border border-outline-subtle text-text-secondary text-[11px] hover:text-white">Ưu tiên cao</button>
-            <button onclick="filterTasks('done')" id="tf-done" class="h-6 px-2.5 rounded-full bg-surface-container border border-outline-subtle text-text-secondary text-[11px] hover:text-white">Đã xong</button>
+          <div class="flex items-center gap-1.5 py-1">
+            <button onclick="filterTasks('all')" id="tf-all" class="h-7 px-3 rounded-full bg-g-blue text-white text-xs font-medium">Tất cả (3)</button>
+            <button onclick="filterTasks('high')" id="tf-high" class="h-7 px-3 rounded-full bg-g-surface border border-g-border text-g-text-secondary text-xs hover:border-g-blue">Quan trọng</button>
+            <button onclick="filterTasks('done')" id="tf-done" class="h-7 px-3 rounded-full bg-g-surface border border-g-border text-g-text-secondary text-xs hover:border-g-blue">Đã hoàn thành</button>
           </div>
 
           <!-- Tasks List Container -->
-          <div id="tasks-list-container" class="space-y-2.5">
+          <div id="tasks-list-container" class="space-y-2">
             <!-- Rendered in JS -->
           </div>
         </div>
       </div>
 
       <!-- ============================================================== -->
-      <!-- SCREEN 4: TAB GHI CHÚ (KEEP NOTES MASONRY FEED)                -->
+      <!-- SCREEN 4: TAB GHI CHÚ (QUICK NOTES FEED)                       -->
       <!-- ============================================================== -->
-      <div id="view-notes" class="screen-view flex-1 flex flex-col min-h-0 hidden">
-        <header class="h-14 w-full shrink-0 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-4 flex items-center justify-between z-30">
+      <div id="view-notes" class="screen-view flex-1 flex flex-col min-h-0 bg-white hidden">
+        <header class="h-14 w-full shrink-0 bg-white border-b border-g-border-subtle px-4 flex items-center justify-between z-30">
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-note-purple text-xl">sticky_note_2</span>
-            <h1 class="text-sm font-semibold text-text-primary">Ghi chú (Keep Notes)</h1>
+            <span class="material-symbols-outlined text-g-banana text-2xl fill">lightbulb</span>
+            <h1 class="text-base font-bold text-g-text-primary">Ghi chú</h1>
           </div>
-          <button onclick="addNewNotePrompt()" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-note-purple border border-outline-subtle flex items-center justify-center transition-colors">
-            <span class="material-symbols-outlined text-xl">edit_note</span>
+          <button onclick="addNewNotePrompt()" class="w-9 h-9 rounded-full bg-g-surface hover:bg-g-surface-variant text-g-text-primary flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-xl">add</span>
           </button>
         </header>
 
-        <div class="flex-1 overflow-y-auto no-scrollbar px-3.5 pt-3 pb-24 space-y-3">
-          <!-- Search Notes -->
-          <div class="flex items-center gap-2 bg-surface-container border border-outline-subtle rounded-xl px-3 py-2">
-            <span class="material-symbols-outlined text-text-muted text-base">search</span>
-            <input type="text" placeholder="Tìm kiếm ghi chú & thẻ tag..." class="w-full bg-transparent border-0 text-xs text-text-primary placeholder:text-text-muted focus:ring-0 focus:outline-none"/>
+        <div class="flex-1 overflow-y-auto no-scrollbar px-3.5 pt-3 pb-24 space-y-3 bg-white">
+          <!-- Search Notes Bar -->
+          <div class="flex items-center gap-2 bg-g-surface border border-g-border rounded-xl px-3.5 py-2">
+            <span class="material-symbols-outlined text-g-text-muted text-lg">search</span>
+            <input type="text" placeholder="Tìm kiếm ghi chú & nhãn..." class="w-full bg-transparent border-0 text-xs text-g-text-primary placeholder:text-g-text-muted focus:ring-0 focus:outline-none"/>
           </div>
 
-          <!-- Notes Cards Feed -->
+          <!-- Notes Cards Feed (Authentic pastel blocks) -->
           <div id="notes-cards-container" class="space-y-3">
             <!-- Rendered in JS -->
           </div>
@@ -318,103 +333,89 @@
       </div>
 
       <!-- ============================================================== -->
-      <!-- SCREEN 5: TAB CÁ NHÂN & CÀI ĐẶT (PROFILE & WORKSPACE SETTINGS) -->
+      <!-- SCREEN 5: TAB CÁ NHÂN & CÀI ĐẶT (PROFILE & SETTINGS)           -->
       <!-- ============================================================== -->
-      <div id="view-profile" class="screen-view flex-1 flex flex-col min-h-0 hidden">
-        <header class="h-14 w-full shrink-0 bg-surface/90 backdrop-blur-md border-b border-outline-subtle px-4 flex items-center justify-between z-30">
-          <h1 class="text-sm font-semibold text-text-primary">Hồ sơ & Trung tâm điều khiển</h1>
-          <button onclick="openModal('appointment')" title="Lịch hẹn" class="w-8 h-8 rounded-lg bg-surface-container border border-outline-subtle text-google-blue flex items-center justify-center">
+      <div id="view-profile" class="screen-view flex-1 flex flex-col min-h-0 bg-g-surface hidden">
+        <header class="h-14 w-full shrink-0 bg-white border-b border-g-border-subtle px-4 flex items-center justify-between z-30">
+          <h1 class="text-base font-bold text-g-text-primary">Tài khoản & Thiết lập</h1>
+          <button onclick="openModal('appointment')" title="Lịch hẹn" class="w-8 h-8 rounded-full bg-g-surface text-g-blue flex items-center justify-center">
             <span class="material-symbols-outlined text-lg">calendar_month</span>
           </button>
         </header>
 
-        <div class="flex-1 overflow-y-auto no-scrollbar px-3.5 pt-3 pb-24 space-y-3.5">
-          <!-- User Profile Card -->
-          <section class="bg-surface-container border border-outline-subtle rounded-2xl p-4 flex items-center gap-3.5">
-            <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-google-blue to-note-purple flex items-center justify-center text-surface font-bold text-lg shadow-md shrink-0">
+        <div class="flex-1 overflow-y-auto no-scrollbar px-4 pt-4 pb-24 space-y-3.5">
+          <!-- Profile Card -->
+          <section class="bg-white border border-g-border rounded-2xl p-4 flex items-center gap-3.5 shadow-sm">
+            <div class="w-14 h-14 rounded-full bg-g-blue text-white font-bold text-xl flex items-center justify-center shrink-0 shadow-sm">
               NA
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-1.5">
-                <h2 class="text-sm font-bold text-text-primary truncate">Nguyễn Nhật An</h2>
-                <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-habit-amber/20 text-habit-amber border border-habit-amber/40">VIP PRO</span>
+                <h2 class="text-sm font-bold text-g-text-primary truncate">Nguyễn Nhật An</h2>
+                <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-g-banana-light text-g-amber border border-g-banana">PRO</span>
               </div>
-              <p class="text-xs text-text-secondary truncate mt-0.5">nhatan.developer@gmail.com</p>
-              <p class="text-[11px] text-text-muted mt-1">Hạn dùng: <span class="text-text-primary font-mono">15/12/2026</span></p>
+              <p class="text-xs text-g-text-muted truncate mt-0.5">nhatan.developer@gmail.com</p>
+              <p class="text-[11px] text-g-green font-medium mt-1">✓ Đã đồng bộ Lịch hai chiều tự động</p>
             </div>
           </section>
 
-          <!-- Core Feature Shortcuts -->
-          <section class="bg-surface-container border border-outline-subtle rounded-2xl overflow-hidden divide-y divide-outline-subtle/50">
-            <!-- 1. Appointment Scheduler Trigger -->
-            <button onclick="openModal('appointment')" class="w-full p-3.5 flex items-center justify-between hover:bg-surface-container-high transition-colors text-left">
+          <!-- Core Feature Action List -->
+          <section class="bg-white border border-g-border rounded-2xl overflow-hidden divide-y divide-g-border-subtle shadow-sm">
+            <button onclick="openModal('appointment')" class="w-full p-3.5 flex items-center justify-between hover:bg-g-surface transition-colors text-left">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-google-blue/15 text-google-blue flex items-center justify-center">
+                <div class="w-9 h-9 rounded-full bg-g-blue-light text-g-blue flex items-center justify-center">
                   <span class="material-symbols-outlined text-lg">more_time</span>
                 </div>
                 <div>
-                  <div class="text-xs font-semibold text-text-primary">Lịch hẹn đặt trước (Booking Page)</div>
-                  <div class="text-[11px] text-text-secondary">Cấu hình khung giờ rảnh theo tuần & link chia sẻ</div>
+                  <div class="text-xs font-semibold text-g-text-primary">Lịch hẹn đặt trước (Appointment Hub)</div>
+                  <div class="text-[11px] text-g-text-muted">Cấu hình khung giờ rảnh theo tuần & link chia sẻ</div>
                 </div>
               </div>
-              <span class="material-symbols-outlined text-text-muted text-base">chevron_right</span>
+              <span class="material-symbols-outlined text-g-text-muted text-base">chevron_right</span>
             </button>
 
-            <!-- 2. VietQR Upgrade Modal Trigger -->
-            <button onclick="openModal('checkout')" class="w-full p-3.5 flex items-center justify-between hover:bg-surface-container-high transition-colors text-left">
+            <button onclick="openModal('checkout')" class="w-full p-3.5 flex items-center justify-between hover:bg-g-surface transition-colors text-left">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-habit-amber/15 text-habit-amber flex items-center justify-center">
-                  <span class="material-symbols-outlined text-lg">workspace_premium</span>
+                <div class="w-9 h-9 rounded-full bg-g-banana-light text-g-amber flex items-center justify-center">
+                  <span class="material-symbols-outlined text-lg">qr_code_2</span>
                 </div>
                 <div>
-                  <div class="text-xs font-semibold text-text-primary">Gói tài khoản & Quét mã VietQR</div>
-                  <div class="text-[11px] text-text-secondary">Nâng cấp VIP, gia hạn hoặc thanh toán tức thì</div>
+                  <div class="text-xs font-semibold text-g-text-primary">Nâng cấp gói tài khoản VietQR</div>
+                  <div class="text-[11px] text-g-text-muted">Thanh toán tự động bằng mã QR tức thì</div>
                 </div>
               </div>
-              <span class="material-symbols-outlined text-text-muted text-base">chevron_right</span>
+              <span class="material-symbols-outlined text-g-text-muted text-base">chevron_right</span>
             </button>
 
-            <!-- 3. Contacts Companion Panel Trigger -->
-            <button onclick="openModal('contacts')" class="w-full p-3.5 flex items-center justify-between hover:bg-surface-container-high transition-colors text-left">
+            <button onclick="openModal('contacts')" class="w-full p-3.5 flex items-center justify-between hover:bg-g-surface transition-colors text-left">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-task-green/15 text-task-green flex items-center justify-center">
+                <div class="w-9 h-9 rounded-full bg-g-green-light text-g-green flex items-center justify-center">
                   <span class="material-symbols-outlined text-lg">contacts</span>
                 </div>
                 <div>
-                  <div class="text-xs font-semibold text-text-primary">Danh bạ & Khách hàng liên kết</div>
-                  <div class="text-[11px] text-text-secondary">4 liên hệ đồng bộ từ Google Workspace</div>
+                  <div class="text-xs font-semibold text-g-text-primary">Danh bạ liên hệ</div>
+                  <div class="text-[11px] text-g-text-muted">4 liên hệ đồng bộ trực tuyến</div>
                 </div>
               </div>
-              <span class="material-symbols-outlined text-text-muted text-base">chevron_right</span>
+              <span class="material-symbols-outlined text-g-text-muted text-base">chevron_right</span>
             </button>
           </section>
 
           <!-- System Preferences Section -->
-          <section class="bg-surface-container border border-outline-subtle rounded-2xl p-4 space-y-3">
-            <h3 class="text-xs uppercase tracking-wider text-text-muted font-bold">Cài đặt ứng dụng</h3>
-
-            <!-- Theme Switcher -->
+          <section class="bg-white border border-g-border rounded-2xl p-4 space-y-3 shadow-sm">
+            <h3 class="text-xs font-bold text-g-text-muted uppercase tracking-wider">Cài đặt ứng dụng</h3>
             <div class="flex items-center justify-between text-xs">
-              <span class="text-text-secondary">Chủ đề giao diện</span>
-              <div class="flex items-center gap-1 bg-surface p-1 rounded-lg border border-outline-subtle">
-                <button onclick="switchTheme('obsidian')" class="w-6 h-6 rounded bg-[#121314] border border-google-blue" title="Obsidian Dark"></button>
-                <button onclick="switchTheme('slate')" class="w-6 h-6 rounded bg-[#1e2022] border border-outline-subtle" title="Slate Gray"></button>
-                <button onclick="switchTheme('tet')" class="w-6 h-6 rounded bg-[#450a0a] border border-outline-subtle" title="Tết Nguyên Đán"></button>
-              </div>
+              <span class="text-g-text-secondary">Ngôn ngữ hiển thị</span>
+              <span class="text-xs font-medium text-g-blue">Tiếng Việt (VN)</span>
             </div>
-
-            <!-- Language Switcher -->
-            <div class="flex items-center justify-between text-xs pt-2 border-t border-outline-subtle/50">
-              <span class="text-text-secondary">Ngôn ngữ hiển thị</span>
-              <div class="flex items-center bg-surface p-0.5 rounded-lg border border-outline-subtle text-[11px]">
-                <button class="px-2 py-0.5 bg-surface-container-high text-google-blue font-bold rounded">Tiếng Việt</button>
-                <button class="px-2 py-0.5 text-text-secondary hover:text-white">English</button>
-              </div>
+            <div class="flex items-center justify-between text-xs pt-2 border-t border-g-border-subtle">
+              <span class="text-g-text-secondary">Đầu tuần vào Thứ Hai</span>
+              <input type="checkbox" checked class="w-4 h-4 rounded text-g-blue focus:ring-g-blue border-g-border"/>
             </div>
           </section>
 
           <!-- Logout Button -->
-          <button onclick="logoutToAuthScreen()" class="w-full py-3 rounded-xl bg-danger-coral/10 hover:bg-danger-coral/20 border border-danger-coral/30 text-danger-coral font-semibold text-xs flex items-center justify-center gap-2 transition-colors">
+          <button onclick="logoutToAuthScreen()" class="w-full py-3 rounded-xl bg-white border border-g-red/30 text-g-red font-semibold text-xs flex items-center justify-center gap-2 hover:bg-red-50 transition-colors shadow-sm">
             <span class="material-symbols-outlined text-base">logout</span>
             <span>Đăng xuất tài khoản</span>
           </button>
@@ -424,381 +425,318 @@
       <!-- ============================================================== -->
       <!-- SCREEN 6: MÀN HÌNH ĐĂNG NHẬP (AUTH / LOGIN SCREEN)            -->
       <!-- ============================================================== -->
-      <div id="view-auth" class="screen-view absolute inset-0 bg-surface z-50 flex flex-col p-6 hidden">
+      <div id="view-auth" class="screen-view absolute inset-0 bg-white z-50 flex flex-col p-6 hidden">
         <div class="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full">
-          <!-- Logo -->
-          <div class="w-12 h-12 rounded-2xl bg-google-blue text-surface flex items-center justify-center mb-5 font-bold shadow-lg">
+          <div class="w-12 h-12 rounded-2xl bg-g-blue text-white flex items-center justify-center mb-4 font-bold shadow-md">
             <span class="material-symbols-outlined text-2xl font-bold">calendar_today</span>
           </div>
-          <h2 class="text-2xl font-bold text-white tracking-tight">RoutinePulse</h2>
-          <p class="text-xs text-text-secondary mt-1 mb-6">Không gian làm việc & Kỷ luật hiệu suất cao</p>
+          <h2 class="text-2xl font-bold text-g-text-primary tracking-tight">RoutinePulse</h2>
+          <p class="text-xs text-g-text-muted mt-1 mb-6">Đồng bộ lịch biểu &amp; Kỷ luật hiệu suất cao</p>
 
           <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5">
             <div>
-              <label class="block text-[11px] text-text-secondary mb-1">Email của bạn</label>
-              <input type="email" value="nhatan.developer@gmail.com" class="w-full bg-surface-container border border-outline-subtle rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-google-blue"/>
+              <label class="block text-xs font-medium text-g-text-secondary mb-1">Email hoặc tài khoản</label>
+              <input type="email" value="nhatan.developer@gmail.com" class="w-full bg-white border border-g-border rounded-xl px-3.5 py-2.5 text-xs text-g-text-primary focus:outline-none focus:border-g-blue"/>
             </div>
             <div>
-              <label class="block text-[11px] text-text-secondary mb-1">Mật khẩu</label>
-              <input type="password" value="••••••••••••" class="w-full bg-surface-container border border-outline-subtle rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-google-blue"/>
+              <label class="block text-xs font-medium text-g-text-secondary mb-1">Mật khẩu</label>
+              <input type="password" value="••••••••••••" class="w-full bg-white border border-g-border rounded-xl px-3.5 py-2.5 text-xs text-g-text-primary focus:outline-none focus:border-g-blue"/>
             </div>
-            <button type="submit" class="w-full py-3 rounded-xl bg-google-blue hover:brightness-105 text-surface font-semibold text-xs shadow-md transition-all active:scale-95">
-              Đăng nhập ngay
+            <button type="submit" class="w-full py-3 rounded-xl bg-g-blue hover:bg-blue-700 text-white font-medium text-xs shadow-sm transition-all active:scale-95">
+              Đăng nhập
             </button>
           </form>
 
-          <div class="my-5 flex items-center gap-3 text-text-muted text-[11px]">
-            <div class="flex-1 h-px bg-outline-subtle"></div>
+          <div class="my-5 flex items-center gap-3 text-g-text-muted text-xs">
+            <div class="flex-1 h-px bg-g-border"></div>
             <span>hoặc</span>
-            <div class="flex-1 h-px bg-outline-subtle"></div>
+            <div class="flex-1 h-px bg-g-border"></div>
           </div>
 
-          <button onclick="handleLoginSubmit(event)" class="w-full py-2.5 rounded-xl bg-surface-container border border-outline-subtle hover:bg-surface-container-high text-text-primary font-medium text-xs flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-base text-google-blue">domain</span>
-            <span>Đăng nhập với Google Workspace</span>
+          <button onclick="handleLoginSubmit(event)" class="w-full py-2.5 rounded-xl bg-white border border-g-border hover:bg-g-surface text-g-text-primary font-medium text-xs flex items-center justify-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-g-blue text-lg">vpn_key</span>
+            <span>Đăng nhập Single Sign-On (SSO)</span>
           </button>
         </div>
       </div>
 
     </div>
 
-    <!-- FLOATING ACTION BUTTON (FAB: QUICK CREATE) -->
+    <!-- FLOATING ACTION BUTTON (FAB: Squircle Button) -->
     <aside id="app-fab" class="absolute bottom-20 right-4 z-40">
-      <button onclick="openModal('create')" aria-label="Tạo mới" class="w-14 h-14 rounded-full bg-google-blue text-surface flex items-center justify-center shadow-2xl hover:brightness-105 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[28px] font-bold">add</span>
+      <button onclick="openModal('create')" aria-label="Tạo mới" class="w-14 h-14 rounded-2xl bg-g-blue-container text-g-blue-dark flex items-center justify-center shadow-lg hover:shadow-xl active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[30px] font-bold">add</span>
       </button>
     </aside>
 
-    <!-- BOTTOM NAVIGATION BAR (5 ERGONOMIC TABS) -->
-    <nav id="app-bottom-nav" class="absolute bottom-0 left-0 w-full z-40 h-16 bg-surface-container border-t border-outline-subtle flex items-center justify-around px-2 py-1">
+    <!-- BOTTOM NAVIGATION BAR (Material 3 Pill Tabs) -->
+    <nav id="app-bottom-nav" class="absolute bottom-0 left-0 w-full z-40 h-16 bg-white border-t border-g-border flex items-center justify-around px-2 py-1">
       <!-- Tab 1: Lịch -->
-      <button onclick="setScreenTab('calendar')" id="nav-calendar" class="flex flex-col items-center justify-center text-google-blue font-semibold flex-1 py-1">
-        <span class="material-symbols-outlined text-[22px] fill">calendar_today</span>
-        <span class="text-[11px] mt-0.5">Lịch</span>
+      <button onclick="setScreenTab('calendar')" id="nav-calendar" class="flex flex-col items-center justify-center flex-1 py-1 text-g-blue font-bold">
+        <div class="px-4 py-1 rounded-full bg-g-blue-container mb-0.5">
+          <span class="material-symbols-outlined text-[20px] fill text-g-blue-dark">calendar_today</span>
+        </div>
+        <span class="text-[11px] font-medium text-g-blue-dark">Lịch</span>
       </button>
       <!-- Tab 2: Kỷ luật -->
-      <button onclick="setScreenTab('routines')" id="nav-routines" class="flex flex-col items-center justify-center text-text-secondary font-medium hover:text-white flex-1 py-1">
-        <span class="material-symbols-outlined text-[22px]">local_fire_department</span>
-        <span class="text-[11px] mt-0.5">Kỷ luật</span>
+      <button onclick="setScreenTab('routines')" id="nav-routines" class="flex flex-col items-center justify-center flex-1 py-1 text-g-text-muted hover:text-g-text-primary">
+        <div class="px-4 py-1 rounded-full mb-0.5">
+          <span class="material-symbols-outlined text-[20px]">local_fire_department</span>
+        </div>
+        <span class="text-[11px] font-medium">Kỷ luật</span>
       </button>
       <!-- Tab 3: Việc làm -->
-      <button onclick="setScreenTab('tasks')" id="nav-tasks" class="flex flex-col items-center justify-center text-text-secondary font-medium hover:text-white flex-1 py-1">
-        <span class="material-symbols-outlined text-[22px]">task_alt</span>
-        <span class="text-[11px] mt-0.5">Việc làm</span>
+      <button onclick="setScreenTab('tasks')" id="nav-tasks" class="flex flex-col items-center justify-center flex-1 py-1 text-g-text-muted hover:text-g-text-primary">
+        <div class="px-4 py-1 rounded-full mb-0.5">
+          <span class="material-symbols-outlined text-[20px]">task_alt</span>
+        </div>
+        <span class="text-[11px] font-medium">Việc làm</span>
       </button>
       <!-- Tab 4: Ghi chú -->
-      <button onclick="setScreenTab('notes')" id="nav-notes" class="flex flex-col items-center justify-center text-text-secondary font-medium hover:text-white flex-1 py-1">
-        <span class="material-symbols-outlined text-[22px]">sticky_note_2</span>
-        <span class="text-[11px] mt-0.5">Ghi chú</span>
+      <button onclick="setScreenTab('notes')" id="nav-notes" class="flex flex-col items-center justify-center flex-1 py-1 text-g-text-muted hover:text-g-text-primary">
+        <div class="px-4 py-1 rounded-full mb-0.5">
+          <span class="material-symbols-outlined text-[20px]">sticky_note_2</span>
+        </div>
+        <span class="text-[11px] font-medium">Ghi chú</span>
       </button>
       <!-- Tab 5: Cá nhân -->
-      <button onclick="setScreenTab('profile')" id="nav-profile" class="flex flex-col items-center justify-center text-text-secondary font-medium hover:text-white flex-1 py-1">
-        <span class="material-symbols-outlined text-[22px]">person</span>
-        <span class="text-[11px] mt-0.5">Cá nhân</span>
+      <button onclick="setScreenTab('profile')" id="nav-profile" class="flex flex-col items-center justify-center flex-1 py-1 text-g-text-muted hover:text-g-text-primary">
+        <div class="px-4 py-1 rounded-full mb-0.5">
+          <span class="material-symbols-outlined text-[20px]">account_circle</span>
+        </div>
+        <span class="text-[11px] font-medium">Cá nhân</span>
       </button>
     </nav>
 
     <!-- ============================================================== -->
-    <!-- INTERACTIVE MODALS & BOTTOM SHEETS LAYER                       -->
+    <!-- INTERACTIVE MODALS & FULL BOTTOM SHEETS LAYER                  -->
     <!-- ============================================================== -->
 
     <!-- BACKDROP SCRIM -->
-    <div id="modal-backdrop" onclick="closeAllModals()" class="absolute inset-0 bg-black/75 backdrop-blur-[3px] z-50 transition-opacity hidden"></div>
+    <div id="modal-backdrop" onclick="closeAllModals()" class="absolute inset-0 bg-black/40 z-50 transition-opacity hidden"></div>
 
-    <!-- MODAL 1: CREATE BOTTOM SHEET (EVENT / ROUTINE / TASK) -->
-    <section id="modal-create" class="absolute bottom-0 left-0 w-full h-[92%] bg-surface-container rounded-t-3xl border-t border-x border-outline-subtle z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
-      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1 rounded-full bg-outline-muted"></div></div>
-      <header class="flex items-center justify-between px-5 py-2.5 border-b border-outline-subtle shrink-0">
-        <button onclick="closeAllModals()" class="text-xs text-text-secondary hover:text-white min-h-[36px] px-2">Hủy</button>
-        <h2 class="text-sm font-semibold text-white">Tạo mới</h2>
-        <button onclick="submitCreateForm()" class="bg-google-blue text-surface text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm hover:brightness-105 active:scale-95 transition-all">Lưu</button>
+    <!-- MODAL 1: CREATE BOTTOM SHEET -->
+    <section id="modal-create" class="absolute bottom-0 left-0 w-full h-[94%] bg-white rounded-t-3xl border-t border-g-border z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
+      <header class="flex items-center justify-between px-4 py-3 border-b border-g-border-subtle shrink-0">
+        <button onclick="closeAllModals()" class="w-10 h-10 rounded-full flex items-center justify-center text-g-text-secondary hover:bg-g-surface active:bg-g-surface-variant transition-colors" title="Đóng">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+        <button onclick="submitCreateForm()" class="bg-g-blue text-white text-xs font-semibold px-5 py-2 rounded-lg shadow-sm hover:bg-blue-700 active:scale-95 transition-all">
+          Lưu
+        </button>
       </header>
 
-      <!-- Type Switcher -->
-      <div class="px-5 pt-3 pb-2 shrink-0">
-        <div class="bg-surface p-1 rounded-xl border border-outline-subtle grid grid-cols-3 gap-1 text-center text-xs">
-          <button onclick="setCreateType('event')" id="ct-event" class="py-1.5 rounded-lg bg-surface-container-high text-white font-semibold">Sự kiện</button>
-          <button onclick="setCreateType('routine')" id="ct-routine" class="py-1.5 rounded-lg text-text-secondary hover:text-white">Thói quen</button>
-          <button onclick="setCreateType('task')" id="ct-task" class="py-1.5 rounded-lg text-text-secondary hover:text-white">Việc làm</button>
-        </div>
+      <div class="px-6 pt-4 pb-2 shrink-0">
+        <input id="form-title" type="text" placeholder="Thêm tiêu đề..." class="w-full bg-transparent border-0 text-xl font-normal text-g-text-primary placeholder:text-g-text-muted focus:ring-0 focus:outline-none px-0"/>
       </div>
 
-      <!-- Form Body -->
-      <form class="flex-1 px-5 py-2 space-y-3.5 overflow-y-auto no-scrollbar pb-10">
-        <input id="form-title" type="text" placeholder="Thêm tiêu đề..." class="w-full bg-transparent border-0 border-b border-transparent focus:border-google-blue px-0 py-1.5 text-lg font-medium text-white placeholder:text-text-muted focus:ring-0 focus:outline-none"/>
+      <div class="px-6 py-2 shrink-0 flex items-center gap-2">
+        <button onclick="setCreateType('event')" id="ct-event" class="px-3.5 py-1.5 rounded-full bg-g-blue-light text-g-blue text-xs font-semibold border border-g-blue/30">Sự kiện</button>
+        <button onclick="setCreateType('routine')" id="ct-routine" class="px-3.5 py-1.5 rounded-full bg-g-surface text-g-text-secondary text-xs font-medium hover:bg-g-surface-variant">Thói quen</button>
+        <button onclick="setCreateType('task')" id="ct-task" class="px-3.5 py-1.5 rounded-full bg-g-surface text-g-text-secondary text-xs font-medium hover:bg-g-surface-variant">Việc làm</button>
+      </div>
 
-        <!-- Time & Recurrence Container -->
-        <div class="bg-surface border border-outline-subtle rounded-2xl p-3.5 space-y-3 text-xs">
+      <form class="flex-1 px-6 py-2 space-y-4 overflow-y-auto no-scrollbar pb-10 divide-y divide-g-border-subtle">
+        
+        <div class="pt-3 flex items-center gap-4 text-xs">
+          <span class="material-symbols-outlined text-g-text-muted text-xl">event</span>
+          <div class="flex-1">
+            <span class="font-medium text-g-text-primary block">Lịch làm việc</span>
+            <span class="text-g-text-muted text-[11px]">nhatan.developer@gmail.com</span>
+          </div>
+          <span class="w-3.5 h-3.5 rounded-full bg-g-blue"></span>
+        </div>
+
+        <div class="pt-4 space-y-3 text-xs">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-google-blue text-lg">calendar_today</span>
-              <span id="form-date-text" class="text-text-primary font-medium">Hôm nay, 20 Tháng 10</span>
+            <div class="flex items-center gap-4">
+              <span class="material-symbols-outlined text-g-text-muted text-xl">schedule</span>
+              <span class="text-g-text-primary font-medium text-sm">Cả ngày</span>
             </div>
-            <span class="text-google-blue font-mono font-medium">09:00 - 10:00</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="form-allday-switch" type="checkbox" class="sr-only peer" onchange="toggleAllDay(this)"/>
+              <div class="w-11 h-6 bg-g-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-g-blue"></div>
+            </label>
           </div>
-          <div class="border-t border-outline-subtle/50"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-text-secondary">Cả ngày</span>
-            <input type="checkbox" class="w-4 h-4 rounded text-google-blue bg-surface-container border-outline-subtle"/>
-          </div>
-          <div class="border-t border-outline-subtle/50"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-text-secondary">Lặp lại</span>
-            <select id="form-frequency" class="bg-surface-container border border-outline-subtle text-text-primary rounded-lg text-xs py-1 px-2 focus:outline-none">
-              <option value="none">Không lặp lại</option>
-              <option value="daily">Hàng ngày</option>
-              <option value="weekly">Hàng tuần vào Thứ Ba</option>
-            </select>
+          <div class="pl-9 flex items-center justify-between text-g-text-primary">
+            <span id="form-date-text" class="font-medium">Thứ Ba, 20 Tháng 10, 2026</span>
+            <span id="form-time-range" class="font-medium text-g-blue">09:00 – 10:00</span>
           </div>
         </div>
 
-        <!-- Google Meet Video Call Switch -->
-        <div class="bg-surface border border-outline-subtle rounded-2xl p-3.5 flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-google-blue/15 text-google-blue flex items-center justify-center">
-              <span class="material-symbols-outlined text-base fill">videocam</span>
-            </div>
-            <div>
-              <div class="font-semibold text-text-primary">Google Meet</div>
-              <div class="text-[11px] text-google-blue truncate">Tạo đường link hội nghị video</div>
-            </div>
-          </div>
-          <input id="form-meet-switch" type="checkbox" checked class="w-4 h-4 rounded text-google-blue bg-surface-container border-outline-subtle"/>
+        <div class="pt-4 flex items-center gap-4 text-xs">
+          <span class="material-symbols-outlined text-g-text-muted text-xl">replay</span>
+          <select id="form-frequency" class="flex-1 bg-transparent border-0 text-g-text-primary text-xs font-medium focus:ring-0 p-0 cursor-pointer">
+            <option value="none">Không lặp lại</option>
+            <option value="daily">Hàng ngày</option>
+            <option value="weekly" selected>Lặp lại hàng tuần vào Thứ Ba</option>
+            <option value="monthly">Hàng tháng vào ngày 20</option>
+          </select>
         </div>
 
-        <!-- Location & Travel Time -->
-        <div class="bg-surface border border-outline-subtle rounded-2xl p-3.5 space-y-2 text-xs">
-          <div class="flex items-center gap-2.5">
-            <span class="material-symbols-outlined text-google-blue text-base">location_on</span>
-            <input id="form-location" type="text" placeholder="Thêm vị trí (Phòng họp 01...)" class="w-full bg-transparent border-0 text-xs text-text-primary placeholder:text-text-muted focus:ring-0 focus:outline-none"/>
-          </div>
-          <div class="flex items-center gap-1.5 pl-6 text-[11px] text-text-muted">
-            <span class="material-symbols-outlined text-sm">directions_walk</span>
-            <span>Thời gian di chuyển: 15 phút</span>
+        <!-- Video Conference Row -->
+        <div class="pt-4 flex items-center gap-4 text-xs">
+          <span class="material-symbols-outlined text-g-blue text-xl fill">videocam</span>
+          <div class="flex-1">
+            <span class="font-medium text-g-blue block">Thêm phòng họp trực tuyến (Video Call)</span>
+            <span class="text-g-text-muted text-[11px]">meet.routinepulse.app/room-rtp-20</span>
           </div>
         </div>
 
-        <!-- Priority Selector -->
-        <div class="bg-surface border border-outline-subtle rounded-2xl p-3.5 space-y-2 text-xs">
-          <span class="text-[10px] uppercase font-bold text-text-muted">Mức độ ưu tiên</span>
-          <div class="grid grid-cols-3 gap-2 text-center">
-            <button type="button" onclick="setCreatePriority('low')" id="prio-low" class="py-1.5 rounded-lg bg-surface-container border border-outline-subtle text-text-secondary">Thấp</button>
-            <button type="button" onclick="setCreatePriority('medium')" id="prio-med" class="py-1.5 rounded-lg bg-surface-container border border-outline-subtle text-text-secondary">Vừa</button>
-            <button type="button" onclick="setCreatePriority('high')" id="prio-high" class="py-1.5 rounded-lg bg-danger-coral/20 border border-danger-coral text-danger-coral font-bold">Cao</button>
-          </div>
+        <div class="pt-4 flex items-center gap-4 text-xs">
+          <span class="material-symbols-outlined text-g-text-muted text-xl">location_on</span>
+          <input id="form-location" type="text" placeholder="Thêm vị trí..." class="flex-1 bg-transparent border-0 text-xs text-g-text-primary placeholder:text-g-text-muted focus:ring-0 p-0"/>
         </div>
+
+        <div class="pt-4 flex items-center gap-4 text-xs">
+          <span class="material-symbols-outlined text-g-text-muted text-xl">subject</span>
+          <input type="text" placeholder="Thêm mô tả hoặc tệp đính kèm..." class="flex-1 bg-transparent border-0 text-xs text-g-text-primary placeholder:text-g-text-muted focus:ring-0 p-0"/>
+        </div>
+
       </form>
     </section>
 
-    <!-- MODAL 2: DAY INSPECTOR BOTTOM SHEET (CHI TIẾT NGÀY) -->
-    <section id="modal-day-inspector" class="absolute bottom-0 left-0 w-full h-[85%] bg-surface-container rounded-t-3xl border-t border-x border-outline-subtle z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
-      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1 rounded-full bg-outline-muted"></div></div>
-      <header class="flex items-center justify-between px-5 py-2.5 border-b border-outline-subtle shrink-0">
+    <!-- MODAL 2: DAY INSPECTOR BOTTOM SHEET -->
+    <section id="modal-day-inspector" class="absolute bottom-0 left-0 w-full h-[85%] bg-white rounded-t-3xl border-t border-g-border z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
+      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1.5 rounded-full bg-g-border"></div></div>
+      <header class="flex items-center justify-between px-5 py-2.5 border-b border-g-border-subtle shrink-0">
         <div>
-          <h2 id="day-inspector-title" class="text-sm font-bold text-white">Thứ Ba, 20 Tháng 10, 2026</h2>
-          <span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-danger-coral/20 text-danger-coral mt-0.5">
+          <h2 id="day-inspector-title" class="text-base font-bold text-g-text-primary">Thứ Ba, 20 Tháng 10, 2026</h2>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-red-100 text-g-red mt-0.5">
             <span>🎉 Ngày Phụ Nữ Việt Nam</span>
           </span>
         </div>
-        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-surface-container-high text-text-secondary hover:text-white flex items-center justify-center">
+        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full flex items-center justify-center text-g-text-muted hover:bg-g-surface">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </header>
 
-      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3" id="day-inspector-content">
-        <!-- Rendered in JS -->
+      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3 bg-g-surface">
+        <div class="bg-white border border-g-border rounded-xl p-3 flex items-center justify-between text-xs">
+          <span class="text-g-text-secondary">Tổng số mục trong ngày:</span>
+          <span class="font-bold text-g-blue">4 sự kiện & nhiệm vụ</span>
+        </div>
+        <div id="day-inspector-events-list" class="space-y-2">
+          <!-- Rendered in JS -->
+        </div>
       </div>
     </section>
 
-    <!-- MODAL 3: EVENT DETAIL MODAL & RECURRING WORKFLOW -->
-    <section id="modal-event-detail" class="absolute bottom-0 left-0 w-full bg-surface-container rounded-t-3xl border-t border-x border-outline-subtle z-50 p-5 space-y-4 shadow-2xl transition-transform translate-y-full duration-300">
-      <div class="w-full pb-1 flex justify-center"><div class="w-10 h-1 rounded-full bg-outline-muted"></div></div>
-      <div class="flex items-start justify-between">
-        <div>
-          <span id="detail-event-tag" class="text-[10px] font-bold px-2 py-0.5 rounded bg-google-blue/20 text-google-blue border border-google-blue/30">SỰ KIỆN</span>
-          <h3 id="detail-event-title" class="text-base font-bold text-white mt-1">Họp Kiến trúc Hệ thống RoutinePulse</h3>
-          <p id="detail-event-time" class="text-xs text-text-secondary mt-0.5 font-mono">08:30 – 09:30 (Thứ Ba, 20 Th10)</p>
+    <!-- MODAL 3: APPOINTMENT SCHEDULE SETTINGS -->
+    <section id="modal-appointment" class="absolute bottom-0 left-0 w-full h-[90%] bg-white rounded-t-3xl border-t border-g-border z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
+      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1.5 rounded-full bg-g-border"></div></div>
+      <header class="flex items-center justify-between px-5 py-2.5 border-b border-g-border-subtle shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-g-blue text-xl">more_time</span>
+          <h2 class="text-sm font-bold text-g-text-primary">Lịch hẹn đặt trước (Appointment Hub)</h2>
         </div>
-        <button onclick="closeAllModals()" class="text-text-muted hover:text-white"><span class="material-symbols-outlined text-xl">close</span></button>
-      </div>
-
-      <div class="bg-surface p-3 rounded-xl border border-outline-subtle space-y-2 text-xs">
-        <div id="detail-meet-row" class="flex items-center justify-between text-google-blue">
-          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">videocam</span> Tham gia Google Meet</span>
-          <button onclick="alert('Đang kết nối cuộc họp Google Meet...')" class="px-2.5 py-1 rounded-md bg-google-blue text-surface font-semibold text-[11px]">Vào họp</button>
-        </div>
-        <div id="detail-location-row" class="flex items-center gap-2 text-text-secondary pt-2 border-t border-outline-subtle/50">
-          <span class="material-symbols-outlined text-base">location_on</span>
-          <span id="detail-location-text">Phòng Họp 01 / Trực tuyến (Di chuyển 15p)</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2 pt-1">
-        <button onclick="handleDeleteEventConfirm()" class="py-2.5 rounded-xl bg-danger-coral/10 border border-danger-coral/30 text-danger-coral text-xs font-semibold flex items-center justify-center gap-1.5">
-          <span class="material-symbols-outlined text-base">delete</span> Xóa sự kiện
-        </button>
-        <button onclick="closeAllModals()" class="py-2.5 rounded-xl bg-surface-container-high border border-outline-subtle text-text-primary text-xs font-semibold">
-          Đóng
-        </button>
-      </div>
-    </section>
-
-    <!-- MODAL 4: APPOINTMENT SCHEDULE MANAGER (LỊCH HẸN ĐẶT TRƯỚC) -->
-    <section id="modal-appointment" class="absolute bottom-0 left-0 w-full h-[90%] bg-surface-container rounded-t-3xl border-t border-x border-outline-subtle z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
-      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1 rounded-full bg-outline-muted"></div></div>
-      <header class="flex items-center justify-between px-5 py-2.5 border-b border-outline-subtle shrink-0">
-        <div>
-          <h2 class="text-sm font-bold text-white">Lịch hẹn đặt trước (Appointment Hub)</h2>
-          <p class="text-[11px] text-text-secondary">Cấu hình khung giờ nhận lịch rảnh</p>
-        </div>
-        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-surface-container-high text-text-secondary hover:text-white flex items-center justify-center">
-          <span class="material-symbols-outlined text-lg">close</span>
-        </button>
+        <button onclick="closeAllModals()" class="text-xs text-g-blue font-bold px-3 py-1 rounded hover:bg-g-blue-light">Xong</button>
       </header>
 
-      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3.5 text-xs">
-        <!-- Share Booking Link Card -->
-        <div class="bg-surface border border-outline-subtle rounded-2xl p-3.5 space-y-2">
-          <span class="text-[10px] font-bold uppercase text-google-blue tracking-wider">Đường dẫn đặt lịch cá nhân</span>
-          <div class="flex items-center gap-2 bg-surface-container p-2 rounded-xl border border-outline-subtle">
-            <span class="text-text-secondary truncate flex-1 font-mono text-[11px]">routinepulse.app/book/nhatan</span>
-            <button onclick="copyBookingLink()" class="px-2 py-1 rounded bg-google-blue text-surface font-semibold text-[11px] shrink-0">Sao chép</button>
+      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3.5 bg-g-surface text-xs">
+        <div class="bg-white border border-g-border rounded-xl p-3.5 space-y-2 shadow-sm">
+          <span class="text-[11px] font-bold uppercase text-g-blue tracking-wider">Trang đặt lịch biểu công khai</span>
+          <div class="flex items-center gap-2 bg-g-surface p-2 rounded-lg border border-g-border">
+            <span class="text-g-text-secondary truncate flex-1 font-mono text-xs">routinepulse.app/book/nhatan</span>
+            <button onclick="copyBookingLink()" class="px-3 py-1 bg-g-blue text-white font-medium text-xs rounded-md shadow-sm">Sao chép</button>
           </div>
+          <p class="text-[11px] text-g-text-muted">Người khác có thể bấm vào link này để đặt lịch gặp dựa trên khung giờ rảnh của bạn.</p>
         </div>
 
-        <!-- Weekly Availability Slots -->
-        <div class="space-y-2">
-          <h3 class="text-[11px] uppercase tracking-wider text-text-muted font-bold">Khung giờ các thứ trong tuần</h3>
-          <div id="availability-slots-list" class="space-y-2">
+        <div class="bg-white border border-g-border rounded-xl p-3.5 space-y-2.5 shadow-sm">
+          <h3 class="text-xs font-bold text-g-text-primary">Khung giờ nhận lịch theo tuần</h3>
+          <div id="availability-slots-container" class="space-y-2">
             <!-- Rendered in JS -->
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MODAL 5: VIETQR CHECKOUT & UPGRADE VIP -->
-    <section id="modal-checkout" class="absolute bottom-0 left-0 w-full h-[90%] bg-surface-container rounded-t-3xl border-t border-x border-outline-subtle z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
-      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1 rounded-full bg-outline-muted"></div></div>
-      <header class="flex items-center justify-between px-5 py-2.5 border-b border-outline-subtle shrink-0">
-        <div>
-          <h2 class="text-sm font-bold text-white">Nâng cấp gói tài khoản</h2>
-          <p class="text-[11px] text-habit-amber">Mở khóa toàn bộ tính năng VIP</p>
-        </div>
-        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-surface-container-high text-text-secondary hover:text-white flex items-center justify-center">
+    <!-- MODAL 4: VIETQR UPGRADE -->
+    <section id="modal-checkout" class="absolute bottom-0 left-0 w-full h-[85%] bg-white rounded-t-3xl border-t border-g-border z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
+      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1.5 rounded-full bg-g-border"></div></div>
+      <header class="flex items-center justify-between px-5 py-2.5 border-b border-g-border-subtle shrink-0">
+        <h2 class="text-sm font-bold text-g-text-primary">Thanh toán VietQR</h2>
+        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full flex items-center justify-center text-g-text-muted hover:bg-g-surface">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </header>
 
-      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3.5 text-xs text-center">
-        <!-- Tier Toggle -->
-        <div class="grid grid-cols-2 gap-2 text-left">
-          <div class="bg-surface p-3 rounded-xl border border-outline-subtle cursor-pointer hover:border-google-blue">
-            <div class="text-xs font-bold text-white">Gói PRO (1 Tháng)</div>
-            <div class="text-sm font-bold text-google-blue mt-1">99.000đ</div>
-          </div>
-          <div class="bg-surface p-3 rounded-xl border-2 border-habit-amber text-left relative">
-            <span class="absolute -top-2 right-2 px-1.5 py-0.2 rounded text-[9px] font-bold bg-habit-amber text-surface">TIẾT KIỆM 40%</span>
-            <div class="text-xs font-bold text-white">Gói VIP (1 Năm)</div>
-            <div class="text-sm font-bold text-habit-amber mt-1">699.000đ</div>
-          </div>
+      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-3 text-center bg-white">
+        <div class="p-3 bg-g-surface border border-g-border rounded-xl inline-block shadow-sm">
+          <img src="https://api.vietqr.io/image/970422-0912345678-compact2.png?amount=199000&addInfo=ROUTINEPULSE_VIP" alt="Mã VietQR Thanh Toán" class="w-48 h-48 mx-auto object-contain rounded-lg"/>
         </div>
-
-        <!-- VietQR Box -->
-        <div class="bg-white p-4 rounded-2xl inline-block max-w-[210px] mx-auto shadow-lg text-black">
-          <!-- QR SVG simulation -->
-          <svg class="w-40 h-40 mx-auto" viewBox="0 0 100 100" fill="currentColor">
-            <path d="M10 10h30v30h-30zM15 15v20h20v-20zM60 10h30v30h-30zM65 15v20h20v-20zM10 60h30v30h-30zM15 65v20h20v-20zM22 22h6v6h-6zM72 22h6v6h-6zM22 72h6v6h-6zM50 15h5v5h-5zM45 25h10v5h-10zM55 45h5v15h-5zM65 60h15v5h-15zM75 75h15v15h-15zM50 80h10v5h-10z"/>
-          </svg>
-          <div class="font-bold text-xs mt-2">MB BANK: 99998888899</div>
-          <div class="text-[10px] text-gray-500 font-mono">ROUTINEPULSE VIP</div>
-        </div>
-
-        <p class="text-text-secondary text-[11px]">Quét mã QR bằng App ngân hàng bất kỳ để kích hoạt ngay</p>
-        <button onclick="confirmPaymentSuccess()" class="w-full py-2.5 rounded-xl bg-task-green text-surface font-bold text-xs">
-          Xác nhận đã chuyển khoản
+        <p class="text-xs font-bold text-g-text-primary">Gói VIP PRO - 199.000 đ / năm</p>
+        <p class="text-[11px] text-g-text-muted">Quét mã bằng bất kỳ ứng dụng ngân hàng hoặc ví MoMo để tự động kích hoạt tài khoản.</p>
+        <button onclick="alert('Đã xác nhận thanh toán thành công!'); closeAllModals();" class="w-full py-2.5 bg-g-green text-white font-semibold text-xs rounded-xl shadow-sm">
+          Tôi đã hoàn tất chuyển khoản
         </button>
       </div>
     </section>
 
-    <!-- MODAL 6: CONTACTS COMPANION PANEL (DANH BẠ LIÊN HỆ) -->
-    <section id="modal-contacts" class="absolute bottom-0 left-0 w-full h-[80%] bg-surface-container rounded-t-3xl border-t border-x border-outline-subtle z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
-      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1 rounded-full bg-outline-muted"></div></div>
-      <header class="flex items-center justify-between px-5 py-2.5 border-b border-outline-subtle shrink-0">
-        <div>
-          <h2 class="text-sm font-bold text-white">Danh bạ & Khách hàng</h2>
-          <p class="text-[11px] text-text-secondary">4 liên hệ đồng bộ</p>
-        </div>
-        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-surface-container-high text-text-secondary hover:text-white flex items-center justify-center">
+    <!-- MODAL 5: CONTACTS COMPANION -->
+    <section id="modal-contacts" class="absolute bottom-0 left-0 w-full h-[85%] bg-white rounded-t-3xl border-t border-g-border z-50 flex flex-col overflow-hidden shadow-2xl transition-transform translate-y-full duration-300">
+      <div class="w-full pt-3 pb-1 flex justify-center"><div class="w-10 h-1.5 rounded-full bg-g-border"></div></div>
+      <header class="flex items-center justify-between px-5 py-2.5 border-b border-g-border-subtle shrink-0">
+        <h2 class="text-sm font-bold text-g-text-primary">Danh bạ liên hệ</h2>
+        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full flex items-center justify-center text-g-text-muted hover:bg-g-surface">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </header>
-      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-2.5 text-xs" id="contacts-list-container">
-        <!-- Rendered in JS -->
+
+      <div class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-2 bg-g-surface">
+        <div id="contacts-list-container" class="space-y-2">
+          <!-- Rendered in JS -->
+        </div>
       </div>
     </section>
 
   </div>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
-  <div id="toast" class="fixed top-5 z-50 max-w-sm px-4 py-2.5 rounded-xl bg-surface-container border border-google-blue text-white text-xs shadow-2xl flex items-center gap-2 transform -translate-y-24 transition-transform duration-300">
-    <span class="material-symbols-outlined text-google-blue text-base" id="toast-icon">check_circle</span>
-    <span id="toast-message">Thao tác thành công</span>
-  </div>
-
-  <!-- SCRIPT LOGIC (INTERACTIVE STATE MANAGEMENT) -->
+  <!-- SCRIPT LOGIC -->
   <script>
-    // 1. DATA STATE
+    // 1. STATE MANAGEMENT
     const state = {
       currentTab: 'calendar',
-      calendarMode: 'agenda', // 'agenda' | 'month' | 'week'
+      calendarMode: 'agenda',
       selectedDate: 20,
-      activeModal: null,
-      createType: 'event',
-      createPriority: 'high',
+      monthPickerOpen: false,
       routineFilter: 'all',
       taskFilter: 'all',
-      
+
+      // Calendar Events with Solid Colors
+      events: [
+        { id: 101, title: 'Họp Kiến trúc Hệ thống RoutinePulse', time: '08:30 – 09:30', color: 'flamingo', colorHex: '#E67C73', location: 'Phòng họp trực tuyến', date: 20, dayName: 'T3', dayNum: 20 },
+        { id: 102, title: 'Review PR Subroutine Engine & Task sync', time: '10:00 – 11:30', color: 'blue', colorHex: '#1A73E8', location: 'Phòng Lab 01', date: 20, dayName: 'T3', dayNum: 20, isTask: true },
+        { id: 103, title: 'Tư vấn lộ trình khách hàng Tech Lead', time: '14:00 – 15:00', color: 'green', colorHex: '#0B8043', location: 'Trực tuyến', date: 20, dayName: 'T3', dayNum: 20 },
+        { id: 104, title: 'Đồng bộ cơ sở dữ liệu & CalDAV Engine', time: '16:00 – 17:00', color: 'lavender', colorHex: '#7986CB', location: 'Văn phòng', date: 20, dayName: 'T3', dayNum: 20 },
+        { id: 105, title: 'Họp Ban Giám Đốc quý IV', time: '09:00 – 11:00', color: 'flamingo', colorHex: '#E67C73', location: 'Tầng 12', date: 21, dayName: 'T4', dayNum: 21 },
+        { id: 106, title: 'Chạy thử nghiệm tải trọng Server', time: '14:30 – 16:00', color: 'blue', colorHex: '#1A73E8', location: 'Hạ tầng Cloud', date: 22, dayName: 'T5', dayNum: 22 }
+      ],
+
       habits: [
-        { id: 1, title: 'Chạy bộ 30 phút & Giãn cơ', time: '06:30', shift: 'morning', category: 'Sức khỏe', streak: 18, completed: true, subroutines: [] },
-        { id: 2, title: 'Đọc 20 trang sách chuyên môn', time: '07:30', shift: 'morning', category: 'Trí tuệ', streak: 14, completed: true, subroutines: [
-          { title: '10 trang kỹ thuật', completed: true },
-          { title: '10 trang tư duy', completed: true }
-        ]},
-        { id: 3, title: 'Deep Work: Kiến trúc Core Engine', time: '14:00', shift: 'afternoon', category: 'Công việc', streak: 9, completed: false, subroutines: [] },
-        { id: 4, title: 'Uống đủ 2L nước & Thiền 15 phút', time: '21:00', shift: 'evening', category: 'Tâm trí', streak: 12, completed: false, subroutines: [] }
+        { id: 1, title: 'Chạy bộ 30 phút & Giãn cơ', time: '07:00', shift: 'morning', category: 'Sức khỏe', completed: true, streak: 14, subroutines: [{ title: 'Xỏ giày & Khởi động', completed: true }, { title: 'Chạy 3.5km quanh hồ', completed: true }] },
+        { id: 2, title: 'Đọc 20 trang sách Kiến Trúc', time: '08:00', shift: 'morning', category: 'Trí tuệ', completed: true, streak: 9, subroutines: [] },
+        { id: 3, title: 'Đi bộ thư giãn & uống 500ml nước', time: '14:30', shift: 'afternoon', category: 'Sức khỏe', completed: true, streak: 12, subroutines: [] },
+        { id: 4, title: 'Thiền định & Viết nhật ký kết ngày', time: '21:30', shift: 'evening', category: 'Tinh thần', completed: false, streak: 6, subroutines: [{ title: 'Bật nhạc Baroque', completed: false }, { title: 'Ghi 3 điều biết ơn', completed: false }] }
       ],
 
       tasks: [
-        { id: 101, title: 'Review PR Subroutine Engine', dueDate: 'Hôm nay, 17:00', priority: 'high', completed: false, subtasks: [
-          { title: 'Kiểm thử logic streak', completed: true },
-          { title: 'Kiểm tra độ tương thích mobile', completed: false }
-        ]},
-        { id: 102, title: 'Chuẩn bị slide báo cáo Sprint', dueDate: 'Ngày mai, 10:00', priority: 'medium', completed: false, subtasks: [] },
-        { id: 103, title: 'Cập nhật tài liệu API v2', dueDate: '22 Th10', priority: 'low', completed: true, subtasks: [] }
+        { id: 201, title: 'Hoàn thiện bản vẽ Mobile chuẩn phong cách phẳng', dueDate: 'Hôm nay, 17:00', priority: 'high', completed: false, subtasks: [{ title: 'Chuyển sang nền trắng và màu Solid', completed: true }, { title: 'Tối ưu hoá Agenda view', completed: true }] },
+        { id: 202, title: 'Chuẩn bị tài liệu kỹ thuật API Subtasks', dueDate: 'Ngày mai, 12:00', priority: 'medium', completed: false, subtasks: [] },
+        { id: 203, title: 'Gia hạn tên miền & Chứng chỉ SSL', dueDate: '25 Tháng 10', priority: 'high', completed: true, subtasks: [] }
       ],
 
       notes: [
-        { id: 201, title: 'Kỷ luật & Thói quen cốt lõi', pinned: true, color: 'amber', tags: ['#KỷLuật', '#Mindset'], checklist: [
-          { text: 'Ngủ trước 23:00 mỗi tối', done: true },
-          { text: 'Review checklist tiến độ lúc 17:30', done: true }
-        ]},
-        { id: 202, title: 'Kế hoạch Release v2.4 Mobile App', pinned: false, color: 'blue', tags: ['#DựÁnQ4'], checklist: [
-          { text: 'Chuyển đổi 5 Tab Navigation', done: true },
-          { text: 'Tích hợp VietQR Checkout', done: false }
-        ]},
-        { id: 203, title: 'Ý tưởng mở rộng RoutinePulse', pinned: false, color: 'purple', tags: ['#ÝTưởng'], checklist: [] }
-      ],
-
-      events: [
-        { id: 301, title: 'Họp Kiến trúc Hệ thống RoutinePulse', time: '08:30 - 09:30', meet: true, location: 'Phòng Họp 01 / Trực tuyến', priority: 'high' },
-        { id: 302, title: 'Tư vấn lộ trình khách hàng Tech Lead', time: '14:00 - 15:00', meet: true, location: 'Google Meet', priority: 'medium' }
+        { id: 301, title: 'Ý tưởng Tối ưu hóa UI Mobile', content: 'Sử dụng Flat Solid colors: Flamingo, Sage, Cobalt, Banana. Tránh lạm dụng gradient neon đen.', color: 'banana', bgClass: 'bg-[#FEF7E0] border-[#F6BF26]' },
+        { id: 302, title: 'Checklist triển khai CalDAV Sync', content: '1. Đồng bộ sự kiện 2 chiều\n2. Xử lý trùng lặp ID\n3. Push webhook tức thì', color: 'green', bgClass: 'bg-[#E6F4EA] border-[#0B8043]' },
+        { id: 303, title: 'Ghi chú Họp Sản Phẩm', content: 'Tập trung tính năng Lịch hẹn đặt trước (Appointment Hub) cho khách hàng.', color: 'purple', bgClass: 'bg-[#F3E8FD] border-[#8E24AA]' }
       ],
 
       contacts: [
-        { name: 'Nguyễn Văn Nam', role: 'Product Manager', email: 'nam.nv@tech.vn', phone: '0988 123 456' },
-        { name: 'Trần Thị Mai', role: 'UI/UX Designer', email: 'mai.tran@studio.vn', phone: '0977 654 321' },
-        { name: 'Lê Hoàng Long', role: 'Lead Backend', email: 'long.lh@cloud.vn', phone: '0912 345 678' },
-        { name: 'Phạm Minh Đức', role: 'QA Engineer', email: 'duc.pm@corp.vn', phone: '0909 888 777' }
+        { name: 'Nguyễn Văn Hùng', role: 'Product Manager', email: 'hung.nv@techcorp.vn', phone: '0988 123 456' },
+        { name: 'Trần Thị Mai', role: 'UI/UX Designer', email: 'mai.tt@designhub.com', phone: '0977 654 321' },
+        { name: 'Lê Hoàng Long', role: 'Lead Backend', email: 'long.lh@cloud.vn', phone: '0912 345 678' }
       ],
 
       availability: [
@@ -814,14 +752,13 @@
 
     // 2. INITIALIZATION
     window.addEventListener('DOMContentLoaded', () => {
-      renderWeekStrip();
       renderCalendarContent();
+      renderMiniMonthGrid();
       renderHabitsList();
       renderTasksList();
       renderNotesList();
       renderContactsList();
       renderAvailabilitySlots();
-      updateTelemetryKPI();
 
       // Real clock update
       setInterval(() => {
@@ -838,27 +775,32 @@
       state.currentTab = tabName;
       if (calendarMode) state.calendarMode = calendarMode;
 
-      // Toggle views
       document.querySelectorAll('.screen-view').forEach(el => el.classList.add('hidden'));
       const activeEl = document.getElementById(`view-${tabName}`);
       if (activeEl) activeEl.classList.remove('hidden');
 
-      // Update bottom nav highlights
-      const navButtons = ['calendar', 'routines', 'tasks', 'notes', 'profile'];
-      navButtons.forEach(btn => {
-        const navEl = document.getElementById(`nav-${btn}`);
-        if (!navEl) return;
-        const icon = navEl.querySelector('.material-symbols-outlined');
-        if (btn === tabName) {
-          navEl.className = 'flex flex-col items-center justify-center text-google-blue font-semibold flex-1 py-1';
-          if (icon) icon.classList.add('fill');
+      // Update bottom nav highlights (Preserving icon classes strictly)
+      const tabs = ['calendar', 'routines', 'tasks', 'notes', 'profile'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`nav-${t}`);
+        if (!btn) return;
+        const pillDiv = btn.querySelector('div');
+        const icon = pillDiv ? pillDiv.querySelector('span') : null;
+        const label = btn.querySelector(':scope > span');
+
+        if (t === tabName) {
+          btn.className = 'flex flex-col items-center justify-center flex-1 py-1 text-g-blue';
+          if (pillDiv) pillDiv.className = 'px-4 py-1 rounded-full bg-g-blue-container mb-0.5';
+          if (icon) icon.className = 'material-symbols-outlined text-[20px] fill text-g-blue-dark';
+          if (label) label.className = 'text-[11px] font-bold text-g-blue-dark';
         } else {
-          navEl.className = 'flex flex-col items-center justify-center text-text-secondary font-medium hover:text-white flex-1 py-1';
-          if (icon) icon.classList.remove('fill');
+          btn.className = 'flex flex-col items-center justify-center flex-1 py-1 text-g-text-muted hover:text-g-text-primary';
+          if (pillDiv) pillDiv.className = 'px-4 py-1 rounded-full mb-0.5';
+          if (icon) icon.className = 'material-symbols-outlined text-[20px]';
+          if (label) label.className = 'text-[11px] font-medium';
         }
       });
 
-      // Show/hide FAB
       const fab = document.getElementById('app-fab');
       if (tabName === 'profile' || tabName === 'auth') {
         fab.classList.add('hidden');
@@ -871,229 +813,296 @@
       }
     }
 
-    function setCalendarMode(mode) {
-      state.calendarMode = mode;
-      ['month', 'week', 'agenda'].forEach(m => {
-        const btn = document.getElementById(`btn-mode-${m}`);
-        if (m === mode) {
-          btn.className = 'px-3 py-1 bg-surface-container-high text-google-blue font-semibold rounded-full border border-outline-subtle shadow-sm transition-all';
-        } else {
-          btn.className = 'px-2.5 py-1 text-text-secondary rounded-full hover:text-white transition-all';
-        }
-      });
+    function cycleCalendarView() {
+      if (state.calendarMode === 'agenda') {
+        state.calendarMode = 'month';
+      } else if (state.calendarMode === 'month') {
+        state.calendarMode = 'week';
+      } else {
+        state.calendarMode = 'agenda';
+      }
+      const badge = document.getElementById('btn-view-mode-badge');
+      if (state.calendarMode === 'agenda') badge.textContent = 'Biểu';
+      if (state.calendarMode === 'month') badge.textContent = 'Tháng';
+      if (state.calendarMode === 'week') badge.textContent = 'Tuần';
       renderCalendarContent();
     }
 
-    // 4. RENDERING FUNCTIONS
-    function renderWeekStrip() {
-      const container = document.getElementById('week-strip-container');
-      const days = [
-        { label: 'T2', num: 19, active: false, dots: ['bg-task-green'] },
-        { label: 'T3', num: 20, active: true, dots: ['bg-google-blue', 'bg-habit-amber'] },
-        { label: 'T4', num: 21, active: false, dots: ['bg-habit-amber'] },
-        { label: 'T5', num: 22, active: false, dots: ['bg-google-blue'] },
-        { label: 'T6', num: 23, active: false, dots: [] },
-        { label: 'T7', num: 24, active: false, dots: ['bg-task-green'] },
-        { label: 'CN', num: 25, active: false, dots: ['bg-habit-amber'] }
-      ];
-
-      container.innerHTML = days.map(d => {
-        if (d.active) {
-          return `
-            <button onclick="selectDate(${d.num})" class="flex flex-col items-center py-1.5 rounded-xl bg-google-blue text-surface font-semibold shadow-sm transition-transform active:scale-95">
-              <span class="text-[10px] uppercase font-bold text-surface mb-0.5">${d.label}</span>
-              <span class="text-sm leading-none font-bold mb-1">${d.num}</span>
-              <div class="flex items-center gap-0.5"><span class="w-1.5 h-1.5 rounded-full bg-surface"></span></div>
-            </button>
-          `;
-        }
-        return `
-          <button onclick="selectDate(${d.num})" class="flex flex-col items-center py-1.5 rounded-lg hover:bg-surface-container transition-colors">
-            <span class="text-[10px] uppercase font-medium text-text-secondary mb-0.5">${d.label}</span>
-            <span class="text-xs font-medium text-text-primary mb-1">${d.num}</span>
-            <span class="w-1.5 h-1.5 rounded-full ${d.dots[0] || 'bg-transparent'}"></span>
-          </button>
-        `;
-      }).join('');
+    function toggleMonthPicker() {
+      state.monthPickerOpen = !state.monthPickerOpen;
+      const el = document.getElementById('mini-month-dropdown');
+      const arrow = document.getElementById('header-month-arrow');
+      if (state.monthPickerOpen) {
+        el.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+      } else {
+        el.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+      }
     }
 
-    function selectDate(num) {
-      state.selectedDate = num;
-      openModal('day-inspector');
+    function goToToday() {
+      state.selectedDate = 20;
+      setScreenTab('calendar', 'agenda');
+    }
+
+    // 4. RENDERING FUNCTIONS
+    function renderMiniMonthGrid() {
+      const container = document.getElementById('mini-month-grid');
+      let html = '';
+      for (let empty = 0; empty < 3; empty++) {
+        html += `<div></div>`;
+      }
+      for (let d = 1; d <= 31; d++) {
+        const isToday = d === 20;
+        const hasEvents = d === 20 || d === 15 || d === 21 || d === 22 || d === 28;
+        html += `
+          <button onclick="selectDateFromMini(${d})" class="h-9 flex flex-col items-center justify-center relative hover:bg-g-surface rounded-full">
+            <span class="w-7 h-7 flex items-center justify-center rounded-full text-xs font-medium ${isToday ? 'bg-g-blue text-white font-bold' : 'text-g-text-primary'}">${d}</span>
+            <div class="flex items-center gap-0.5 mt-0.5">
+              ${hasEvents && !isToday ? '<span class="w-1 h-1 rounded-full bg-g-blue"></span><span class="w-1 h-1 rounded-full bg-g-flamingo"></span>' : ''}
+            </div>
+          </button>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function selectDateFromMini(d) {
+      state.selectedDate = d;
+      toggleMonthPicker();
+      renderCalendarContent();
     }
 
     function renderCalendarContent() {
       const canvas = document.getElementById('calendar-content-canvas');
+
+      // VIEW 1: AGENDA / SCHEDULE
       if (state.calendarMode === 'agenda') {
         canvas.innerHTML = `
-          <div class="flex items-center justify-between pb-2">
-            <div class="flex items-center gap-1.5">
-              <span class="text-xs font-bold text-white">Lịch biểu hôm nay</span>
-              <span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-high text-google-blue">20 Tháng 10</span>
-            </div>
-            <span class="text-[11px] text-text-muted">4 mục công việc</span>
-          </div>
-          <div class="space-y-2.5">
-            <!-- Item 1: Event -->
-            <article onclick="openEventDetail(301)" class="bg-surface-container border border-outline-subtle hover:border-google-blue/60 rounded-xl p-3 flex flex-col gap-2 cursor-pointer transition-colors">
-              <div class="flex items-start justify-between">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-mono font-semibold text-google-blue">08:30</span>
-                    <span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-google-blue/15 text-google-blue border border-google-blue/30">
-                      <span class="material-symbols-outlined text-[12px] fill">videocam</span> Google Meet
-                    </span>
-                  </div>
-                  <h3 class="text-xs font-semibold text-white mt-1">Họp Kiến trúc Hệ thống RoutinePulse</h3>
+          <div class="divide-y divide-g-border-subtle bg-white">
+            
+            <!-- DAY 1: MON 19 -->
+            <div class="flex py-3 px-3 gap-3">
+              <div class="w-12 shrink-0 flex flex-col items-center pt-1 text-center">
+                <span class="text-[11px] font-bold text-g-text-muted uppercase">T2</span>
+                <span class="text-lg font-normal text-g-text-primary">19</span>
+              </div>
+              <div class="flex-1 space-y-2">
+                <div class="bg-g-flamingo text-white rounded-lg p-3 shadow-sm">
+                  <div class="text-xs font-bold leading-snug">Họp Khởi Động Tuần Mới & Đánh giá KPI</div>
+                  <div class="text-[11px] opacity-90 mt-0.5">08:00 – 09:30</div>
                 </div>
-                <span class="text-[10px] text-text-secondary bg-surface-container-high px-2 py-0.5 rounded border border-outline-subtle">08:30 - 09:30</span>
               </div>
-              <div class="flex items-center gap-1 text-[11px] text-text-secondary border-t border-outline-subtle/50 pt-2">
-                <span class="material-symbols-outlined text-sm">location_on</span>
-                <span>Phòng Họp 01 / Trực tuyến</span>
-              </div>
-            </article>
+            </div>
 
-            <!-- Item 2: Habit Routine -->
-            <article class="bg-surface-container border border-outline-subtle rounded-xl p-3 flex flex-col gap-2">
-              <div class="flex items-start justify-between">
-                <div class="flex items-start gap-2.5">
-                  <button onclick="toggleHabitComplete(1, event)" class="w-6 h-6 rounded-md ${state.habits[0].completed ? 'bg-task-green text-surface' : 'border border-outline-subtle text-transparent'} flex items-center justify-center shrink-0 mt-0.5 transition-colors">
-                    <span class="material-symbols-outlined text-sm font-bold">check</span>
-                  </button>
+            <!-- DAY 2: TUE 20 (HÔM NAY - ACTIVE BLUE CIRCLE & RED NOW LINE) -->
+            <div class="flex py-3 px-3 gap-3 bg-blue-50/20">
+              <div class="w-12 shrink-0 flex flex-col items-center pt-0 text-center">
+                <span class="text-[11px] font-bold text-g-blue uppercase">T3</span>
+                <span class="w-8 h-8 rounded-full bg-g-blue text-white flex items-center justify-center text-sm font-bold shadow-sm">20</span>
+              </div>
+              <div class="flex-1 space-y-2.5">
+                
+                <div onclick="openModal('day-inspector')" class="bg-g-flamingo text-white rounded-lg p-3 shadow-sm cursor-pointer active:opacity-90">
+                  <div class="text-xs font-bold leading-snug">Họp Kiến trúc Hệ thống RoutinePulse</div>
+                  <div class="text-[11px] opacity-90 mt-0.5">08:30 – 09:30 · Trực tuyến</div>
+                </div>
+
+                <!-- RED NOW-TIME INDICATOR LINE -->
+                <div class="flex items-center gap-1.5 py-1 -mx-2">
+                  <div class="w-2.5 h-2.5 rounded-full bg-g-red"></div>
+                  <div class="flex-1 h-0.5 bg-g-red"></div>
+                </div>
+
+                <div onclick="openModal('day-inspector')" class="bg-g-blue text-white rounded-lg p-3 shadow-sm cursor-pointer active:opacity-90 flex items-start gap-2">
+                  <span class="material-symbols-outlined text-sm font-bold mt-0.5">check_circle</span>
                   <div>
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-xs font-mono font-semibold text-habit-amber">07:00</span>
-                      <span class="text-[10px] px-1.5 py-0.2 rounded bg-habit-amber/20 text-habit-amber border border-habit-amber/30">Thói quen</span>
-                    </div>
-                    <h3 class="text-xs font-medium text-white mt-0.5 ${state.habits[0].completed ? 'line-through opacity-80' : ''}">${state.habits[0].title}</h3>
+                    <div class="text-xs font-bold leading-snug">Review PR Subroutine Engine & Task sync</div>
+                    <div class="text-[11px] opacity-90 mt-0.5">10:00 – 11:30 · Lab 01</div>
                   </div>
                 </div>
-                <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-surface-container-high text-habit-amber">🔥 18 ngày</span>
-              </div>
-            </article>
 
-            <!-- Item 3: Task -->
-            <article class="bg-surface-container border border-outline-subtle rounded-xl p-3 flex flex-col gap-2">
-              <div class="flex items-start justify-between">
-                <div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-xs font-mono font-semibold text-task-green">10:00</span>
-                    <span class="text-[10px] px-1.5 py-0.2 rounded bg-task-green/20 text-task-green border border-task-green/30">Nhiệm vụ</span>
-                  </div>
-                  <h3 class="text-xs font-medium text-white mt-1">Review PR Subroutine Engine</h3>
+                <div onclick="openModal('day-inspector')" class="bg-g-green text-white rounded-lg p-3 shadow-sm cursor-pointer active:opacity-90">
+                  <div class="text-xs font-bold leading-snug">Tư vấn lộ trình khách hàng Tech Lead</div>
+                  <div class="text-[11px] opacity-90 mt-0.5">14:00 – 15:00</div>
                 </div>
-                <span class="text-[10px] px-2 py-0.5 rounded-full bg-danger-coral/20 text-danger-coral font-bold">Ưu tiên cao</span>
-              </div>
-              <div class="text-[11px] text-text-secondary bg-surface-container-low p-2 rounded-lg flex items-center justify-between">
-                <span>Tiến độ subtasks</span>
-                <span class="text-white font-mono">1/2 xong</span>
-              </div>
-            </article>
 
-            <!-- Item 4: Appointment -->
-            <article onclick="openModal('appointment')" class="bg-surface-container border border-outline-subtle rounded-xl p-3 flex flex-col gap-2 cursor-pointer hover:border-google-blue/40">
-              <div class="flex items-start justify-between">
-                <div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-xs font-mono font-semibold text-google-blue">14:00</span>
-                    <span class="text-[10px] px-1.5 py-0.2 rounded bg-google-blue/20 text-google-blue border border-google-blue/30">Lịch hẹn</span>
-                  </div>
-                  <h3 class="text-xs font-medium text-white mt-1">Tư vấn lộ trình khách hàng Tech Lead</h3>
+                <div onclick="openModal('day-inspector')" class="bg-g-lavender text-white rounded-lg p-3 shadow-sm cursor-pointer active:opacity-90">
+                  <div class="text-xs font-bold leading-snug">Đồng bộ cơ sở dữ liệu & CalDAV Engine</div>
+                  <div class="text-[11px] opacity-90 mt-0.5">16:00 – 17:00</div>
                 </div>
-                <span class="text-[10px] text-text-secondary bg-surface-container-high px-2 py-0.5 rounded border border-outline-subtle">14:00 - 15:00</span>
+
               </div>
-            </article>
+            </div>
+
+            <!-- DAY 3: WED 21 -->
+            <div class="flex py-3 px-3 gap-3">
+              <div class="w-12 shrink-0 flex flex-col items-center pt-1 text-center">
+                <span class="text-[11px] font-bold text-g-text-muted uppercase">T4</span>
+                <span class="text-lg font-normal text-g-text-primary">21</span>
+              </div>
+              <div class="flex-1 space-y-2">
+                <div class="bg-g-flamingo text-white rounded-lg p-3 shadow-sm">
+                  <div class="text-xs font-bold leading-snug">Họp Ban Giám Đốc quý IV</div>
+                  <div class="text-[11px] opacity-90 mt-0.5">09:00 – 11:00</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DAY 4: THU 22 -->
+            <div class="flex py-3 px-3 gap-3">
+              <div class="w-12 shrink-0 flex flex-col items-center pt-1 text-center">
+                <span class="text-[11px] font-bold text-g-text-muted uppercase">T5</span>
+                <span class="text-lg font-normal text-g-text-primary">22</span>
+              </div>
+              <div class="flex-1 space-y-2">
+                <div class="bg-g-blue text-white rounded-lg p-3 shadow-sm">
+                  <div class="text-xs font-bold leading-snug">Chạy thử nghiệm tải trọng Server</div>
+                  <div class="text-[11px] opacity-90 mt-0.5">14:30 – 16:00</div>
+                </div>
+              </div>
+            </div>
+
           </div>
         `;
-      } else if (state.calendarMode === 'month') {
+      } 
+      // VIEW 2: MONTH GRID
+      else if (state.calendarMode === 'month') {
         canvas.innerHTML = `
-          <div class="bg-surface-container border border-outline-subtle rounded-2xl p-3.5 space-y-3">
-            <div class="grid grid-cols-7 text-center text-[11px] font-bold text-text-secondary pb-1 border-b border-outline-subtle/50">
-              <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+          <div class="w-full bg-white flex flex-col h-full">
+            <div class="grid grid-cols-7 text-center text-xs font-semibold text-g-text-muted py-2 border-b border-g-border">
+              <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
-            <div class="grid grid-cols-7 gap-1 text-center text-xs">
-              ${generateMonthGridHTML()}
+            <div class="grid grid-cols-7 flex-1 border-b border-g-border-subtle divide-x divide-g-border-subtle text-xs">
+              ${generateFullMonthGridHTML()}
             </div>
-          </div>
-          <div class="p-3 bg-surface-container-low border border-outline-subtle rounded-xl text-xs flex items-center justify-between mt-3">
-            <span class="text-text-secondary">Chạm vào bất kỳ ngày nào để xem chi tiết (Day Inspector)</span>
-            <span class="material-symbols-outlined text-google-blue text-sm">touch_app</span>
           </div>
         `;
-      } else if (state.calendarMode === 'week') {
+      }
+      // VIEW 3: WEEK / TIMELINE
+      else if (state.calendarMode === 'week') {
         canvas.innerHTML = `
-          <div class="space-y-2">
-            <div class="text-xs text-text-secondary flex justify-between items-center px-1">
-              <span>Khung giờ liên tục 06:00 – 23:00</span>
-              <span class="text-google-blue font-bold">Thứ Ba (Hôm nay)</span>
+          <div class="bg-white p-3 space-y-3">
+            <div class="flex items-center justify-between pb-1 border-b border-g-border">
+              <span class="text-xs font-bold text-g-text-primary">Lịch trình chi tiết theo giờ</span>
+              <span class="text-xs font-semibold text-g-blue bg-g-blue-light px-2.5 py-0.5 rounded-full">Thứ Ba 20/10</span>
             </div>
-            <div class="bg-surface-container border border-outline-subtle rounded-2xl p-3 divide-y divide-outline-subtle/40 text-xs">
-              <div class="py-2.5 flex items-start gap-3"><span class="w-10 font-mono text-text-muted">07:00</span><div class="flex-1 bg-habit-amber/15 border border-habit-amber/30 text-habit-amber p-2 rounded-lg">Chạy bộ 30 phút (Thói quen)</div></div>
-              <div class="py-2.5 flex items-start gap-3"><span class="w-10 font-mono text-text-muted">08:30</span><div class="flex-1 bg-google-blue/15 border border-google-blue/30 text-google-blue p-2 rounded-lg font-semibold">Họp Kiến trúc Hệ thống (Google Meet)</div></div>
-              <div class="py-2.5 flex items-start gap-3"><span class="w-10 font-mono text-text-muted">10:00</span><div class="flex-1 bg-task-green/15 border border-task-green/30 text-task-green p-2 rounded-lg">Review PR Subroutine Engine</div></div>
-              <div class="py-2.5 flex items-start gap-3"><span class="w-10 font-mono text-text-muted">14:00</span><div class="flex-1 bg-google-blue/15 border border-google-blue/30 text-google-blue p-2 rounded-lg">Tư vấn lộ trình khách hàng</div></div>
-              <div class="py-2.5 flex items-start gap-3"><span class="w-10 font-mono text-text-muted">21:00</span><div class="flex-1 bg-habit-amber/15 border border-habit-amber/30 text-habit-amber p-2 rounded-lg">Uống 2L nước & Thiền định</div></div>
+            <div class="space-y-2 text-xs">
+              <div class="flex items-start gap-3 py-1">
+                <span class="w-12 font-mono text-g-text-muted text-[11px]">07:00</span>
+                <div class="flex-1 bg-g-green text-white p-2.5 rounded-lg shadow-sm font-medium">Chạy bộ 30 phút (Thói quen)</div>
+              </div>
+              <div class="flex items-start gap-3 py-1">
+                <span class="w-12 font-mono text-g-text-muted text-[11px]">08:30</span>
+                <div class="flex-1 bg-g-flamingo text-white p-2.5 rounded-lg shadow-sm font-medium">Họp Kiến trúc Hệ thống</div>
+              </div>
+              <div class="flex items-start gap-3 py-1">
+                <span class="w-12 font-mono text-g-text-muted text-[11px]">10:00</span>
+                <div class="flex-1 bg-g-blue text-white p-2.5 rounded-lg shadow-sm font-medium">Review PR Subroutine Engine</div>
+              </div>
+              <div class="flex items-start gap-3 py-1">
+                <span class="w-12 font-mono text-g-text-muted text-[11px]">14:00</span>
+                <div class="flex-1 bg-g-green text-white p-2.5 rounded-lg shadow-sm font-medium">Tư vấn lộ trình khách hàng</div>
+              </div>
+              <div class="flex items-start gap-3 py-1">
+                <span class="w-12 font-mono text-g-text-muted text-[11px]">21:30</span>
+                <div class="flex-1 bg-g-amber text-white p-2.5 rounded-lg shadow-sm font-medium">Thiền định & Viết nhật ký</div>
+              </div>
             </div>
           </div>
         `;
       }
     }
 
-    function generateMonthGridHTML() {
+    function generateFullMonthGridHTML() {
       let html = '';
-      // 31 days simulation for October
-      for (let day = 1; day <= 31; day++) {
+      for (let day = 1; day <= 35; day++) {
+        const dateNum = day <= 31 ? day : day - 31;
+        const isCurrentMonth = day <= 31;
         const isToday = day === 20;
-        const hasEvent = day === 20 || day === 15 || day === 24 || day === 28;
-        const holiday = day === 20 ? '🎉' : '';
+
+        let pillsHTML = '';
+        if (day === 20) {
+          pillsHTML = `
+            <div class="bg-g-flamingo text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate mb-0.5">08:30 Họp Kiến trúc</div>
+            <div class="bg-g-blue text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate mb-0.5">✓ Review PR</div>
+            <div class="bg-g-green text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate">14:00 Tư vấn</div>
+          `;
+        } else if (day === 15) {
+          pillsHTML = `
+            <div class="bg-g-green text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate">Ăn sáng đối tác</div>
+            <div class="bg-g-blue text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate mt-0.5">Chuẩn bị Slide</div>
+          `;
+        } else if (day === 21) {
+          pillsHTML = `
+            <div class="bg-g-flamingo text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate">Họp Ban Giám Đốc</div>
+          `;
+        } else if (day === 22) {
+          pillsHTML = `
+            <div class="bg-g-blue text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate">Thử nghiệm tải</div>
+          `;
+        } else if (day === 23) {
+          pillsHTML = `
+            <div class="bg-g-green text-white text-[9px] font-semibold px-1 py-0.5 rounded truncate">Gặp khách hàng</div>
+          `;
+        }
+
         html += `
-          <button onclick="selectDate(${day})" class="h-10 rounded-lg flex flex-col items-center justify-center p-1 transition-colors ${isToday ? 'bg-google-blue text-surface font-bold' : 'hover:bg-surface-container-high text-text-primary'}">
-            <span class="text-xs leading-none">${day}</span>
-            <div class="flex items-center gap-0.5 mt-1">
-              ${hasEvent && !isToday ? '<span class="w-1 h-1 rounded-full bg-google-blue"></span>' : ''}
-              ${holiday ? `<span class="text-[9px] leading-none">${holiday}</span>` : ''}
+          <div onclick="selectDateFromMonthGrid(${dateNum})" class="min-h-[78px] p-1 border-b border-g-border-subtle flex flex-col justify-start hover:bg-g-surface cursor-pointer transition-colors ${!isCurrentMonth ? 'bg-g-surface/50 opacity-40' : ''}">
+            <div class="flex items-center justify-between mb-1">
+              <span class="w-5 h-5 flex items-center justify-center rounded-full text-[11px] font-medium ${isToday ? 'bg-g-blue text-white font-bold' : 'text-g-text-secondary'}">
+                ${dateNum}
+              </span>
             </div>
-          </button>
+            <div class="flex-1 w-full overflow-hidden">
+              ${pillsHTML}
+            </div>
+          </div>
         `;
       }
       return html;
     }
 
+    function selectDateFromMonthGrid(d) {
+      state.selectedDate = d;
+      openModal('day-inspector');
+    }
+
+    // HABITS LIST RENDERING
     function renderHabitsList() {
       const container = document.getElementById('habits-list-container');
       const filtered = state.habits.filter(h => state.routineFilter === 'all' || h.shift === state.routineFilter);
 
       container.innerHTML = filtered.map(h => `
-        <article class="bg-surface-container border border-outline-subtle rounded-xl p-3 flex flex-col gap-2.5 transition-colors">
+        <article class="bg-white border border-g-border rounded-xl p-3.5 flex flex-col gap-2.5 shadow-sm transition-all">
           <div class="flex items-start justify-between">
             <div class="flex items-start gap-3">
-              <button onclick="toggleHabitComplete(${h.id}, event)" class="w-7 h-7 rounded-lg ${h.completed ? 'bg-task-green text-surface' : 'border-2 border-outline-subtle text-transparent hover:border-habit-amber'} flex items-center justify-center shrink-0 mt-0.5 transition-all active:scale-90">
-                <span class="material-symbols-outlined text-sm font-bold">check</span>
+              <button onclick="toggleHabitComplete(${h.id}, event)" class="w-7 h-7 rounded-full ${h.completed ? 'bg-g-green text-white' : 'border-2 border-g-border hover:border-g-green text-transparent'} flex items-center justify-center shrink-0 mt-0.5 transition-all">
+                <span class="material-symbols-outlined text-base font-bold">check</span>
               </button>
               <div>
-                <h3 class="text-xs font-semibold text-text-primary ${h.completed ? 'line-through opacity-75' : ''}">${h.title}</h3>
+                <h3 class="text-xs font-bold text-g-text-primary ${h.completed ? 'line-through text-g-text-muted' : ''}">${h.title}</h3>
                 <div class="flex items-center gap-2 mt-1">
-                  <span class="text-[11px] font-mono text-text-secondary">${h.time}</span>
-                  <span class="w-1 h-1 rounded-full bg-outline-subtle"></span>
-                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-surface-container-high text-text-secondary">${h.category}</span>
+                  <span class="text-[11px] font-mono text-g-text-muted">${h.time}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-g-surface text-g-text-secondary border border-g-border-subtle font-medium">${h.category}</span>
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-habit-amber/15 text-habit-amber font-mono text-xs font-semibold shrink-0">
+            <div class="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-g-banana-light text-g-amber font-mono text-xs font-bold shrink-0 border border-g-banana/40">
               <span class="material-symbols-outlined text-xs fill">local_fire_department</span>
               <span>${h.streak} ngày</span>
             </div>
           </div>
           ${h.subroutines && h.subroutines.length > 0 ? `
-            <div class="pl-10 pt-2 border-t border-outline-subtle/50 space-y-1.5">
+            <div class="pl-10 pt-2 border-t border-g-border-subtle space-y-1.5">
               ${h.subroutines.map((sub, idx) => `
-                <div onclick="toggleSubroutineComplete(${h.id}, ${idx})" class="flex items-center justify-between text-[11px] text-text-secondary cursor-pointer hover:text-white">
-                  <span class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-xs ${sub.completed ? 'text-task-green fill' : 'text-text-muted'}">check_circle</span>
-                    <span class="${sub.completed ? 'line-through text-text-muted' : ''}">${sub.title}</span>
+                <div onclick="toggleSubroutineComplete(${h.id}, ${idx})" class="flex items-center justify-between text-xs text-g-text-secondary cursor-pointer hover:text-g-text-primary">
+                  <span class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm ${sub.completed ? 'text-g-green fill' : 'text-g-text-muted'}">check_circle</span>
+                    <span class="${sub.completed ? 'line-through text-g-text-muted' : ''}">${sub.title}</span>
                   </span>
-                  <span class="font-mono text-[10px]">${sub.completed ? 'Xong' : 'Chờ'}</span>
+                  <span class="font-mono text-[11px] text-g-text-muted">${sub.completed ? 'Đã xong' : 'Chưa xong'}</span>
                 </div>
               `).join('')}
             </div>
@@ -1102,6 +1111,38 @@
       `).join('');
     }
 
+    function toggleHabitComplete(id, event) {
+      if (event) event.stopPropagation();
+      const habit = state.habits.find(h => h.id === id);
+      if (habit) {
+        habit.completed = !habit.completed;
+        renderHabitsList();
+      }
+    }
+
+    function toggleSubroutineComplete(habitId, subIdx) {
+      const habit = state.habits.find(h => h.id === habitId);
+      if (habit && habit.subroutines[subIdx]) {
+        habit.subroutines[subIdx].completed = !habit.subroutines[subIdx].completed;
+        renderHabitsList();
+      }
+    }
+
+    function filterRoutineShift(shift) {
+      state.routineFilter = shift;
+      ['all', 'morning', 'afternoon', 'evening'].forEach(s => {
+        const btn = document.getElementById(`rf-${s}`);
+        if (!btn) return;
+        if (s === shift) {
+          btn.className = 'h-7 px-3.5 rounded-full bg-g-blue text-white text-xs font-medium shrink-0 shadow-sm';
+        } else {
+          btn.className = 'h-7 px-3.5 rounded-full bg-white border border-g-border text-g-text-secondary text-xs hover:border-g-blue shrink-0';
+        }
+      });
+      renderHabitsList();
+    }
+
+    // TASKS RENDERING
     function renderTasksList() {
       const container = document.getElementById('tasks-list-container');
       const filtered = state.tasks.filter(t => {
@@ -1111,27 +1152,27 @@
       });
 
       container.innerHTML = filtered.map(t => `
-        <article class="bg-surface-container border border-outline-subtle rounded-xl p-3 flex flex-col gap-2.5">
+        <article class="bg-white border border-g-border rounded-xl p-3 flex flex-col gap-2 shadow-sm">
           <div class="flex items-start justify-between">
-            <div class="flex items-start gap-2.5">
-              <button onclick="toggleTaskComplete(${t.id})" class="w-6 h-6 rounded-md ${t.completed ? 'bg-task-green text-surface' : 'border border-outline-subtle text-transparent'} flex items-center justify-center shrink-0 mt-0.5">
+            <div class="flex items-start gap-3">
+              <button onclick="toggleTaskComplete(${t.id})" class="w-6 h-6 rounded-full ${t.completed ? 'bg-g-blue text-white' : 'border-2 border-g-border hover:border-g-blue text-transparent'} flex items-center justify-center shrink-0 mt-0.5 transition-all">
                 <span class="material-symbols-outlined text-xs font-bold">check</span>
               </button>
               <div>
-                <h3 class="text-xs font-medium text-text-primary ${t.completed ? 'line-through opacity-75' : ''}">${t.title}</h3>
-                <span class="text-[11px] text-text-muted mt-0.5 block font-mono">Hạn: ${t.dueDate}</span>
+                <h3 class="text-xs font-medium text-g-text-primary ${t.completed ? 'line-through text-g-text-muted' : ''}">${t.title}</h3>
+                <span class="text-[11px] text-g-text-muted mt-0.5 block">Hạn: ${t.dueDate}</span>
               </div>
             </div>
-            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${t.priority === 'high' ? 'bg-danger-coral/20 text-danger-coral' : 'bg-surface-container-high text-text-secondary'}">
-              ${t.priority === 'high' ? 'Cao' : 'Vừa'}
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${t.priority === 'high' ? 'bg-red-50 text-g-red border border-red-200' : 'bg-g-surface text-g-text-secondary border border-g-border'}">
+              ${t.priority === 'high' ? 'Quan trọng' : 'Bình thường'}
             </span>
           </div>
           ${t.subtasks && t.subtasks.length > 0 ? `
-            <div class="pl-8 pt-2 border-t border-outline-subtle/50 space-y-1 text-[11px] text-text-secondary">
+            <div class="pl-9 pt-1.5 border-t border-g-border-subtle space-y-1 text-xs text-g-text-secondary">
               ${t.subtasks.map(st => `
-                <div class="flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full ${st.completed ? 'bg-task-green' : 'bg-outline-muted'}"></span>
-                  <span class="${st.completed ? 'line-through text-text-muted' : ''}">${st.title}</span>
+                <div class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full ${st.completed ? 'bg-g-blue' : 'bg-g-border'}"></span>
+                  <span class="${st.completed ? 'line-through text-g-text-muted' : ''}">${st.title}</span>
                 </div>
               `).join('')}
             </div>
@@ -1140,388 +1181,195 @@
       `).join('');
     }
 
-    function renderNotesList() {
-      const container = document.getElementById('notes-cards-container');
-      container.innerHTML = state.notes.map(n => {
-        let borderClass = 'border-outline-subtle';
-        let badgeColor = 'text-google-blue bg-google-blue/15';
-        if (n.color === 'amber') { borderClass = 'border-habit-amber/50'; badgeColor = 'text-habit-amber bg-habit-amber/20'; }
-        if (n.color === 'purple') { borderClass = 'border-note-purple/50'; badgeColor = 'text-note-purple bg-note-purple/20'; }
-
-        return `
-          <article class="bg-surface-container border ${borderClass} rounded-2xl p-3.5 space-y-2.5">
-            <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-                ${n.pinned ? '<span class="material-symbols-outlined text-habit-amber text-sm fill">push_pin</span>' : ''}
-                ${n.title}
-              </h3>
-              <div class="flex gap-1">
-                ${n.tags.map(tag => `<span class="text-[10px] px-1.5 py-0.2 rounded ${badgeColor}">${tag}</span>`).join('')}
-              </div>
-            </div>
-            ${n.checklist && n.checklist.length > 0 ? `
-              <div class="space-y-1.5 text-xs text-text-secondary pt-1">
-                ${n.checklist.map(c => `
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-xs ${c.done ? 'text-task-green fill' : 'text-text-muted'}">check_box</span>
-                    <span class="${c.done ? 'line-through text-text-muted' : ''}">${c.text}</span>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
-          </article>
-        `;
-      }).join('');
-    }
-
-    function renderContactsList() {
-      const container = document.getElementById('contacts-list-container');
-      container.innerHTML = state.contacts.map(c => `
-        <div class="bg-surface border border-outline-subtle rounded-xl p-3 flex items-center justify-between">
-          <div>
-            <div class="text-xs font-bold text-white">${c.name}</div>
-            <div class="text-[11px] text-google-blue">${c.role}</div>
-            <div class="text-[10px] text-text-muted font-mono mt-0.5">${c.email} · ${c.phone}</div>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <button onclick="alert('Đang gọi cho ${c.name}...')" class="w-7 h-7 rounded-lg bg-surface-container hover:bg-task-green/20 text-task-green flex items-center justify-center">
-              <span class="material-symbols-outlined text-sm">call</span>
-            </button>
-            <button onclick="openModal('create', 'event')" class="w-7 h-7 rounded-lg bg-surface-container hover:bg-google-blue/20 text-google-blue flex items-center justify-center">
-              <span class="material-symbols-outlined text-sm">event</span>
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function renderAvailabilitySlots() {
-      const container = document.getElementById('availability-slots-list');
-      container.innerHTML = state.availability.map((s, idx) => `
-        <div class="bg-surface border border-outline-subtle rounded-xl p-3 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <input type="checkbox" ${s.active ? 'checked' : ''} onchange="toggleDayAvailability(${idx})" class="w-4 h-4 rounded text-google-blue bg-surface-container border-outline-subtle"/>
-            <span class="font-medium ${s.active ? 'text-white' : 'text-text-muted line-through'}">${s.day}</span>
-          </div>
-          <span class="font-mono text-xs ${s.active ? 'text-google-blue' : 'text-text-muted'}">${s.range}</span>
-        </div>
-      `).join('');
-    }
-
-    // 5. INTERACTION HANDLERS
-    function toggleHabitComplete(id, event) {
-      if (event) event.stopPropagation();
-      const h = state.habits.find(item => item.id === id);
-      if (h) {
-        h.completed = !h.completed;
-        if (h.completed) {
-          h.streak += 1;
-          showToast(`Đã hoàn thành: ${h.title} (Streak ${h.streak} ngày 🔥)`);
-        } else {
-          h.streak = Math.max(1, h.streak - 1);
-          showToast(`Đã bỏ đánh dấu: ${h.title}`);
-        }
-        renderHabitsList();
-        renderCalendarContent();
-        updateTelemetryKPI();
-      }
-    }
-
-    function toggleSubroutineComplete(habitId, subIdx) {
-      const h = state.habits.find(item => item.id === habitId);
-      if (h && h.subroutines[subIdx]) {
-        h.subroutines[subIdx].completed = !h.subroutines[subIdx].completed;
-        renderHabitsList();
-        showToast('Đã cập nhật việc nhỏ!');
-      }
-    }
-
-    function updateTelemetryKPI() {
-      const total = state.habits.length;
-      const completed = state.habits.filter(h => h.completed).length;
-      const percent = Math.round((completed / total) * 100);
-
-      const kpiBadge = document.getElementById('kpi-percent-badge');
-      const kpiBar = document.getElementById('kpi-progress-bar');
-      const statSummary = document.getElementById('habit-stat-summary');
-      const statPercent = document.getElementById('habit-stat-percent');
-
-      if (kpiBadge) kpiBadge.textContent = `${percent}%`;
-      if (kpiBar) kpiBar.style.width = `${percent}%`;
-      if (statSummary) statSummary.textContent = `${completed}/${total} thói quen hoàn thành`;
-      if (statPercent) statPercent.textContent = `${percent}%`;
-    }
-
-    function filterRoutineShift(shift) {
-      state.routineFilter = shift;
-      ['all', 'morning', 'afternoon', 'evening'].forEach(s => {
-        const btn = document.getElementById(`rf-${s}`);
-        if (btn) {
-          if (s === shift) {
-            btn.className = 'h-7 px-3 rounded-full bg-habit-amber/20 border border-habit-amber/50 text-habit-amber text-xs font-semibold shrink-0';
-          } else {
-            btn.className = 'h-7 px-3 rounded-full bg-surface-container border border-outline-subtle text-text-secondary text-xs hover:text-white shrink-0';
-          }
-        }
-      });
-      renderHabitsList();
-    }
-
     function toggleTaskComplete(id) {
-      const t = state.tasks.find(item => item.id === id);
-      if (t) {
-        t.completed = !t.completed;
+      const task = state.tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
         renderTasksList();
-        showToast(t.completed ? 'Đã hoàn tất việc!' : 'Đã mở lại việc!');
       }
     }
 
-    function handleQuickTaskAdd(event) {
-      if (event.key === 'Enter') {
-        const input = document.getElementById('quick-task-input');
-        const val = input.value.trim();
-        if (val) {
-          state.tasks.unshift({
-            id: Date.now(),
-            title: val,
-            dueDate: 'Hôm nay',
-            priority: 'medium',
-            completed: false,
-            subtasks: []
-          });
-          input.value = '';
-          renderTasksList();
-          showToast(`Đã thêm việc: ${val}`);
-        }
+    function handleQuickTaskAdd(e) {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        state.tasks.unshift({
+          id: Date.now(),
+          title: e.target.value.trim(),
+          dueDate: 'Hôm nay',
+          priority: 'high',
+          completed: false,
+          subtasks: []
+        });
+        e.target.value = '';
+        renderTasksList();
       }
     }
 
-    function filterTasks(prio) {
-      state.taskFilter = prio;
-      ['all', 'high', 'done'].forEach(p => {
-        const btn = document.getElementById(`tf-${p}`);
-        if (btn) {
-          if (p === prio) {
-            btn.className = 'h-6 px-2.5 rounded-full bg-task-green/20 border border-task-green/40 text-task-green text-[11px] font-semibold';
-          } else {
-            btn.className = 'h-6 px-2.5 rounded-full bg-surface-container border border-outline-subtle text-text-secondary text-[11px] hover:text-white';
-          }
+    function filterTasks(type) {
+      state.taskFilter = type;
+      ['all', 'high', 'done'].forEach(f => {
+        const btn = document.getElementById(`tf-${f}`);
+        if (!btn) return;
+        if (f === type) {
+          btn.className = 'h-7 px-3 rounded-full bg-g-blue text-white text-xs font-medium';
+        } else {
+          btn.className = 'h-7 px-3 rounded-full bg-g-surface border border-g-border text-g-text-secondary text-xs hover:border-g-blue';
         }
       });
       renderTasksList();
     }
 
+    // NOTES RENDERING
+    function renderNotesList() {
+      const container = document.getElementById('notes-cards-container');
+      container.innerHTML = state.notes.map(n => `
+        <article class="${n.bgClass} border rounded-2xl p-4 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-g-text-primary">${n.title}</h3>
+            <span class="material-symbols-outlined text-sm text-g-text-muted">push_pin</span>
+          </div>
+          <p class="text-xs text-g-text-secondary whitespace-pre-line leading-relaxed">${n.content}</p>
+        </article>
+      `).join('');
+    }
+
     function addNewNotePrompt() {
-      const title = prompt('Nhập tiêu đề ghi chú mới:');
+      const title = prompt('Tiêu đề ghi chú:');
       if (title) {
         state.notes.unshift({
           id: Date.now(),
           title: title,
-          pinned: false,
-          color: 'blue',
-          tags: ['#GhiChúMới'],
-          checklist: [{ text: 'Nội dung ban đầu', done: false }]
+          content: 'Nội dung ghi chú mới cập nhật...',
+          color: 'banana',
+          bgClass: 'bg-[#FEF7E0] border-[#F6BF26]'
         });
         renderNotesList();
-        showToast('Đã tạo ghi chú mới!');
       }
     }
 
-    // 6. MODAL & BOTTOM SHEET MANAGEMENT
-    function openModal(modalName, prefillType = null) {
-      closeAllModals();
-      state.activeModal = modalName;
+    // CONTACTS & AVAILABILITY RENDERING
+    function renderContactsList() {
+      const container = document.getElementById('contacts-list-container');
+      container.innerHTML = state.contacts.map(c => `
+        <div class="bg-white border border-g-border rounded-xl p-3 flex items-center justify-between shadow-sm">
+          <div>
+            <div class="text-xs font-bold text-g-text-primary">${c.name}</div>
+            <div class="text-[11px] text-g-text-muted">${c.role} · ${c.email}</div>
+          </div>
+          <a href="tel:${c.phone}" class="w-8 h-8 rounded-full bg-g-surface text-g-blue flex items-center justify-center hover:bg-g-blue-light">
+            <span class="material-symbols-outlined text-base">call</span>
+          </a>
+        </div>
+      `).join('');
+    }
+
+    function renderAvailabilitySlots() {
+      const container = document.getElementById('availability-slots-container');
+      container.innerHTML = state.availability.map(a => `
+        <div class="flex items-center justify-between py-1.5 border-b border-g-border-subtle last:border-0 text-xs">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" ${a.active ? 'checked' : ''} class="w-4 h-4 rounded text-g-blue focus:ring-g-blue border-g-border"/>
+            <span class="font-medium text-g-text-primary">${a.day}</span>
+          </div>
+          <span class="font-mono ${a.active ? 'text-g-blue font-semibold' : 'text-g-text-muted'}">${a.range}</span>
+        </div>
+      `).join('');
+    }
+
+    // MODALS CONTROLS
+    function openModal(modalName, defaultType = null) {
       document.getElementById('modal-backdrop').classList.remove('hidden');
-
-      const modalEl = document.getElementById(`modal-${modalName}`);
-      if (modalEl) {
-        modalEl.classList.remove('translate-y-full');
+      const modal = document.getElementById(`modal-${modalName}`);
+      if (modal) {
+        modal.classList.remove('translate-y-full');
       }
-
-      if (modalName === 'create' && prefillType) {
-        setCreateType(prefillType);
+      if (modalName === 'create' && defaultType) {
+        setCreateType(defaultType);
       }
       if (modalName === 'day-inspector') {
-        renderDayInspectorDetails();
+        renderDayInspectorEvents();
       }
     }
 
     function closeAllModals() {
       document.getElementById('modal-backdrop').classList.add('hidden');
-      const modals = ['create', 'day-inspector', 'event-detail', 'appointment', 'checkout', 'contacts'];
-      modals.forEach(m => {
-        const el = document.getElementById(`modal-${m}`);
-        if (el) el.classList.add('translate-y-full');
+      document.querySelectorAll('#mobile-app section[id^="modal-"]').forEach(m => {
+        m.classList.add('translate-y-full');
       });
-      state.activeModal = null;
-    }
-
-    function openEventDetail(eventId) {
-      openModal('event-detail');
-    }
-
-    function renderDayInspectorDetails() {
-      const title = document.getElementById('day-inspector-title');
-      if (title) title.textContent = `Thứ Ba, ${state.selectedDate} Tháng 10, 2026`;
-
-      const content = document.getElementById('day-inspector-content');
-      content.innerHTML = `
-        <div class="space-y-2">
-          <h4 class="text-xs uppercase tracking-wider text-text-muted font-bold">Lịch trình trong ngày (${state.selectedDate}/10)</h4>
-          <div class="p-3 bg-surface border border-outline-subtle rounded-xl flex items-center justify-between">
-            <div>
-              <span class="text-google-blue font-bold text-xs">08:30 – 09:30</span>
-              <p class="text-white text-xs font-semibold">Họp Kiến trúc Hệ thống</p>
-            </div>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-google-blue/15 text-google-blue">Meet</span>
-          </div>
-          <div class="p-3 bg-surface border border-outline-subtle rounded-xl flex items-center justify-between">
-            <div>
-              <span class="text-habit-amber font-bold text-xs">07:00</span>
-              <p class="text-white text-xs">Chạy bộ 30 phút & Giãn cơ</p>
-            </div>
-            <span class="text-task-green text-xs font-bold">Đã xong ✓</span>
-          </div>
-          <div class="p-3 bg-surface border border-outline-subtle rounded-xl flex items-center justify-between">
-            <div>
-              <span class="text-task-green font-bold text-xs">10:00</span>
-              <p class="text-white text-xs">Review PR Subroutine Engine</p>
-            </div>
-            <span class="text-danger-coral text-xs font-bold">Ưu tiên cao</span>
-          </div>
-        </div>
-        <button onclick="openModal('create')" class="w-full py-2.5 rounded-xl bg-google-blue text-surface font-semibold text-xs mt-3 flex items-center justify-center gap-1.5">
-          <span class="material-symbols-outlined text-base">add</span> Thêm vào ngày này
-        </button>
-      `;
     }
 
     function setCreateType(type) {
-      state.createType = type;
       ['event', 'routine', 'task'].forEach(t => {
         const btn = document.getElementById(`ct-${t}`);
-        if (btn) {
-          if (t === type) {
-            btn.className = 'py-1.5 rounded-lg bg-surface-container-high text-white font-semibold';
-          } else {
-            btn.className = 'py-1.5 rounded-lg text-text-secondary hover:text-white';
-          }
+        if (!btn) return;
+        if (t === type) {
+          btn.className = 'px-3.5 py-1.5 rounded-full bg-g-blue-light text-g-blue text-xs font-semibold border border-g-blue/30';
+        } else {
+          btn.className = 'px-3.5 py-1.5 rounded-full bg-g-surface text-g-text-secondary text-xs font-medium hover:bg-g-surface-variant';
         }
       });
     }
 
-    function setCreatePriority(prio) {
-      state.createPriority = prio;
-      const map = {
-        low: document.getElementById('prio-low'),
-        medium: document.getElementById('prio-med'),
-        high: document.getElementById('prio-high')
-      };
-      Object.keys(map).forEach(k => {
-        if (k === prio) {
-          map[k].className = 'py-1.5 rounded-lg bg-danger-coral/20 border border-danger-coral text-danger-coral font-bold';
-        } else {
-          map[k].className = 'py-1.5 rounded-lg bg-surface-container border border-outline-subtle text-text-secondary';
-        }
-      });
+    function toggleAllDay(cb) {
+      const timeRange = document.getElementById('form-time-range');
+      if (cb.checked) {
+        timeRange.textContent = 'Cả ngày';
+      } else {
+        timeRange.textContent = '09:00 – 10:00';
+      }
     }
 
     function submitCreateForm() {
-      const titleInput = document.getElementById('form-title');
-      const val = titleInput.value.trim() || 'Mục công việc mới';
-      
-      if (state.createType === 'routine') {
-        state.habits.push({
-          id: Date.now(),
-          title: val,
-          time: '08:00',
-          shift: 'morning',
-          category: 'Kỷ luật',
-          streak: 1,
-          completed: false,
-          subroutines: []
-        });
-        renderHabitsList();
-        updateTelemetryKPI();
-        showToast(`Đã thêm thói quen mới: ${val}`);
-      } else if (state.createType === 'task') {
-        state.tasks.unshift({
-          id: Date.now(),
-          title: val,
-          dueDate: 'Hôm nay',
-          priority: state.createPriority,
-          completed: false,
-          subtasks: []
-        });
-        renderTasksList();
-        showToast(`Đã thêm việc cần làm: ${val}`);
-      } else {
-        state.events.unshift({
-          id: Date.now(),
-          title: val,
-          time: '11:00 - 12:00',
-          meet: true,
-          location: 'Phòng Họp Online',
-          priority: 'high'
-        });
-        renderCalendarContent();
-        showToast(`Đã tạo sự kiện: ${val}`);
-      }
-
-      titleInput.value = '';
+      const title = document.getElementById('form-title').value.trim() || 'Sự kiện mới';
+      state.events.unshift({
+        id: Date.now(),
+        title: title,
+        time: '09:00 – 10:00',
+        color: 'flamingo',
+        colorHex: '#E67C73',
+        location: document.getElementById('form-location').value || 'Văn phòng',
+        date: 20,
+        dayName: 'T3',
+        dayNum: 20
+      });
       closeAllModals();
+      setScreenTab('calendar', 'agenda');
     }
 
-    function handleDeleteEventConfirm() {
-      if (confirm('Bạn muốn xóa sự kiện này? Chọn OK cho sự kiện này, hoặc Cancel để giữ.')) {
-        closeAllModals();
-        showToast('Đã xóa sự kiện thành công!');
-      }
-    }
-
-    function toggleDayAvailability(idx) {
-      state.availability[idx].active = !state.availability[idx].active;
-      renderAvailabilitySlots();
-      showToast('Đã lưu thay đổi khung giờ rảnh!');
+    function renderDayInspectorEvents() {
+      const list = document.getElementById('day-inspector-events-list');
+      list.innerHTML = state.events.filter(e => e.date === state.selectedDate).map(e => `
+        <div class="bg-white border border-g-border rounded-xl p-3 flex items-start justify-between shadow-sm">
+          <div>
+            <div class="text-xs font-bold text-g-text-primary">${e.title}</div>
+            <div class="text-[11px] text-g-text-muted mt-0.5">${e.time} · ${e.location}</div>
+          </div>
+          <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${e.colorHex}"></span>
+        </div>
+      `).join('') || '<div class="text-xs text-g-text-muted p-4 text-center">Không có sự kiện nào cho ngày này.</div>';
     }
 
     function copyBookingLink() {
       navigator.clipboard?.writeText('https://routinepulse.app/book/nhatan');
-      showToast('Đã sao chép link đặt lịch cá nhân!');
+      alert('Đã sao chép đường dẫn đặt lịch vào bộ nhớ tạm!');
     }
 
-    function confirmPaymentSuccess() {
-      closeAllModals();
-      showToast('Xác nhận thành công! Bạn đã là thành viên VIP');
+    function filterSearchPrompt() {
+      const q = prompt('Tìm kiếm sự kiện, thói quen, công việc:');
+      if (q) alert(`Kết quả tìm kiếm cho: "${q}"`);
     }
 
-    // 7. THEMES & AUTH
-    function switchTheme(theme) {
-      showToast(`Đã áp dụng theme: ${theme.toUpperCase()}`);
+    function toggleSideMenu() {
+      alert('Mở menu điều hướng cá nhân: Lịch công việc, Danh mục thói quen, Cài đặt đồng bộ');
     }
 
     function logoutToAuthScreen() {
-      document.getElementById('view-auth').classList.remove('hidden');
+      setScreenTab('auth');
     }
 
     function handleLoginSubmit(e) {
-      if (e) e.preventDefault();
-      document.getElementById('view-auth').classList.add('hidden');
-      setScreenTab('calendar');
-      showToast('Đăng nhập thành công! Chào mừng Nhật An');
-    }
-
-    // 8. TOAST SYSTEM
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      const text = document.getElementById('toast-message');
-      text.textContent = msg;
-      toast.classList.remove('-translate-y-24');
-      toast.classList.add('translate-y-4');
-      setTimeout(() => {
-        toast.classList.remove('translate-y-4');
-        toast.classList.add('-translate-y-24');
-      }, 3000);
+      e.preventDefault();
+      alert('Đăng nhập thành công vào RoutinePulse!');
+      setScreenTab('calendar', 'agenda');
     }
   </script>
 </body>
