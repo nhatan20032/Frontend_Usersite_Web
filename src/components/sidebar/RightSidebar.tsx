@@ -50,21 +50,21 @@ export const RightSidebar: React.FC = () => {
         <div className="w-full h-full flex flex-col space-y-3.5 overflow-y-auto">
 
           {/* 1. Google Tasks Companion Panel Header */}
-          <div className="flex items-center justify-between border-b border-[#2A2B2D] pb-3 flex-shrink-0">
+          <div className="flex items-center justify-between border-b border-[var(--border-grid)] pb-3 flex-shrink-0">
             <div className="flex items-center gap-2">
               {/* Blue Google Tasks style icon */}
-              <div className="w-6 h-6 rounded-full bg-[#1A73E8] flex items-center justify-center text-white shadow-xs">
+              <div className="w-6 h-6 rounded-full bg-[var(--google-blue-primary)] flex items-center justify-center text-white shadow-xs">
                 <CheckSquare className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm text-[#E3E2E3]">{t('sidebar.rightTitle') || 'Google Tasks'}</h3>
-                <p className="text-[10px] text-[#70757A]">{t('sidebar.rightSubtitle') || 'Công việc & Deadline'}</p>
+                <h3 className="font-semibold text-sm text-[var(--text-primary)]">{t('sidebar.rightTitle') || 'Google Tasks'}</h3>
+                <p className="text-[11px] text-[var(--text-muted)]">{t('sidebar.rightSubtitle') || 'Công việc & Deadline'}</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => openModal('create')}
-                className="p-1.5 hover:bg-[#28292A] rounded-full text-[#9AA0A6] hover:text-[#E3E2E3] transition-colors cursor-pointer"
+                className="p-1.5 hover:bg-[var(--surface-container-high)] rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 title={t('sidebar.addTaskTooltip') || 'Thêm công việc'}
               >
                 <Plus className="w-4 h-4" />
@@ -74,13 +74,13 @@ export const RightSidebar: React.FC = () => {
 
 
           {/* 3. Filter Tabs */}
-          <div className="flex items-center gap-1 text-xs border-b border-[#2A2B2D] pb-2 flex-shrink-0">
+          <div className="flex items-center gap-1 text-xs border-b border-[var(--border-grid)] pb-2 flex-shrink-0">
             <button
               type="button"
               onClick={() => setFilterTab('all')}
               className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer font-medium ${filterTab === 'all'
-                ? 'bg-[#28292A] text-[#8AB4F8]'
-                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+                ? 'bg-[var(--surface-container-high)] text-[var(--google-blue)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
             >
               {language === 'vi' ? 'Tất cả' : 'All'} ({tasksData.length})
@@ -89,8 +89,8 @@ export const RightSidebar: React.FC = () => {
               type="button"
               onClick={() => setFilterTab('pending')}
               className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer font-medium ${filterTab === 'pending'
-                ? 'bg-[#28292A] text-[#8AB4F8]'
-                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+                ? 'bg-[var(--surface-container-high)] text-[var(--google-blue)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
             >
               {language === 'vi' ? 'Chưa xong' : 'Pending'} ({pendingTaskCount})
@@ -99,8 +99,8 @@ export const RightSidebar: React.FC = () => {
               type="button"
               onClick={() => setFilterTab('high')}
               className={`px-2.5 py-1 rounded-md transition-colors cursor-pointer font-medium ${filterTab === 'high'
-                ? 'bg-[#28292A] text-[#F28B82]'
-                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
+                ? 'bg-[var(--surface-container-high)] text-[#F28B82]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
             >
               {language === 'vi' ? 'Gấp' : 'Urgent'}
@@ -108,7 +108,7 @@ export const RightSidebar: React.FC = () => {
           </div>
 
           {/* 4. Progress Summary */}
-          <div className="flex items-center justify-between text-[11px] text-[#9AA0A6] px-1 flex-shrink-0">
+          <div className="flex items-center justify-between text-[11px] text-[var(--text-secondary)] px-1 flex-shrink-0">
             <span>{language === 'vi' ? 'Tiến độ hoàn thành:' : 'Completion:'}</span>
             <span className="font-mono text-[#81C995] font-semibold">
               {tasksData.length - pendingTaskCount} / {tasksData.length}
@@ -118,8 +118,8 @@ export const RightSidebar: React.FC = () => {
           {/* 5. Dynamic Task List */}
           <div className="space-y-2 flex-1 overflow-y-auto">
             {filteredTasks.length === 0 ? (
-              <div className="bg-[#1F2021] border border-[#2A2B2D] p-5 text-center rounded-lg space-y-1">
-                <p className="text-xs text-[#70757A] font-normal">{t('sidebar.emptyTasks')}</p>
+              <div className="bg-[var(--surface-container)] border border-[var(--border-grid)] p-5 text-center rounded-lg space-y-1">
+                <p className="text-xs text-[var(--text-muted)] font-normal">{t('sidebar.emptyTasks')}</p>
               </div>
             ) : (
               filteredTasks.map((task) => (

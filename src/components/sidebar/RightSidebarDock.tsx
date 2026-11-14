@@ -10,27 +10,27 @@ export const RightSidebarDock: React.FC = () => {
   const pendingCount = tasksData.filter((t) => !t.completed).length;
 
   return (
-    <div className="w-14 flex-shrink-0 h-full border-l border-[#2A2B2D] bg-[#171819] flex flex-col items-center justify-start py-3 px-1.5 z-20 select-none space-y-4">
+    <div className="w-14 flex-shrink-0 h-full border-l border-[var(--border-grid)] bg-[#171819] flex flex-col items-center justify-start py-3 px-1.5 z-20 select-none space-y-4">
       {/* 1. Google Tasks Companion App Icon */}
       <button
         onClick={() => openRightSidebarTab('tasks')}
         className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center cursor-pointer relative ${
           isRightSidebarOpen && rightSidebarTab === 'tasks'
             ? 'bg-[#2D2E30] text-white'
-            : 'hover:bg-[#28292A] text-[#9AA0A6]'
+            : 'hover:bg-[var(--surface-container-high)] text-[var(--text-secondary)]'
         }`}
         title={t('sidebar.dockTasks') || 'Google Tasks'}
       >
-        <div className="w-7 h-7 rounded-full bg-[#1A73E8] flex items-center justify-center text-white shadow-xs">
+        <div className="w-7 h-7 rounded-full bg-[var(--google-blue-primary)] flex items-center justify-center text-white shadow-xs">
           <CheckSquare className="w-4 h-4" />
         </div>
         {pendingCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#EA4335] text-white text-[9px] font-bold flex items-center justify-center">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#EA4335] text-white text-[11px] font-bold flex items-center justify-center">
             {pendingCount > 99 ? '99+' : pendingCount}
           </span>
         )}
         {isRightSidebarOpen && rightSidebarTab === 'tasks' && (
-          <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[#1A73E8]" />
+          <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-[var(--google-blue-primary)]" />
         )}
       </button>
 
@@ -40,7 +40,7 @@ export const RightSidebarDock: React.FC = () => {
         className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center cursor-pointer relative ${
           isRightSidebarOpen && rightSidebarTab === 'notes-routine'
             ? 'bg-[#2D2E30] text-[#FDD663]'
-            : 'hover:bg-[#28292A] text-[#FDD663]'
+            : 'hover:bg-[var(--surface-container-high)] text-[#FDD663]'
         }`}
         title="Ghi chú & Routine"
       >
@@ -56,7 +56,7 @@ export const RightSidebarDock: React.FC = () => {
         className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center cursor-pointer relative ${
           isRightSidebarOpen && rightSidebarTab === 'contacts'
             ? 'bg-[#2D2E30] text-[#81C995]'
-            : 'hover:bg-[#28292A] text-[#81C995]'
+            : 'hover:bg-[var(--surface-container-high)] text-[#81C995]'
         }`}
         title="Danh bạ & Nhóm"
       >
@@ -66,12 +66,12 @@ export const RightSidebarDock: React.FC = () => {
         )}
       </button>
 
-      <div className="w-6 h-[1px] bg-[#2A2B2D]" />
+      <div className="w-6 h-[1px] bg-[var(--border-grid)]" />
 
       {/* 4. Expand / Collapse Button */}
       <button
         onClick={toggleRightSidebar}
-        className="w-8 h-8 rounded-full hover:bg-[#28292A] text-[#9AA0A6] hover:text-[#E3E2E3] flex items-center justify-center transition-colors cursor-pointer mt-auto"
+        className="w-8 h-8 rounded-full hover:bg-[var(--surface-container-high)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center justify-center transition-colors cursor-pointer mt-auto"
         title={isRightSidebarOpen ? (t('sidebar.collapseRight') || 'Thu gọn bảng') : (t('sidebar.expandRight') || 'Mở rộng bảng')}
       >
         {isRightSidebarOpen ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}

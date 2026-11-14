@@ -50,24 +50,24 @@ export const MiniCalendarPicker: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-2 border-b border-[#2A2B2D] pb-3 flex-shrink-0 select-none">
+    <div className="space-y-2 border-b border-[var(--border-grid)] pb-3 flex-shrink-0 select-none">
       {/* Month & Year Header with Chevrons */}
-      <div className="flex items-center justify-between font-medium text-xs text-[#E3E2E3] px-1">
-        <span className="font-semibold text-xs text-[#E3E2E3]">
+      <div className="flex items-center justify-between font-medium text-xs text-[var(--text-primary)] px-1">
+        <span className="font-semibold text-xs text-[var(--text-primary)]">
           {language === 'vi' ? `${monthNames[selectedMonth]} năm ${selectedYear}` : `${monthNames[selectedMonth]} ${selectedYear}`}
         </span>
 
         <div className="flex items-center gap-0.5 flex-shrink-0">
           <button
             onClick={prevMonth}
-            className="p-1 hover:bg-[#28292A] text-[#9AA0A6] hover:text-[#E3E2E3] rounded-full transition-colors cursor-pointer flex-shrink-0"
+            className="p-1 hover:bg-[var(--surface-container-high)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-full transition-colors cursor-pointer flex-shrink-0"
             title={t('calendar.prevMonth')}
           >
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={nextMonth}
-            className="p-1 hover:bg-[#28292A] text-[#9AA0A6] hover:text-[#E3E2E3] rounded-full transition-colors cursor-pointer flex-shrink-0"
+            className="p-1 hover:bg-[var(--surface-container-high)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-full transition-colors cursor-pointer flex-shrink-0"
             title={t('calendar.nextMonth')}
           >
             <ChevronRight className="w-3.5 h-3.5" />
@@ -76,7 +76,7 @@ export const MiniCalendarPicker: React.FC = () => {
       </div>
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-medium text-[#70757A]">
+      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-medium text-[var(--text-muted)]">
         {miniWeekDays.map((d, i) => (
           <span key={i}>{d}</span>
         ))}
@@ -89,7 +89,7 @@ export const MiniCalendarPicker: React.FC = () => {
           <button
             key={`mini-pad-prev-${pad}`}
             onClick={() => selectDate(pad, prevMonthIndex, prevYear)}
-            className="w-6 h-6 mx-auto flex items-center justify-center rounded-full text-[#4A4D51] hover:bg-[#1F2021] cursor-pointer text-[11px]"
+            className="w-6 h-6 mx-auto flex items-center justify-center rounded-full text-[#4A4D51] hover:bg-[var(--surface-container)] cursor-pointer text-[11px]"
           >
             {pad}
           </button>
@@ -104,8 +104,8 @@ export const MiniCalendarPicker: React.FC = () => {
               onClick={() => selectDate(d, selectedMonth, selectedYear)}
               className={`w-6 h-6 mx-auto flex items-center justify-center rounded-full cursor-pointer transition-colors text-[11px] ${
                 isSelected
-                  ? 'bg-[#1A73E8] text-white font-bold'
-                  : 'hover:bg-[#28292A] text-[#E3E2E3]'
+                  ? 'bg-[var(--google-blue-primary)] text-white font-bold'
+                  : 'hover:bg-[var(--surface-container-high)] text-[var(--text-primary)]'
               }`}
             >
               {d}
@@ -118,7 +118,7 @@ export const MiniCalendarPicker: React.FC = () => {
           <button
             key={`mini-pad-next-${pad}`}
             onClick={() => selectDate(pad, nextMonthIndex, nextYear)}
-            className="w-6 h-6 mx-auto flex items-center justify-center rounded-full text-[#4A4D51] hover:bg-[#1F2021] cursor-pointer text-[11px]"
+            className="w-6 h-6 mx-auto flex items-center justify-center rounded-full text-[#4A4D51] hover:bg-[var(--surface-container)] cursor-pointer text-[11px]"
           >
             {pad}
           </button>

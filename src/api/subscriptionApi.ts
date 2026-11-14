@@ -9,14 +9,15 @@ export interface ApplyCouponResult {
 }
 
 export const subscriptionApi = {
+  getTransactions: () => apiClient.get<Array<{ transactionCode: string; planName: string; amount: number; status: string; createdAt: string }>>('/user/subscriptions/transactions'),
   getPlans() {
     return apiClient.get<SubscriptionPlanDto[]>('/user/subscriptions/plans');
   },
   applyCoupon(code: string, amount: number) {
     return apiClient.post<ApplyCouponResult>('/user/subscriptions/apply-coupon', { code, amount });
   },
-  upgrade(planId: string, couponCode?: string, gateway: number = 0) {
-    return apiClient.post<{ message: string; subscription: any }>('/user/subscriptions/upgrade', {
+  upgrade(planId: string, couponCode?: string, gateway: number = 3) {
+    return apiClient.post<{ message: string; transactionCode: string; status: string; amount: number; vietQrUrl: string }>('/user/subscriptions/upgrade', {
       planId,
       couponCode,
       gateway,
@@ -31,5 +32,14 @@ export const subscriptionApi = {
       startDate?: string;
       endDate?: string;
     }>('/user/subscriptions/my-subscription');
+  },
+  getTransactionStatus(code: string) {
+    return apiClient.get<{
+      transactionCode: string;
+      status: string;
+      planName?: string;
+      finalAmount: number;
+      isSuccess: boolean;
+    }>(`/user/subscriptions/transactions/${code}/status`);
   },
 };

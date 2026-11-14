@@ -1,11 +1,9 @@
 import React from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { X, Lock, Sparkles, Crown } from 'lucide-react';
+import { X, Lock, Crown } from 'lucide-react';
 
 export const LimitModal: React.FC = () => {
-  const { activateFreeTrial } = useAuth();
   const { activeModal, closeModal, openModal } = useApp();
   const { language, t } = useLanguage();
 
@@ -13,26 +11,26 @@ export const LimitModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="bg-[#1E1F20] border border-[#333538] max-w-md w-full rounded-2xl p-6 space-y-4 text-center relative shadow-2xl text-[#E3E2E3]">
+      <div className="bg-[var(--surface-container)] border border-[var(--border-subtle)] max-w-md w-full rounded-2xl p-6 space-y-4 text-center relative shadow-2xl text-[var(--text-primary)]">
         <button
           onClick={closeModal}
-          className="absolute top-4 right-4 text-[#9AA0A6] hover:text-[#E3E2E3] p-1.5 rounded-full hover:bg-[#28292A] transition-colors cursor-pointer"
+          className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1.5 rounded-full hover:bg-[var(--surface-container-high)] transition-colors cursor-pointer"
           title={language === 'vi' ? 'Đóng' : 'Close'}
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="w-12 h-12 bg-[#242527] text-[#FDD663] border border-[#333538] rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+        <div className="w-12 h-12 bg-[#242527] text-[#FDD663] border border-[var(--border-subtle)] rounded-2xl flex items-center justify-center mx-auto shadow-sm">
           <Lock className="w-5 h-5" />
         </div>
 
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-[#E3E2E3]">{t('modals.limit.title')}</h3>
-          <p className="text-xs text-[#9AA0A6]">{t('modals.limit.desc')}</p>
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">{t('modals.limit.title')}</h3>
+          <p className="text-xs text-[var(--text-secondary)]">{t('modals.limit.desc')}</p>
         </div>
 
-        <div className="bg-[#121314] border border-[#2A2B2D] p-4 rounded-xl text-left space-y-2 text-xs">
-          <div className="flex items-center justify-between text-[#9AA0A6]">
+        <div className="bg-[var(--surface-canvas)] border border-[var(--border-grid)] p-4 rounded-xl text-left space-y-2 text-xs">
+          <div className="flex items-center justify-between text-[var(--text-secondary)]">
             <span>{language === 'vi' ? 'Tài khoản hiện tại (FREE):' : 'Current Tier (FREE):'}</span>
             <span className="font-semibold text-rose-400">{language === 'vi' ? 'Bị giới hạn' : 'Restricted'}</span>
           </div>
@@ -40,7 +38,7 @@ export const LimitModal: React.FC = () => {
             <span>{language === 'vi' ? 'Quyền lợi Premium VIP:' : 'VIP Privileges:'}</span>
             <span>{language === 'vi' ? 'Mở khóa hoàn toàn' : 'Fully Unlocked'}</span>
           </div>
-          <ul className="text-[11px] text-[#9AA0A6] space-y-1 list-disc list-inside pt-1 border-t border-[#2A2B2D]">
+          <ul className="text-[11px] text-[var(--text-secondary)] space-y-1 list-disc list-inside pt-1 border-t border-[var(--border-grid)]">
             <li>{t('modals.checkout.feature1')}</li>
             <li>{t('modals.checkout.feature2')}</li>
             <li>{t('modals.checkout.feature3')}</li>
@@ -51,20 +49,10 @@ export const LimitModal: React.FC = () => {
         <div className="flex gap-2.5 pt-1">
           <button
             onClick={() => {
-              activateFreeTrial();
-              closeModal();
-            }}
-            className="flex-1 bg-[#28292A] hover:bg-[#333538] text-emerald-400 font-medium py-2.5 rounded-full text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{language === 'vi' ? 'Dùng thử 7 ngày' : '7-Day Trial'}</span>
-          </button>
-          <button
-            onClick={() => {
               closeModal();
               openModal('checkout');
             }}
-            className="flex-1 bg-[#8AB4F8] hover:bg-[#A8C8FF] text-[#121314] font-semibold py-2.5 rounded-full text-xs shadow transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 bg-[var(--google-blue)] hover:bg-[#A8C8FF] text-[var(--surface-canvas)] font-semibold py-2.5 rounded-full text-xs shadow transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Crown className="w-3.5 h-3.5" />
             <span>{t('sidebar.upgradeBtn')}</span>

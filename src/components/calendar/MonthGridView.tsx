@@ -100,7 +100,7 @@ export const MonthGridView: React.FC = () => {
             if (categoryFilters[catId] === false) return false;
             return true;
           });
-          
+
           const dayTasks = tasksData.filter((t) => {
             const catId = t.categoryId || 'task';
             if (categoryFilters[catId] === false) return false;
@@ -113,9 +113,9 @@ export const MonthGridView: React.FC = () => {
             if (t.dueDate?.includes(':') && isRealToday) return true;
             return false;
           });
-          
+
           const allItems = [
-            ...dayEvents.map(e => ({ id: e.id, title: e.title, itemType: e.type, time: e.time, colorTag: e.colorTag })),
+            ...dayEvents.map(e => ({ id: e.id, title: e.title, itemType: e.type, time: e.time, colorTag: e.colorTag, readOnly: !e.backendId, alertTime: e.alertTime, description: e.description })),
             ...dayTasks.map(t => ({ id: t.id + 10000, title: t.title, itemType: 'task', time: t.dueDate, colorTag: t.colorTag }))
           ];
 
@@ -176,8 +176,8 @@ export const MonthGridView: React.FC = () => {
                         style={{ color: item.colorTag || '#8AB4F8' }}
                         title={item.title}
                       >
-                        <span 
-                          className="w-2 h-2 rounded-full border-[1.5px] shrink-0" 
+                        <span
+                          className="w-2 h-2 rounded-full border-[1.5px] shrink-0"
                           style={{ borderColor: item.colorTag || '#8AB4F8' }}
                         />
                         <span className="truncate leading-none">{item.title}</span>
@@ -187,13 +187,13 @@ export const MonthGridView: React.FC = () => {
                 })}
 
                 {allItems.length > 5 && (
-                  <div 
+                  <div
                     onClick={(e) => {
                        e.stopPropagation();
                        const rect = e.currentTarget.getBoundingClientRect();
                        setPopoverState({ day: d, x: rect.left, y: rect.top, items: allItems });
                     }}
-                    className="text-[11px] text-[#9AA0A6] hover:bg-[#3c4043] hover:text-[#e8eaed] rounded-[3px] px-1.5 py-0.5 font-medium transition-colors"
+                    className="text-[11px] text-[var(--text-secondary)] hover:bg-[#3c4043] hover:text-[#e8eaed] rounded-[3px] px-1.5 py-0.5 font-medium transition-colors"
                   >
                     {allItems.length - 5} {language === 'vi' ? 'mục khác' : 'more'}
                   </div>
@@ -209,34 +209,34 @@ export const MonthGridView: React.FC = () => {
             key={`grid-pad-next-${pad}`}
             onClick={() => handleCellClick(pad, nextMonthIndex, nextYear)}
             title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
-            className="p-1 sm:p-1.5 h-full border-r border-[#2A2B2D] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
+            className="p-1 sm:p-1.5 h-full border-r border-[var(--border-grid)] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
           >
             <div className="flex flex-col items-center mb-1 mt-1">
               <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
             </div>
           </div>
         ))}
-        
+
         {/* Popover for "X mục khác" */}
         {popoverState && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setPopoverState(null)} />
-            <div 
+            <div
               className="fixed z-50 bg-[#28292c] border border-[#3c4043] rounded-lg shadow-xl w-52 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-              style={{ 
-                top: Math.min(popoverState.y - 40, window.innerHeight - 350), 
-                left: Math.min(popoverState.x - 20, window.innerWidth - 220) 
+              style={{
+                top: Math.min(popoverState.y - 40, window.innerHeight - 350),
+                left: Math.min(popoverState.x - 20, window.innerWidth - 220)
               }}
             >
               <div className="flex flex-col items-center pt-3 pb-2 relative">
-                <span className="text-[10px] text-[#9aa0a6] uppercase tracking-wider mb-1">
+                <span className="text-[11px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">
                   {weekdayHeaders[(firstDayIndex + popoverState.day - 1) % 7]}
                 </span>
                 <span className="text-xl text-[#202124] font-medium leading-tight h-8 w-8 flex items-center justify-center rounded-full bg-[#aecbfa]">
                   {popoverState.day}
                 </span>
-                <button 
-                  className="absolute top-2 right-2 text-[#9aa0a6] hover:text-[#e8eaed] hover:bg-[#3c4043] rounded-full p-1 transition-colors"
+                <button
+                  className="absolute top-2 right-2 text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#3c4043] rounded-full p-1 transition-colors"
                   onClick={() => setPopoverState(null)}
                 >
                   <X className="w-3.5 h-3.5" />
@@ -252,7 +252,7 @@ export const MonthGridView: React.FC = () => {
                         style={{ backgroundColor: item.colorTag || '#8AB4F8' }}
                         title={item.title}
                         onClick={(e) => {
-                           e.stopPropagation(); 
+                           e.stopPropagation();
                            const rect = e.currentTarget.getBoundingClientRect();
                            setItemDetailPopover({ item, x: rect.right, y: rect.top, day: popoverState.day, month: selectedMonth, year: selectedYear });
                         }}
@@ -268,13 +268,13 @@ export const MonthGridView: React.FC = () => {
                         style={{ color: item.colorTag || '#8AB4F8' }}
                         title={item.title}
                         onClick={(e) => {
-                           e.stopPropagation(); 
+                           e.stopPropagation();
                            const rect = e.currentTarget.getBoundingClientRect();
                            setItemDetailPopover({ item, x: rect.right, y: rect.top, day: popoverState.day, month: selectedMonth, year: selectedYear });
                         }}
                       >
-                        <span 
-                          className="w-2.5 h-2.5 rounded-full border-[1.5px] shrink-0" 
+                        <span
+                          className="w-2.5 h-2.5 rounded-full border-[1.5px] shrink-0"
                           style={{ borderColor: item.colorTag || '#8AB4F8' }}
                         />
                         <span className="truncate leading-none pt-[1px]">{item.title}</span>
@@ -291,18 +291,19 @@ export const MonthGridView: React.FC = () => {
         {itemDetailPopover && (
           <>
             <div className="fixed inset-0 z-[60]" onClick={(e) => { e.stopPropagation(); setItemDetailPopover(null); }} />
-            <div 
+            <div
               className="fixed z-[70] bg-[#28292c] rounded-lg shadow-xl w-[350px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-              style={{ 
-                top: Math.min(itemDetailPopover.y - 20, window.innerHeight - 250), 
-                left: Math.min(itemDetailPopover.x + 10, window.innerWidth - 370) 
+              style={{
+                top: Math.min(itemDetailPopover.y - 20, window.innerHeight - 250),
+                left: Math.min(itemDetailPopover.x + 10, window.innerWidth - 370)
               }}
             >
               {/* Header Actions */}
               <div className="flex items-center justify-end p-1.5 bg-[#3c4043] rounded-t-lg">
-                <button 
-                  className="p-2 text-[#9aa0a6] hover:bg-white/10 rounded-full transition-colors" 
-                  title={t('common.edit') || 'Chỉnh sửa'}
+                <button
+                  className="p-2 text-[var(--text-secondary)] hover:bg-white/10 rounded-full transition-colors"
+                  disabled={itemDetailPopover.item.readOnly}
+                  title={itemDetailPopover.item.readOnly ? 'Lịch chỉ xem' : t('common.edit') || 'Chỉnh sửa'}
                   onClick={(e) => {
                     e.stopPropagation();
                     selectDate(itemDetailPopover.day, itemDetailPopover.month, itemDetailPopover.year);
@@ -314,9 +315,10 @@ export const MonthGridView: React.FC = () => {
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
-                <button 
-                  className="p-2 text-[#9aa0a6] hover:bg-white/10 rounded-full transition-colors" 
-                  title={t('common.delete') || 'Xóa'}
+                <button
+                  className="p-2 text-[var(--text-secondary)] hover:bg-white/10 rounded-full transition-colors"
+                  disabled={itemDetailPopover.item.readOnly}
+                  title={itemDetailPopover.item.readOnly ? 'Lịch chỉ xem' : t('common.delete') || 'Xóa'}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (itemDetailPopover.item.itemType === 'task') {
@@ -329,22 +331,22 @@ export const MonthGridView: React.FC = () => {
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-                <button 
-                  className="p-2 text-[#9aa0a6] hover:bg-white/10 rounded-full transition-colors ml-1"
+                <button
+                  className="p-2 text-[var(--text-secondary)] hover:bg-white/10 rounded-full transition-colors ml-1"
                   onClick={() => setItemDetailPopover(null)}
                   title={t('common.close') || 'Đóng'}
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              
+
               {/* Content */}
               <div className="p-4 flex flex-col gap-4 bg-[#28292c] rounded-b-lg">
                 <div className="flex gap-4 items-start">
                   <div className="mt-1.5 shrink-0">
-                    <div 
-                      className="w-[14px] h-[14px] rounded-[3px]" 
-                      style={{ backgroundColor: itemDetailPopover.item.colorTag || '#8AB4F8' }} 
+                    <div
+                      className="w-[14px] h-[14px] rounded-[3px]"
+                      style={{ backgroundColor: itemDetailPopover.item.colorTag || '#8AB4F8' }}
                     />
                   </div>
                   <div className="flex flex-col">
@@ -352,31 +354,32 @@ export const MonthGridView: React.FC = () => {
                       {itemDetailPopover.item.title}
                     </h3>
                     <p className="text-[14px] text-[#e8eaed]">
-                      {language === 'vi' 
+                      {language === 'vi'
                         ? `${weekdayHeaders[(firstDayIndex + itemDetailPopover.day - 1) % 7]}, ${itemDetailPopover.day} tháng ${itemDetailPopover.month + 1}`
                         : `${weekdayHeaders[(firstDayIndex + itemDetailPopover.day - 1) % 7]}, ${itemDetailPopover.day} ${monthNamesShortEn[itemDetailPopover.month]}`
                       }
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-4 items-center">
                   <div className="shrink-0 flex justify-center w-[14px]">
-                    <Bell className="w-5 h-5 text-[#9aa0a6]" />
+                    <Bell className="w-5 h-5 text-[var(--text-secondary)]" />
                   </div>
                   <p className="text-[14px] text-[#e8eaed]">
-                    {language === 'vi' ? 'Ngày hôm trước lúc 5PM' : '1 day before at 5 PM'}
+                    {itemDetailPopover.item.alertTime || (language === 'vi' ? 'Không có lời nhắc' : 'No reminder')}
                   </p>
                 </div>
 
                 <div className="flex gap-4 items-center">
                   <div className="shrink-0 flex justify-center w-[14px]">
-                    <CalendarIcon className="w-5 h-5 text-[#9aa0a6]" />
+                    <CalendarIcon className="w-5 h-5 text-[var(--text-secondary)]" />
                   </div>
                   <p className="text-[14px] text-[#e8eaed]">
-                    {currentUser?.name || 'Nhật An Nguyễn Lê'}
+                    {itemDetailPopover.item.readOnly ? 'Lịch chỉ xem • nguồn bên ngoài hoặc ngày sinh hồ sơ' : currentUser?.name || 'Người dùng'}
                   </p>
                 </div>
+                {itemDetailPopover.item.description && <p className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap break-words">{itemDetailPopover.item.description}</p>}
               </div>
             </div>
           </>

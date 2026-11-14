@@ -78,20 +78,20 @@ export const DayInspectorDrawer: React.FC = () => {
       <div className="flex-1" onClick={closeDayInspector} />
 
       {/* Drawer Container */}
-      <div className="w-full max-w-md bg-[#1F2021] border-l border-[#2A2B2D] shadow-2xl h-full flex flex-col p-5 space-y-4 animate-in slide-in-from-right duration-250 z-50 select-none">
+      <div className="w-full max-w-md bg-[var(--surface-container)] border-l border-[var(--border-grid)] shadow-2xl h-full flex flex-col p-5 space-y-4 animate-in slide-in-from-right duration-250 z-50 select-none">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-[#2A2B2D] pb-3">
+        <div className="flex items-start justify-between border-b border-[var(--border-grid)] pb-3">
           <div className="space-y-0.5">
-            <span className="text-[11px] font-semibold text-[#8AB4F8] flex items-center gap-1.5 uppercase tracking-wider">
+            <span className="text-[11px] font-semibold text-[var(--google-blue)] flex items-center gap-1.5 uppercase tracking-wider">
               <CalendarCheck2 className="w-3.5 h-3.5" />
               <span>{weekdayName}</span>
             </span>
-            <h3 className="text-lg font-bold text-[#E3E2E3]">
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">
               {language === 'vi'
                 ? `Ngày ${selectedDay} ${monthNames[selectedMonth]}, ${selectedYear}`
                 : `${monthNames[selectedMonth]} ${selectedDay}, ${selectedYear}`}
             </h3>
-            <p className="text-xs text-[#9AA0A6]">
+            <p className="text-xs text-[var(--text-secondary)]">
               {dayEvents.length > 0
                 ? `${dayEvents.length} ${language === 'vi' ? 'lịch trình & thói quen' : 'events & routines'}`
                 : (language === 'vi' ? 'Chưa có lịch trình cho ngày này' : 'No schedules for this day')}
@@ -100,7 +100,7 @@ export const DayInspectorDrawer: React.FC = () => {
 
           <button
             onClick={closeDayInspector}
-            className="p-1.5 rounded-full text-[#9AA0A6] hover:text-[#E3E2E3] hover:bg-[#28292A] transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-container-high)] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -111,7 +111,7 @@ export const DayInspectorDrawer: React.FC = () => {
           onClick={() => {
             openModal('create');
           }}
-          className="w-full bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-semibold py-2 px-4 rounded-lg shadow-sm text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
+          className="w-full bg-[var(--google-blue-primary)] hover:bg-[#1B66CA] text-white font-semibold py-2 px-4 rounded-lg shadow-sm text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
         >
           <Plus className="w-4 h-4" />
           <span>{t('sidebar.addSchedule')} ({selectedDay}/{selectedMonth + 1})</span>
@@ -120,16 +120,16 @@ export const DayInspectorDrawer: React.FC = () => {
         {/* Day's Event and Routine List */}
         <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar">
           {dayEvents.length === 0 ? (
-            <div className="bg-[#161718] border border-[#2A2B2D] p-8 text-center rounded-xl space-y-2.5 my-auto">
-              <div className="w-10 h-10 rounded-full bg-[#242527] text-[#8AB4F8] flex items-center justify-center mx-auto border border-[#333538]">
+            <div className="bg-[#161718] border border-[var(--border-grid)] p-8 text-center rounded-xl space-y-2.5 my-auto">
+              <div className="w-10 h-10 rounded-full bg-[#242527] text-[var(--google-blue)] flex items-center justify-center mx-auto border border-[var(--border-subtle)]">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <p className="text-xs text-[#9AA0A6]">
+              <p className="text-xs text-[var(--text-secondary)]">
                 {language === 'vi' ? 'Không có thói quen hoặc sự kiện nào trong ngày này.' : 'No habits or events scheduled for this day.'}
               </p>
               <button
                 onClick={() => openModal('create')}
-                className="text-xs text-[#8AB4F8] hover:text-[#AECBFA] font-semibold hover:underline cursor-pointer"
+                className="text-xs text-[var(--google-blue)] hover:text-[#AECBFA] font-semibold hover:underline cursor-pointer"
               >
                 + {language === 'vi' ? 'Thêm lịch trình hoặc thói quen ngay' : 'Add event or habit now'}
               </button>
@@ -141,8 +141,8 @@ export const DayInspectorDrawer: React.FC = () => {
               return (
                 <div
                   key={ev.id}
-                  className={`bg-[#242527] border border-[#333538] hover:border-[#3A3B3D] p-3.5 rounded-xl space-y-2 transition-all border-l-4 ${
-                    isRoutine ? 'border-l-[#FDD663]' : 'border-l-[#8AB4F8]'
+                  className={`bg-[#242527] border border-[var(--border-subtle)] hover:border-[#3A3B3D] p-3.5 rounded-xl space-y-2 transition-all border-l-4 ${
+                    isRoutine ? 'border-l-[#FDD663]' : 'border-l-[var(--google-blue)]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -151,16 +151,16 @@ export const DayInspectorDrawer: React.FC = () => {
                         <span className="font-mono text-xs font-bold text-[#FDD663]">
                           {ev.time || '08:00 AM'}
                         </span>
-                        <h4 className="font-semibold text-sm text-[#E3E2E3] truncate">{ev.title}</h4>
+                        <h4 className="font-semibold text-sm text-[var(--text-primary)] truncate">{ev.title}</h4>
                         {ev.priority === 'high' && (
-                          <span className="text-[9px] bg-[#D93025] text-white font-bold px-1.5 py-0.5 rounded shadow-xs">
+                          <span className="text-[11px] bg-[#D93025] text-white font-bold px-1.5 py-0.5 rounded shadow-xs">
                             {t('common.high')}
                           </span>
                         )}
                       </div>
 
                       {ev.frequency && (
-                        <p className="text-[11px] text-[#9AA0A6] flex items-center gap-1">
+                        <p className="text-[11px] text-[var(--text-secondary)] flex items-center gap-1">
                           <span>🔄 {ev.frequency}</span>
                         </p>
                       )}
@@ -168,7 +168,7 @@ export const DayInspectorDrawer: React.FC = () => {
 
                     <button
                       onClick={() => handleDeleteItem(ev)}
-                      className="p-1 text-[#70757A] hover:text-[#F28B82] hover:bg-[#28292A] rounded-lg transition-colors cursor-pointer"
+                      className="p-1 text-[var(--text-muted)] hover:text-[#F28B82] hover:bg-[var(--surface-container-high)] rounded-lg transition-colors cursor-pointer"
                       title="Xóa"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -177,15 +177,15 @@ export const DayInspectorDrawer: React.FC = () => {
 
                   {/* Location & Travel if event */}
                   {ev.location && (
-                    <div className="bg-[#1A1B1D] border border-[#2A2B2D] p-2 rounded-lg text-xs space-y-1">
+                    <div className="bg-[#1A1B1D] border border-[var(--border-grid)] p-2 rounded-lg text-xs space-y-1">
                       <div className="flex items-center gap-1.5 font-medium text-[#81C995]">
                         <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                         <span className="truncate">{ev.location}</span>
                       </div>
                       {ev.travelTime && (
-                        <div className="flex items-center justify-between text-[10px] text-[#9AA0A6] pt-1 border-t border-[#2A2B2D]">
+                        <div className="flex items-center justify-between text-[11px] text-[var(--text-secondary)] pt-1 border-t border-[var(--border-grid)]">
                           <span className="flex items-center gap-1">
-                            <Navigation className="w-3 h-3 text-[#8AB4F8]" />
+                            <Navigation className="w-3 h-3 text-[var(--google-blue)]" />
                             <span>Di chuyển: {ev.travelTime}</span>
                           </span>
                           {ev.alertTime && (
@@ -220,7 +220,7 @@ export const DayInspectorDrawer: React.FC = () => {
                           className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                             ev.completed
                               ? 'bg-[#1E8E3E]/20 text-[#81C995] border border-[#1E8E3E]/40'
-                              : 'bg-[#1A73E8] hover:bg-[#1B66CA] text-white shadow-xs'
+                              : 'bg-[var(--google-blue-primary)] hover:bg-[#1B66CA] text-white shadow-xs'
                           }`}
                         >
                           <Check className="w-3.5 h-3.5" />

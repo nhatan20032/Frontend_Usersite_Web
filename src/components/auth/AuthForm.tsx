@@ -1,300 +1,32 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useApp } from '../../context/AppContext';
-import { useLanguage } from '../../context/LanguageContext';
-import { Calendar, Mail, Lock, Smartphone, ArrowRight, Sparkles, Crown } from 'lucide-react';
 
 export const AuthForm: React.FC = () => {
-  const { login, setRole } = useAuth();
-  const { showToast } = useApp();
-  const { language } = useLanguage();
-
-  const [activeTab, setActiveTab] = useState<'login' | 'otp' | 'register'>('login');
-  const [email, setEmail] = useState<string>('an.nguyen@routinepulse.com');
-  const [password, setPassword] = useState<string>('123456');
-  const [otp, setOtp] = useState<string>('');
-  const [fullName, setFullName] = useState<string>('Nguyễn Văn An');
-  const [rememberMe, setRememberMe] = useState<boolean>(true);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (activeTab === 'login') {
-      login({ email, name: 'Nguyễn Văn An' });
-      showToast(
-        language === 'vi' ? 'Đăng nhập thành công' : 'Login Successful',
-        language === 'vi' ? 'Chào mừng bạn quay trở lại RoutinePulse!' : 'Welcome back to RoutinePulse!',
-        'success'
-      );
-    } else if (activeTab === 'otp') {
-      login({ email, name: 'Người dùng OTP' });
-      showToast(
-        language === 'vi' ? 'Xác thực OTP thành công' : 'OTP Verified',
-        language === 'vi' ? 'Đã đăng nhập thành công vào hệ thống.' : 'Successfully authenticated.',
-        'success'
-      );
-    } else {
-      login({ email, name: fullName });
-      showToast(
-        language === 'vi' ? 'Đăng ký thành công' : 'Registration Successful',
-        language === 'vi' ? 'Tài khoản của bạn đã được khởi tạo!' : 'Your account has been created!',
-        'success'
-      );
-    }
+  const { loginWithApi, registerWithApi } = useAuth();
+  const [error, setError] = useState('');
+  const [register, setRegister] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [pending, setPending] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault(); if (pending) return;
+    setPending(true); setError('');
+    const ok = register ? await registerWithApi(email, password, fullName) : await loginWithApi(email, password);
+    setPending(false);
+    if (!ok) setError('Không thể xác thực');
   };
-
-  const handleQuickDemo = (role: 'FREE' | 'TRIAL' | 'PREMIUM', name: string) => {
-    login({ name, role });
-    setRole(role);
-    showToast(
-      language === 'vi' ? 'Đăng nhập nhanh Demo' : 'Quick Demo Login',
-      language === 'vi' ? `Đã truy cập với tư cách tài khoản [${role}].` : `Logged in as [${role}] demo user.`,
-      'success'
-    );
-  };
-
-  return (
-    <div className="lg:col-span-6 p-6 sm:p-10 flex flex-col justify-between space-y-6 bg-[#161718] text-[#E3E2E3]">
-      {/* Top Branding */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-[#1A73E8] text-white rounded-xl flex items-center justify-center shadow-sm">
-            <Calendar className="w-4 h-4" />
-          </div>
-          <span className="font-bold text-base tracking-tight text-[#E3E2E3]">RoutinePulse</span>
-        </div>
-        <span className="text-xs font-medium text-[#9AA0A6] bg-[#1F2021] px-3 py-1 rounded-full border border-[#333538]">
-          User Portal
-        </span>
-      </div>
-
-      {/* Center Auth Content */}
-      <div className="space-y-5 max-w-sm w-full mx-auto">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-[#E3E2E3] tracking-tight">
-            {language === 'vi'
-              ? activeTab === 'login'
-                ? 'Đăng nhập tài khoản'
-                : activeTab === 'otp'
-                ? 'Đăng nhập bằng mã OTP'
-                : 'Đăng ký tài khoản mới'
-              : activeTab === 'login'
-              ? 'Sign in to Account'
-              : activeTab === 'otp'
-              ? 'Sign in with OTP'
-              : 'Create New Account'}
-          </h1>
-          <p className="text-xs text-[#9AA0A6] leading-relaxed">
-            {language === 'vi'
-              ? activeTab === 'login'
-                ? 'Quản lý lịch trình, thói quen và sự kiện đa thiết bị.'
-                : activeTab === 'otp'
-                ? 'Nhập mã xác thực gửi về điện thoại hoặc email.'
-                : 'Tạo không gian lịch trình cá nhân hóa miễn phí ngay.'
-              : activeTab === 'login'
-              ? 'Manage schedules, habits, and AI smart events across devices.'
-              : activeTab === 'otp'
-              ? 'Enter the 6-digit code sent to your phone or email.'
-              : 'Create your personalized productivity workspace today.'}
-          </p>
-        </div>
-
-        {/* Auth Method Tabs */}
-        <div className="flex bg-[#1F2021] p-1 rounded-xl border border-[#333538] text-xs font-semibold">
-          <button
-            type="button"
-            onClick={() => setActiveTab('login')}
-            className={`flex-1 min-w-0 py-2 rounded-lg transition-all cursor-pointer truncate ${
-              activeTab === 'login'
-                ? 'bg-[#28292A] text-[#E3E2E3] font-bold shadow-xs border border-[#3A3B3D]'
-                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
-            }`}
-          >
-            {language === 'vi' ? 'Mật khẩu' : 'Password'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('otp')}
-            className={`flex-1 min-w-0 py-2 rounded-lg transition-all cursor-pointer truncate ${
-              activeTab === 'otp'
-                ? 'bg-[#28292A] text-[#E3E2E3] font-bold shadow-xs border border-[#3A3B3D]'
-                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
-            }`}
-          >
-            OTP
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('register')}
-            className={`flex-1 min-w-0 py-2 rounded-lg transition-all cursor-pointer truncate ${
-              activeTab === 'register'
-                ? 'bg-[#28292A] text-[#E3E2E3] font-bold shadow-xs border border-[#3A3B3D]'
-                : 'text-[#9AA0A6] hover:text-[#E3E2E3]'
-            }`}
-          >
-            {language === 'vi' ? 'Tạo tài khoản' : 'Sign Up'}
-          </button>
-        </div>
-
-        {/* Form Container */}
-        <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
-          {activeTab === 'register' && (
-            <div className="space-y-1">
-              <label className="font-medium text-[#9AA0A6]">{language === 'vi' ? 'Họ và tên:' : 'Full Name:'}</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder={language === 'vi' ? 'Ví dụ: Nguyễn Văn An' : 'e.g. Alex Johnson'}
-                  className="w-full bg-[#1F2021] border border-[#333538] rounded-lg px-3.5 py-2 text-xs text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] transition-all font-sans placeholder-[#70757A]"
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-1">
-            <label className="font-medium text-[#9AA0A6]">
-              {activeTab === 'otp'
-                ? (language === 'vi' ? 'Số điện thoại hoặc Email:' : 'Phone or Email:')
-                : (language === 'vi' ? 'Địa chỉ Email:' : 'Email Address:')}
-            </label>
-            <div className="relative">
-              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#70757A]">
-                {activeTab === 'otp' ? <Smartphone className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
-              </div>
-              <input
-                type="text"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={activeTab === 'otp' ? '0987 654 321 / an.nguyen@email.com' : 'name@example.com'}
-                className="w-full bg-[#1F2021] border border-[#333538] rounded-lg pl-10 pr-3.5 py-2 text-xs text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] transition-all font-sans placeholder-[#70757A]"
-              />
-            </div>
-          </div>
-
-          {activeTab === 'otp' ? (
-            <div className="space-y-1">
-              <div className="flex justify-between items-center">
-                <label className="font-medium text-[#9AA0A6]">{language === 'vi' ? 'Mã xác thực OTP (6 chữ số):' : '6-digit OTP Code:'}</label>
-                <button
-                  type="button"
-                  onClick={() => showToast(language === 'vi' ? 'Gửi lại OTP' : 'Resend OTP', 'OTP: 888999', 'info')}
-                  className="text-[11px] text-[#8AB4F8] font-semibold hover:underline cursor-pointer"
-                >
-                  {language === 'vi' ? 'Gửi lại mã (60s)' : 'Resend Code (60s)'}
-                </button>
-              </div>
-              <input
-                type="text"
-                maxLength={6}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="888999"
-                className="w-full bg-[#1F2021] border border-[#333538] rounded-lg px-3.5 py-2 text-xs text-center font-mono tracking-widest text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] transition-all placeholder-[#70757A]"
-              />
-            </div>
-          ) : (
-            <div className="space-y-1">
-              <div className="flex justify-between items-center">
-                <label className="font-medium text-[#9AA0A6]">{language === 'vi' ? 'Mật khẩu:' : 'Password:'}</label>
-                {activeTab === 'login' && (
-                  <button
-                    type="button"
-                    onClick={() => showToast(language === 'vi' ? 'Quên mật khẩu' : 'Forgot Password', language === 'vi' ? 'Đã gửi liên kết đặt lại mật khẩu về email của bạn.' : 'Password reset link sent.', 'info')}
-                    className="text-[11px] text-[#8AB4F8] font-semibold hover:underline cursor-pointer"
-                  >
-                    {language === 'vi' ? 'Quên mật khẩu?' : 'Forgot password?'}
-                  </button>
-                )}
-              </div>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-[#70757A] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-[#1F2021] border border-[#333538] rounded-lg pl-10 pr-3.5 py-2 text-xs text-[#E3E2E3] focus:outline-none focus:border-[#8AB4F8] transition-all font-sans placeholder-[#70757A]"
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'login' && (
-            <label className="flex items-center gap-2 text-[#9AA0A6] cursor-pointer pt-1">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded text-[#1A73E8] bg-[#1F2021] border-[#333538] cursor-pointer"
-              />
-              <span className="text-xs">{language === 'vi' ? 'Ghi nhớ đăng nhập trên thiết bị này' : 'Remember me on this device'}</span>
-            </label>
-          )}
-
-          <button
-            type="submit"
-            className="w-full bg-[#1A73E8] hover:bg-[#1B66CA] text-white font-semibold py-2.5 rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 text-xs cursor-pointer active:scale-98"
-          >
-            <span>
-              {language === 'vi'
-                ? activeTab === 'login'
-                  ? 'Đăng nhập RoutinePulse'
-                  : activeTab === 'otp'
-                  ? 'Xác nhận & Đăng nhập'
-                  : 'Khởi tạo tài khoản ngay'
-                : activeTab === 'login'
-                ? 'Sign In to RoutinePulse'
-                : activeTab === 'otp'
-                ? 'Verify & Sign In'
-                : 'Create Account Now'}
-            </span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
-
-        {/* Quick Demo Bypass Switcher */}
-        <div className="border-t border-[#2A2B2D] pt-4 space-y-2">
-          <div className="text-center text-[11px] text-[#70757A] font-medium">
-            {language === 'vi' ? 'Truy cập nhanh chế độ Demo' : 'Quick demo access'}
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('FREE', 'Nguyễn Văn An (Free)')}
-              className="p-2 rounded-lg bg-[#1F2021] hover:bg-[#28292A] text-[#E3E2E3] border border-[#333538] font-medium text-xs transition-colors cursor-pointer text-center"
-            >
-              Free User
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('TRIAL', 'Trần Bảo Ngọc (Trial)')}
-              className="p-2 rounded-lg bg-[#81C995]/15 hover:bg-[#81C995]/25 text-[#81C995] border border-[#81C995]/35 font-medium text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>7D Trial</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('PREMIUM', 'Lê Hoàng Long (VIP)')}
-              className="p-2 rounded-lg bg-[#FDD663]/15 hover:bg-[#FDD663]/25 text-[#FDD663] border border-[#FDD663]/35 font-medium text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer"
-            >
-              <Crown className="w-3.5 h-3.5" />
-              <span>VIP 1 {language === 'vi' ? 'Năm' : 'Yr'}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Security Note */}
-      <div className="text-center text-[11px] text-[#70757A]">
-        {language === 'vi'
-          ? 'RoutinePulse Workspace • Nền tảng quản lý thời gian & thói quen'
-          : 'RoutinePulse Workspace • Calendar & Habit Tracking Platform'}
-      </div>
-    </div>
-  );
+  const inputClass = 'w-full bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-[var(--text-primary)]';
+  return <div className="lg:col-span-6 p-6 sm:p-10 flex flex-col justify-center gap-6 bg-[#161718] text-[var(--text-primary)]">
+    <h1 className="text-2xl font-bold">RoutinePulse</h1>
+    <h2>{register ? 'Đăng ký tài khoản' : 'Đăng nhập'}</h2>
+    {error && <p role="alert" className="text-red-400">{error}</p>}
+    <form onSubmit={submit} className="space-y-4">
+      {register && <label className="block">Họ tên<input required autoComplete="name" value={fullName} onChange={e => setFullName(e.target.value)} className={inputClass} /></label>}
+      <label className="block">Email<input required type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} className={inputClass} /></label>
+      <label className="block">Mật khẩu<input required type="password" minLength={register ? 8 : undefined} autoComplete={register ? 'new-password' : 'current-password'} value={password} onChange={e => setPassword(e.target.value)} className={inputClass} /></label>
+      <button disabled={pending} className="w-full rounded-lg bg-[var(--google-blue-primary)] p-3 disabled:opacity-50">{pending ? 'Đang xử lý…' : register ? 'Đăng ký' : 'Đăng nhập'}</button>
+    </form>
+    <button type="button" onClick={() => setRegister(!register)} className="text-[var(--google-blue)]">{register ? 'Đã có tài khoản? Đăng nhập' : 'Tạo tài khoản mới'}</button>
+  </div>;
 };

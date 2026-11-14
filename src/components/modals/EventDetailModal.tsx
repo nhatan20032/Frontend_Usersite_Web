@@ -43,46 +43,46 @@ export const EventDetailModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="bg-[#1F2021] border border-[#333538] max-w-md w-full rounded-2xl p-6 space-y-4 relative shadow-2xl text-[#E3E2E3]">
+      <div className="bg-[var(--surface-container)] border border-[var(--border-subtle)] max-w-md w-full rounded-2xl p-6 space-y-4 relative shadow-2xl text-[var(--text-primary)]">
         <button
           onClick={closeModal}
-          className="absolute top-4 right-4 text-[#9AA0A6] hover:text-[#E3E2E3] p-1.5 rounded-full hover:bg-[#28292A] cursor-pointer transition-colors"
+          className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1.5 rounded-full hover:bg-[var(--surface-container-high)] cursor-pointer transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
-        <div className="space-y-1.5 border-b border-[#2A2B2D] pb-3 pr-8">
+        <div className="space-y-1.5 border-b border-[var(--border-grid)] pb-3 pr-8">
           <div className="flex items-center gap-2">
             <span
-              className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold shadow-xs ${
+              className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold shadow-xs ${
                 isRoutine
                   ? 'bg-[#E37400] text-white'
-                  : 'bg-[#1A73E8] text-white'
+                  : 'bg-[var(--google-blue-primary)] text-white'
               }`}
             >
               {isRoutine ? (language === 'vi' ? 'THÓI QUEN' : 'ROUTINE') : (language === 'vi' ? 'SỰ KIỆN' : 'EVENT')}
             </span>
             <span
-              className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+              className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
                 event.priority === 'high'
                   ? 'bg-[#D93025] text-white'
                   : event.priority === 'medium'
                   ? 'bg-[#E37400] text-white'
-                  : 'bg-[#28292A] text-[#9AA0A6] border border-[#333538]'
+                  : 'bg-[var(--surface-container-high)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
               }`}
             >
               {event.priority === 'high' ? t('common.high') : event.priority === 'medium' ? t('common.medium') : t('common.low')}
             </span>
           </div>
-          <h3 className="text-base font-bold text-[#E3E2E3] pt-0.5 leading-snug">{event.title}</h3>
+          <h3 className="text-base font-bold text-[var(--text-primary)] pt-0.5 leading-snug">{event.title}</h3>
         </div>
 
         {/* Event Details Content */}
-        <div className="space-y-3 text-xs text-[#E3E2E3]">
-          <div className="flex items-center gap-2.5 text-[#9AA0A6]">
-            <Clock className="w-4 h-4 text-[#8AB4F8] shrink-0" />
-            <span className="text-[#E3E2E3]">
+        <div className="space-y-3 text-xs text-[var(--text-primary)]">
+          <div className="flex items-center gap-2.5 text-[var(--text-secondary)]">
+            <Clock className="w-4 h-4 text-[var(--google-blue)] shrink-0" />
+            <span className="text-[var(--text-primary)]">
               {language === 'vi'
                 ? `Thời gian: ${event.time} (Ngày ${event.day} ${monthNames[selectedMonth]})`
                 : `Time: ${event.time} (${monthNames[selectedMonth]} ${event.day})`}
@@ -99,8 +99,8 @@ export const EventDetailModal: React.FC = () => {
                 </span>
               </div>
               {event.frequency && (
-                <div className="text-[11px] text-[#9AA0A6] bg-[#161718] border border-[#2A2B2D] p-2 rounded-lg">
-                  🔄 {language === 'vi' ? 'Tần suất lặp lại:' : 'Frequency:'} <span className="text-[#E3E2E3] font-medium">{event.frequency}</span>
+                <div className="text-[11px] text-[var(--text-secondary)] bg-[#161718] border border-[var(--border-grid)] p-2 rounded-lg">
+                  🔄 {language === 'vi' ? 'Tần suất lặp lại:' : 'Frequency:'} <span className="text-[var(--text-primary)] font-medium">{event.frequency}</span>
                 </div>
               )}
             </div>
@@ -110,25 +110,25 @@ export const EventDetailModal: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <MapPin className="w-4 h-4 text-[#81C995] shrink-0" />
                   <span>
-                    {t('modals.detail.location')}: <b className="text-[#E3E2E3]">{event.location}</b>
+                    {t('modals.detail.location')}: <b className="text-[var(--text-primary)]">{event.location}</b>
                   </span>
                 </div>
               )}
 
               {(event.travelTime || event.alertTime) && (
-                <div className="bg-[#161718] border border-[#2A2B2D] p-3 rounded-xl space-y-2 text-xs text-[#9AA0A6]">
+                <div className="bg-[#161718] border border-[var(--border-grid)] p-3 rounded-xl space-y-2 text-xs text-[var(--text-secondary)]">
                   {event.travelTime && (
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="flex items-center gap-1.5">
-                        <Navigation className="w-3.5 h-3.5 text-[#8AB4F8]" />
+                        <Navigation className="w-3.5 h-3.5 text-[var(--google-blue)]" />
                         <span>{language === 'vi' ? 'Thời gian di chuyển ước tính' : 'Estimated Travel Time'}</span>
                       </span>
                       <span className="font-semibold text-[#81C995] font-mono">{event.travelTime}</span>
                     </div>
                   )}
                   {event.alertTime && (
-                    <div className="text-[11px] text-[#E3E2E3] bg-[#242527] border border-[#333538] p-2.5 rounded-lg flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 text-[#9AA0A6]">
+                    <div className="text-[11px] text-[var(--text-primary)] bg-[#242527] border border-[var(--border-subtle)] p-2.5 rounded-lg flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                         <Bell className="w-3.5 h-3.5 text-[#FDD663]" />
                         <span>{t('modals.detail.reminder')}</span>
                       </span>
@@ -139,9 +139,9 @@ export const EventDetailModal: React.FC = () => {
               )}
 
               {event.description && (
-                <div className="bg-[#161718] border border-[#2A2B2D] p-2.5 rounded-lg text-xs text-[#9AA0A6] space-y-1">
-                  <span className="text-[10px] text-[#70757A] uppercase font-semibold block">{language === 'vi' ? 'Ghi chú' : 'Description'}</span>
-                  <p className="text-[#E3E2E3] whitespace-pre-wrap">{event.description}</p>
+                <div className="bg-[#161718] border border-[var(--border-grid)] p-2.5 rounded-lg text-xs text-[var(--text-secondary)] space-y-1">
+                  <span className="text-[11px] text-[var(--text-muted)] uppercase font-semibold block">{language === 'vi' ? 'Ghi chú' : 'Description'}</span>
+                  <p className="text-[var(--text-primary)] whitespace-pre-wrap">{event.description}</p>
                 </div>
               )}
             </div>
@@ -149,17 +149,17 @@ export const EventDetailModal: React.FC = () => {
         </div>
 
         {/* Modal Actions */}
-        <div className="flex gap-2 pt-2 border-t border-[#2A2B2D]">
-          <button
+        <div className="flex gap-2 pt-2 border-t border-[var(--border-grid)]">
+          {event.backendId && <button
             onClick={handleDelete}
-            className="bg-[#28292A] hover:bg-[#D93025] text-[#F28B82] hover:text-white border border-[#3A3B3D] hover:border-transparent font-medium px-3.5 py-2 rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="bg-[var(--surface-container-high)] hover:bg-[#D93025] text-[#F28B82] hover:text-white border border-[#3A3B3D] hover:border-transparent font-medium px-3.5 py-2 rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
             <span>{t('common.delete')}</span>
-          </button>
+          </button>}
           <button
             onClick={closeModal}
-            className="flex-1 bg-[#28292A] hover:bg-[#333538] text-[#E3E2E3] font-semibold py-2 rounded-lg text-xs border border-[#3A3B3D] transition-colors cursor-pointer"
+            className="flex-1 bg-[var(--surface-container-high)] hover:bg-[var(--border-subtle)] text-[var(--text-primary)] font-semibold py-2 rounded-lg text-xs border border-[#3A3B3D] transition-colors cursor-pointer"
           >
             {t('common.close')}
           </button>

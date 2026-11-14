@@ -1,3 +1,4 @@
+import { appointmentApi } from '../../api/appointmentApi';
 import React, { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -79,7 +80,7 @@ interface DragState {
 }
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ab4f8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#202124]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--google-blue)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#202124]';
 
 const CustomTimePicker: React.FC<{ value: string; onChange: (val: string) => void }> = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
@@ -116,7 +117,7 @@ const CustomTimePicker: React.FC<{ value: string; onChange: (val: string) => voi
           if (!Number.isNaN(m)) onChange(fmt(m));
           else setText(to12h(parse(value)));
         }}
-        className="h-9 w-[110px] px-3 rounded-lg bg-[#303134] border border-[#5f6368] hover:bg-[#3c4043] text-sm tabular-nums text-[#e8eaed] transition-colors focus:border-[#8ab4f8] focus:outline-none"
+        className="h-9 w-[110px] px-3 rounded-lg bg-[#303134] border border-[#5f6368] hover:bg-[#3c4043] text-sm tabular-nums text-[#e8eaed] transition-colors focus:border-[var(--google-blue)] focus:outline-none"
       />
       {open && (
         <div className="absolute z-[100] top-full left-0 mt-1 w-full max-h-60 overflow-y-auto custom-scrollbar bg-[#303134] border border-[#5f6368] rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.6)] py-1 origin-top-left animate-in fade-in zoom-in-95 duration-200">
@@ -125,7 +126,7 @@ const CustomTimePicker: React.FC<{ value: string; onChange: (val: string) => voi
               key={opt}
               type="button"
               onMouseDown={(e) => { e.preventDefault(); onChange(opt); setOpen(false); }}
-              className={`w-full text-left px-4 py-2 text-sm hover:bg-[#3c4043] ${fmt(parse(value)) === opt ? 'bg-[#3c4043] text-[#8ab4f8]' : 'text-[#e8eaed]'}`}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-[#3c4043] ${fmt(parse(value)) === opt ? 'bg-[#3c4043] text-[var(--google-blue)]' : 'text-[#e8eaed]'}`}
             >
               {to12h(parse(opt))}
             </button>
@@ -149,7 +150,7 @@ const CustomSelect: React.FC<{
 }> = ({ value, onChange, options, className = "w-full max-w-[200px]" }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const handle = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -162,13 +163,13 @@ const CustomSelect: React.FC<{
 
   return (
     <div ref={ref} className={`relative ${className}`}>
-      <button 
+      <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between h-10 px-3 rounded-lg bg-[#303134] border hover:bg-[#3c4043] text-sm text-[#e8eaed] transition-colors focus:outline-none ${open ? 'border-[#8ab4f8]' : 'border-[#5f6368] focus:border-[#8ab4f8]'}`}
+        className={`w-full flex items-center justify-between h-10 px-3 rounded-lg bg-[#303134] border hover:bg-[#3c4043] text-sm text-[#e8eaed] transition-colors focus:outline-none ${open ? 'border-[var(--google-blue)]' : 'border-[#5f6368] focus:border-[var(--google-blue)]'}`}
       >
         <span className="truncate pr-2">{selectedOption?.label}</span>
-        <ChevronDown className={`w-4 h-4 text-[#9aa0a6] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 text-[var(--text-secondary)] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
         <div className="absolute z-[100] top-full left-0 mt-1 w-full max-h-60 overflow-y-auto custom-scrollbar bg-[#303134] border border-[#5f6368] rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.6)] py-1.5 origin-top-left animate-in fade-in zoom-in-95 duration-200">
@@ -180,8 +181,8 @@ const CustomSelect: React.FC<{
                 type="button"
                 onClick={() => { onChange(opt.value); setOpen(false); }}
                 className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                  isSelected 
-                    ? 'bg-[#1a73e8] text-white' 
+                  isSelected
+                    ? 'bg-[var(--google-blue-primary)] text-white'
                     : 'text-[#e8eaed] hover:bg-[#3c4043]'
                 }`}
               >
@@ -196,14 +197,31 @@ const CustomSelect: React.FC<{
 };
 
 export const AppointmentScheduleModal: React.FC = () => {
-  const { activeModal, closeModal, showToast, addEvent, selectedMonth, selectedYear, selectedDay } = useApp();
+  const { activeModal, closeModal, showToast, selectedMonth, selectedYear, selectedDay } = useApp();
   const { t } = useLanguage();
 
-  const [title, setTitle] = useState<string>('Tư vấn Thiết kế UI/UX & Code Review');
+  const [title, setTitle] = useState<string>('');
   const [duration, setDuration] = useState<number>(60); // minutes
   const [repeatMode, setRepeatMode] = useState<string>('weekly');
   const [availability, setAvailability] = useState<DailyAvailabilitySlot[]>(initialAvailability);
+  const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
   const [timezone, setTimezone] = useState<string>('GMT+07:00');
+  useEffect(() => {
+    if (activeModal !== 'appointment-schedule') return;
+    let active = true;
+    setAvailabilityLoaded(false);
+    appointmentApi.getAvailability().then(data => {
+      if (!active) return;
+      setAvailabilityLoaded(true);
+      setTimezone(data.timezone); setDuration(data.defaultDurationMinutes);
+      setAvailability(initialAvailability.map(day => ({ ...day,
+        isAvailable: data.slots.some(s => s.dayIndex === day.dayIndex && s.isAvailable),
+        ranges: data.slots.filter(s => s.dayIndex === day.dayIndex && s.isAvailable).map(s => range(parse(s.startTime), parse(s.endTime))),
+      })));
+    }).catch((e: Error) => showToast('Không tải được lịch hẹn', e.message, 'error'));
+    return () => { active = false; };
+  }, [activeModal]);
+
   const [maxDays, setMaxDays] = useState<number>(60);
   const [minHours, setMinHours] = useState<number>(4);
   const [windowOpen, setWindowOpen] = useState(false);
@@ -397,39 +415,21 @@ export const AppointmentScheduleModal: React.FC = () => {
   };
 
   // ---- save ----
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!availabilityLoaded) return showToast('Chưa tải được cấu hình', 'Mở lại cửa sổ để tải lịch trước khi lưu.', 'error');
     const active = availability.filter((d) => d.isAvailable && d.ranges.length > 0);
     const err = (msg: string) => showToast(t('appt.errTitle'), msg, 'error');
-    if (!title.trim()) return err(t('appt.errNoTitle'));
     if (active.length === 0) return err(t('appt.errNoRange'));
     if (active.some((d) => d.ranges.some((r) => r.end - r.start < duration)))
       return err(t('appt.errShort', { d: duration }));
 
-    const weekday = new Date(selectedYear, selectedMonth, selectedDay || 1).getDay();
-    const primary = (active.find((d) => d.dayIndex === weekday) ?? active[0]).ranges[0];
-    const daysText = active
-      .map((d) => `${dayNames[d.dayIndex]} ${d.ranges.map((r) => `${fmt(r.start)}–${fmt(r.end)}`).join(', ')}`)
-      .join('; ');
+    try {
+      await appointmentApi.saveAvailability({ timezone, defaultDurationMinutes: duration,
+        slots: availability.flatMap(d => d.ranges.length ? d.ranges.map(r => ({ dayIndex: d.dayIndex, dayName: d.dayNameVi, isAvailable: d.isAvailable, startTime: to12h(r.start), endTime: to12h(r.end) })) : [{ dayIndex: d.dayIndex, dayName: d.dayNameVi, isAvailable: false, startTime: '09:00 AM', endTime: '05:00 PM' }]),
+      });
+    } catch (e) { return showToast('Không thể lưu lịch hẹn', (e as Error).message, 'error'); }
 
-    addEvent({
-      type: 'event',
-      title: `${t('appt.eventPrefix')} ${title.trim()}`,
-      time: to12h(primary.start),
-      endTime: to12h(primary.end),
-      priority: 'high',
-      year: selectedYear,
-      month: selectedMonth,
-      day: selectedDay,
-      colorTag: '#8AB4F8',
-      description: t('appt.descTpl', {
-        d: duration,
-        repeat: t(repeatMode === 'weekly' ? 'appt.repeatWeekly' : 'appt.repeatThisWeek'),
-        tz: timezone,
-        days: daysText,
-      }),
-    });
-
-    showToast(t('appt.savedTitle'), t('appt.savedDesc'), 'success');
+    showToast('Đã lưu khung giờ', 'Đã lưu múi giờ, thời lượng và khung giờ vào máy chủ. Các tùy chọn xem trước không được lưu.', 'success');
     closeModal();
   };
 
@@ -468,7 +468,7 @@ export const AppointmentScheduleModal: React.FC = () => {
             type="button"
             onClick={closeModal}
             aria-label={t('appt.close')}
-            className={`w-9 h-9 rounded-full grid place-items-center text-[#9aa0a6] hover:bg-[#303134] hover:text-[#e8eaed] transition-colors ${focusRing}`}
+            className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:bg-[#303134] hover:text-[#e8eaed] transition-colors ${focusRing}`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -479,7 +479,7 @@ export const AppointmentScheduleModal: React.FC = () => {
             <button
               type="button"
               onClick={handleSave}
-              className={`h-9 px-6 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#202124] text-[14px] font-medium transition-colors ${focusRing}`}
+              className={`h-9 px-6 rounded-full bg-[var(--google-blue)] hover:bg-[#aecbfa] text-[#202124] text-[14px] font-medium transition-colors ${focusRing}`}
             >
               {t('appt.save')}
             </button>
@@ -491,7 +491,7 @@ export const AppointmentScheduleModal: React.FC = () => {
           <aside className="w-full md:w-[460px] shrink-0 bg-[#28292c] border-r border-[#3c4043] flex flex-col">
             <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-5 flex flex-col gap-6">
               <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium tracking-wider text-[#9aa0a6] uppercase">{t('appt.title')}</span>
+                <span className="text-xs font-medium tracking-wider text-[var(--text-secondary)] uppercase">Tiêu đề xem trước (không lưu máy chủ)</span>
                 <input
                   type="text"
                   value={title}
@@ -499,20 +499,20 @@ export const AppointmentScheduleModal: React.FC = () => {
                   placeholder={t('appt.titlePlaceholder')}
                   aria-label={t('appt.titlePlaceholder')}
                   autoFocus
-                  className="w-full bg-transparent border-0 border-b border-[#5f6368] focus:border-[#8ab4f8] text-[20px] font-medium pb-2 focus:outline-none placeholder:text-[#9aa0a6] transition-colors"
+                  className="w-full bg-transparent border-0 border-b border-[#5f6368] focus:border-[var(--google-blue)] text-[20px] font-medium pb-2 focus:outline-none placeholder:text-[var(--text-secondary)] transition-colors"
                 />
               </div>
 
             {/* Duration */}
             <div className="flex flex-col gap-2">
               <span className="text-[13px] font-medium tracking-wide text-[#e8eaed]">{t('appt.duration')}</span>
-              <span className="text-[11px] text-[#9aa0a6]">Mỗi cuộc hẹn sẽ kéo dài bao lâu?</span>
-              <CustomSelect 
-                value={duration} 
-                onChange={setDuration} 
-                options={DURATIONS.map(m => ({ 
-                  value: m, 
-                  label: m < 60 ? `${m} phút` : `${m / 60} giờ` 
+              <span className="text-[11px] text-[var(--text-secondary)]">Mỗi cuộc hẹn sẽ kéo dài bao lâu?</span>
+              <CustomSelect
+                value={duration}
+                onChange={setDuration}
+                options={DURATIONS.map(m => ({
+                  value: m,
+                  label: m < 60 ? `${m} phút` : `${m / 60} giờ`
                 }))}
                 className="w-full max-w-[150px]"
               />
@@ -522,7 +522,7 @@ export const AppointmentScheduleModal: React.FC = () => {
             <section className="flex flex-col">
               <div className="flex flex-col gap-1 mb-4">
                 <h3 className="text-[13px] font-medium text-[#e8eaed]">{t('appt.weekly')}</h3>
-                <span className="text-[11px] text-[#9aa0a6]">Thiết lập thời gian bạn thường rảnh để đặt cuộc hẹn.</span>
+                <span className="text-[11px] text-[var(--text-secondary)]">Thiết lập thời gian bạn thường rảnh để đặt cuộc hẹn.</span>
               </div>
               <div className="mb-4">
                 <CustomSelect
@@ -542,7 +542,7 @@ export const AppointmentScheduleModal: React.FC = () => {
                   return (
                   <li key={slot.id} className="group flex items-start gap-3 py-1.5 min-h-[44px]">
                     <span
-                      className={`w-14 mt-1.5 text-[13px] font-medium shrink-0 ${hasRanges ? 'text-[#e8eaed]' : 'text-[#9aa0a6]'}`}
+                      className={`w-14 mt-1.5 text-[13px] font-medium shrink-0 ${hasRanges ? 'text-[#e8eaed]' : 'text-[var(--text-secondary)]'}`}
                     >
                       {dayNames[slot.dayIndex]}
                     </span>
@@ -555,7 +555,7 @@ export const AppointmentScheduleModal: React.FC = () => {
                               value={fmt(r.start)}
                               onChange={(val) => editRange(slot.dayIndex, r.id, 'start', val)}
                             />
-                            <span className="text-[#9aa0a6] text-xs">–</span>
+                            <span className="text-[var(--text-secondary)] text-xs">–</span>
                             <CustomTimePicker
                               value={fmt(r.end)}
                               onChange={(val) => editRange(slot.dayIndex, r.id, 'end', val)}
@@ -565,11 +565,11 @@ export const AppointmentScheduleModal: React.FC = () => {
                               onClick={() => removeRange(slot.dayIndex, r.id)}
                               aria-label={t('appt.removeRange')}
                               title={t('appt.removeRange')}
-                              className={`w-9 h-9 rounded-full grid place-items-center text-[#9aa0a6] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                              className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
                             >
                               <X className="w-5 h-5" />
                             </button>
-                            
+
                             {i === slot.ranges.length - 1 && (
                               <div className="flex items-center gap-0.5 ml-1">
                                 <button
@@ -577,7 +577,7 @@ export const AppointmentScheduleModal: React.FC = () => {
                                   onClick={() => addRange(slot.dayIndex)}
                                   aria-label={t('appt.addRange')}
                                   title={t('appt.addRange')}
-                                  className={`w-9 h-9 rounded-full grid place-items-center text-[#9aa0a6] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                                  className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
                                 >
                                   <Plus className="w-5 h-5" />
                                 </button>
@@ -586,7 +586,7 @@ export const AppointmentScheduleModal: React.FC = () => {
                                   onClick={() => handleCopyAll(slot.dayIndex)}
                                   aria-label={t('appt.applyWeekdays')}
                                   title={t('appt.applyWeekdays')}
-                                  className={`w-9 h-9 rounded-full grid place-items-center text-[#9aa0a6] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                                  className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
                                 >
                                   <Copy className="w-[18px] h-[18px]" />
                                 </button>
@@ -597,13 +597,13 @@ export const AppointmentScheduleModal: React.FC = () => {
                       </div>
                     ) : (
                       <div className="flex-1 flex items-center h-9">
-                        <span className="text-[13px] text-[#9aa0a6] font-medium mr-auto">Bận</span>
+                        <span className="text-[13px] text-[var(--text-secondary)] font-medium mr-auto">Bận</span>
                         <button
                           type="button"
                           onClick={() => toggleDayAvailable(slot.dayIndex)}
                           aria-label={t('appt.addRange')}
                           title={t('appt.addRange')}
-                          className={`w-9 h-9 rounded-full grid place-items-center text-[#9aa0a6] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                          className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
                         >
                           <Plus className="w-5 h-5" />
                         </button>
@@ -630,14 +630,14 @@ export const AppointmentScheduleModal: React.FC = () => {
                 type="button"
                 onClick={() => setWindowOpen((o) => !o)}
                 aria-expanded={windowOpen}
-                className={`flex items-center justify-between text-left text-sm text-[#9aa0a6] hover:text-[#e8eaed] rounded transition-colors focus:outline-none focus:text-[#8ab4f8]`}
+                className={`flex items-center justify-between text-left text-sm text-[var(--text-secondary)] hover:text-[#e8eaed] rounded transition-colors focus:outline-none focus:text-[var(--google-blue)]`}
               >
                 <span>{t('appt.window', { max: maxDays, min: minHours })}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${windowOpen ? 'rotate-180' : ''}`} />
               </button>
               {windowOpen && (
                 <div className="grid grid-cols-2 gap-3 mt-2">
-                  <label className="flex flex-col gap-1 text-sm text-[#9aa0a6]">
+                  <label className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
                     {t('appt.maxDays')}
                     <input
                       type="number"
@@ -645,10 +645,10 @@ export const AppointmentScheduleModal: React.FC = () => {
                       max={365}
                       value={maxDays}
                       onChange={(e) => setMaxDays(clamp(Number(e.target.value) || 1, 1, 365))}
-                      className={`h-10 px-3 rounded-lg bg-[#303134] border border-[#5f6368] text-[#e8eaed] tabular-nums focus:border-[#8ab4f8] focus:outline-none`}
+                      className={`h-10 px-3 rounded-lg bg-[#303134] border border-[#5f6368] text-[#e8eaed] tabular-nums focus:border-[var(--google-blue)] focus:outline-none`}
                     />
                   </label>
-                  <label className="flex flex-col gap-1 text-sm text-[#9aa0a6]">
+                  <label className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
                     {t('appt.minHours')}
                     <input
                       type="number"
@@ -656,27 +656,27 @@ export const AppointmentScheduleModal: React.FC = () => {
                       max={168}
                       value={minHours}
                       onChange={(e) => setMinHours(clamp(Number(e.target.value) || 0, 0, 168))}
-                      className={`h-10 px-3 rounded-lg bg-[#303134] border border-[#5f6368] text-[#e8eaed] tabular-nums focus:border-[#8ab4f8] focus:outline-none`}
+                      className={`h-10 px-3 rounded-lg bg-[#303134] border border-[#5f6368] text-[#e8eaed] tabular-nums focus:border-[var(--google-blue)] focus:outline-none`}
                     />
                   </label>
                 </div>
               )}
             </section>
             </div>
-            
+
             {/* Sticky Action Footer */}
             <div className="p-4 border-t border-[#3c4043] flex items-center justify-end gap-3 bg-[#28292c]">
               <button
                 type="button"
                 onClick={closeModal}
-                className={`h-9 px-6 rounded-full text-[#8ab4f8] hover:bg-[#303134] text-[14px] font-medium transition-colors ${focusRing}`}
+                className={`h-9 px-6 rounded-full text-[var(--google-blue)] hover:bg-[#303134] text-[14px] font-medium transition-colors ${focusRing}`}
               >
                 Hủy
               </button>
               <button
                 type="button"
                 onClick={handleSave}
-                className={`h-9 px-6 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#202124] text-[14px] font-medium transition-colors ${focusRing}`}
+                className={`h-9 px-6 rounded-full bg-[var(--google-blue)] hover:bg-[#aecbfa] text-[#202124] text-[14px] font-medium transition-colors ${focusRing}`}
               >
                 Tiếp
               </button>
@@ -691,26 +691,26 @@ export const AppointmentScheduleModal: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setWeekOffset((w) => w - 1)}
-                    className="w-8 h-8 rounded-full grid place-items-center text-[#9aa0a6] hover:bg-[#303134]"
+                    className="w-8 h-8 rounded-full grid place-items-center text-[var(--text-secondary)] hover:bg-[#303134]"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setWeekOffset((w) => w + 1)}
-                    className="w-8 h-8 rounded-full grid place-items-center text-[#9aa0a6] hover:bg-[#303134]"
+                    className="w-8 h-8 rounded-full grid place-items-center text-[var(--text-secondary)] hover:bg-[#303134]"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="text-[11px] text-[#9aa0a6]">{tzShort}</div>
+                <div className="text-[11px] text-[var(--text-secondary)]">{tzShort}</div>
               </div>
               {weekDays.map((d) => (
                 <div key={d.dayIndex} className="py-2 flex flex-col items-center justify-center gap-1 border-l border-transparent">
-                  <span className={`text-[11px] font-medium uppercase tracking-wider ${d.isToday ? 'text-[#8ab4f8]' : 'text-[#9aa0a6]'}`}>{dayNames[d.dayIndex]}</span>
+                  <span className={`text-[11px] font-medium uppercase tracking-wider ${d.isToday ? 'text-[var(--google-blue)]' : 'text-[var(--text-secondary)]'}`}>{dayNames[d.dayIndex]}</span>
                   <span
                     className={`w-11 h-11 grid place-items-center rounded-full text-[24px] tabular-nums ${
-                      d.isToday ? 'bg-[#8ab4f8] text-[#202124]' : 'text-[#e8eaed] hover:bg-[#303134]'
+                      d.isToday ? 'bg-[var(--google-blue)] text-[#202124]' : 'text-[#e8eaed] hover:bg-[#303134]'
                     }`}
                   >
                     {d.date.getDate()}
@@ -768,9 +768,9 @@ export const AppointmentScheduleModal: React.FC = () => {
                             onPointerDown={(e) => beginDrag(e, wd.dayIndex, 'move', r)}
                             onKeyDown={(e) => onBlockKey(e, wd.dayIndex, r)}
                             onFocus={() => setSelected({ day: wd.dayIndex, id: r.id })}
-                            className={`group/block absolute inset-x-1 rounded-sm border-l-4 border-[#8ab4f8] overflow-hidden cursor-grab active:cursor-grabbing transition-colors outline-none ${
-                              live ? 'bg-[#8ab4f8]/30' : 'bg-[#8ab4f8]/20 hover:bg-[#8ab4f8]/30'
-                            } ${isSel ? 'ring-1 ring-[#8ab4f8]' : ''} focus-visible:ring-2 focus-visible:ring-[#8ab4f8]`}
+                            className={`group/block absolute inset-x-1 rounded-sm border-l-4 border-[var(--google-blue)] overflow-hidden cursor-grab active:cursor-grabbing transition-colors outline-none ${
+                              live ? 'bg-[var(--google-blue)]/30' : 'bg-[var(--google-blue)]/20 hover:bg-[var(--google-blue)]/30'
+                            } ${isSel ? 'ring-1 ring-[var(--google-blue)]' : ''} focus-visible:ring-2 focus-visible:ring-[var(--google-blue)]`}
                             style={{
                               top: minToPx(s),
                               height: h,
@@ -806,7 +806,7 @@ export const AppointmentScheduleModal: React.FC = () => {
                       {/* Draft range while creating */}
                       {isDragDay && drag?.mode === 'create' && drag.end - drag.start >= SNAP && (
                         <div
-                          className="absolute inset-x-1 rounded-sm border-l-4 border-[#8ab4f8] bg-[#8ab4f8]/30 pointer-events-none"
+                          className="absolute inset-x-1 rounded-sm border-l-4 border-[var(--google-blue)] bg-[var(--google-blue)]/30 pointer-events-none"
                           style={{ top: minToPx(drag.start), height: minToPx(drag.end) - minToPx(drag.start) }}
                         />
                       )}

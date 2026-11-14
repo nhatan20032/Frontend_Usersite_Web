@@ -2,6 +2,11 @@ import { apiClient } from './apiClient';
 
 export interface EventDto {
   id: string;
+  categoryId?: string;
+  attendees?: string[];
+  priority?: number;
+  availabilityStatus?: 'busy' | 'free';
+  alertTime?: string;
   title: string;
   description?: string;
   locationText?: string;
@@ -10,6 +15,8 @@ export interface EventDto {
   startTime: string;
   endTime: string;
   recurrenceRule?: string;
+  colorTag?: string;
+  seriesId?: string;
 }
 
 export const eventApi = {
@@ -25,6 +32,8 @@ export const eventApi = {
     startTime: string;
     endTime: string;
     recurrenceRule?: string;
+  colorTag?: string;
+  seriesId?: string;
   }) {
     return apiClient.post<EventDto>('/user/events', data);
   },

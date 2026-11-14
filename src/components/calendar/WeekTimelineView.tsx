@@ -54,10 +54,10 @@ export const WeekTimelineView: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#121314] select-none overflow-hidden">
+    <div className="w-full h-full flex flex-col bg-[var(--surface-canvas)] select-none overflow-hidden">
       {/* 1. Sticky Week Day Column Headers */}
-      <div className="grid grid-cols-[64px_repeat(7,1fr)] border-b border-[#2A2B2D] bg-[#121314] shrink-0 z-20">
-        <div className="py-2.5 px-2 text-center text-[10px] font-mono font-medium text-[#70757A] border-r border-[#2A2B2D] flex items-center justify-center">
+      <div className="grid grid-cols-[64px_repeat(7,1fr)] border-b border-[var(--border-grid)] bg-[var(--surface-canvas)] shrink-0 z-20">
+        <div className="py-2.5 px-2 text-center text-[11px] font-mono font-medium text-[var(--text-muted)] border-r border-[var(--border-grid)] flex items-center justify-center">
           GMT+7
         </div>
         {weekDays.map((wd) => {
@@ -72,20 +72,20 @@ export const WeekTimelineView: React.FC = () => {
             <div
               key={`hdr-${wd.day}-${wd.month}`}
               onClick={() => selectDate(wd.day, wd.month, wd.year)}
-              className={`py-2 px-1 text-center cursor-pointer transition-colors border-r border-[#2A2B2D] last:border-r-0 ${
-                isSelected ? 'bg-[#1A73E8]/10' : 'hover:bg-[#1C1D1F]'
+              className={`py-2 px-1 text-center cursor-pointer transition-colors border-r border-[var(--border-grid)] last:border-r-0 ${
+                isSelected ? 'bg-[var(--google-blue-primary)]/10' : 'hover:bg-[#1C1D1F]'
               }`}
             >
-              <span className="text-[11px] font-medium text-[#9AA0A6] uppercase tracking-wider block">
+              <span className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wider block">
                 {wd.dayName}
               </span>
               <div className="mt-0.5 flex items-center justify-center">
                 {isToday ? (
-                  <span className="w-6 h-6 rounded-full bg-[#1A73E8] text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                  <span className="w-6 h-6 rounded-full bg-[var(--google-blue-primary)] text-white font-bold text-xs flex items-center justify-center shadow-xs">
                     {wd.day}
                   </span>
                 ) : (
-                  <span className={`text-xs font-semibold ${isSelected ? 'text-[#8AB4F8]' : 'text-[#E3E2E3]'}`}>
+                  <span className={`text-xs font-semibold ${isSelected ? 'text-[var(--google-blue)]' : 'text-[var(--text-primary)]'}`}>
                     {wd.day}
                   </span>
                 )}
@@ -96,11 +96,11 @@ export const WeekTimelineView: React.FC = () => {
       </div>
 
       {/* 2. Scrollable Timeline Grid */}
-      <div className="flex-1 overflow-y-auto divide-y divide-[#2A2B2D]/60 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto divide-y divide-[var(--border-grid)]/60 custom-scrollbar">
         {hours.map((h) => (
           <div key={h} className="grid grid-cols-[64px_repeat(7,1fr)] min-h-[52px] group">
             {/* Time Label Column */}
-            <div className="py-1 px-1.5 text-center text-[11px] font-mono text-[#70757A] border-r border-[#2A2B2D] flex items-start justify-center pt-2 select-none">
+            <div className="py-1 px-1.5 text-center text-[11px] font-mono text-[var(--text-muted)] border-r border-[var(--border-grid)] flex items-start justify-center pt-2 select-none">
               {h}
             </div>
 
@@ -122,13 +122,13 @@ export const WeekTimelineView: React.FC = () => {
                       openModal('create');
                     }
                   }}
-                  className="p-1 border-r border-[#2A2B2D] last:border-r-0 transition-colors hover:bg-[#161719] flex flex-col gap-1 cursor-pointer overflow-hidden min-h-[52px]"
+                  className="p-1 border-r border-[var(--border-grid)] last:border-r-0 transition-colors hover:bg-[#161719] flex flex-col gap-1 cursor-pointer overflow-hidden min-h-[52px]"
                 >
                   {dayHourEvents.map((ev) => {
                     const isRoutine = ev.type === 'routine';
                     const chipBg = isRoutine
                       ? 'bg-[#D96B27] hover:bg-[#C25E20]'
-                      : 'bg-[#1A73E8] hover:bg-[#1B66CA]';
+                      : 'bg-[var(--google-blue-primary)] hover:bg-[#1B66CA]';
 
                     return (
                       <div
@@ -137,12 +137,12 @@ export const WeekTimelineView: React.FC = () => {
                           e.stopPropagation();
                           openModal('detail', ev.id);
                         }}
-                        className={`px-1.5 py-1 rounded text-[10px] text-white font-medium truncate shadow-xs transition-colors cursor-pointer ${chipBg}`}
+                        className={`px-1.5 py-1 rounded text-[11px] text-white font-medium truncate shadow-xs transition-colors cursor-pointer ${chipBg}`}
                         title={`${ev.time ? ev.time + ' - ' : ''}${ev.title}`}
                       >
                         <div className="flex items-center gap-1 min-w-0">
                           <span className="w-1.5 h-1.5 rounded-full bg-white/90 shrink-0" />
-                          <span className="font-semibold text-[9px] text-white/85 shrink-0 font-mono">
+                          <span className="font-semibold text-[11px] text-white/85 shrink-0 font-mono">
                             {ev.time ? ev.time.split(' ')[0] : ''}
                           </span>
                           <span className="truncate">{ev.title}</span>

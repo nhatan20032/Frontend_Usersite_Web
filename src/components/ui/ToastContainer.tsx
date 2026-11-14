@@ -44,7 +44,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
 
   return (
     <div
-      className={`pointer-events-auto bg-[#1E1F22] border border-[#2B2D31] text-[#E3E2E3] p-3.5 rounded-xl shadow-2xl flex items-start gap-3 transition-all ${
+      className={`pointer-events-auto bg-[#1E1F22] border border-[#2B2D31] text-[var(--text-primary)] p-3.5 rounded-xl shadow-2xl flex items-start gap-3 transition-all ${
         isExiting ? 'toast-exit' : 'toast-enter'
       }`}
     >
@@ -52,13 +52,13 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
         {icon}
       </div>
       <div className="flex-1 min-w-0 text-xs">
-        <div className="font-medium text-[#E3E2E3] truncate">{toast.title}</div>
+        <div className="font-medium text-[var(--text-primary)] truncate">{toast.title}</div>
         <div className="text-[#909094] text-[11px] leading-relaxed mt-0.5 break-words">{toast.message}</div>
       </div>
       <button
         onClick={handleDismiss}
         aria-label="Close notification"
-        className="text-[#909094] hover:text-[#E3E2E3] p-1 rounded-md hover:bg-white/5 transition-colors shrink-0"
+        className="text-[#909094] hover:text-[var(--text-primary)] p-1 rounded-md hover:bg-white/5 transition-colors shrink-0"
       >
         <X className="w-3.5 h-3.5" />
       </button>

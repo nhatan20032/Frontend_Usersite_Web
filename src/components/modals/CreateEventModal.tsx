@@ -141,8 +141,8 @@ function CustomDropdown<T extends string | number>({
         ref={buttonRef}
         type="button"
         onClick={handleToggle}
-        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1E1F20] border border-[#333538] text-[#E3E2E3] text-xs hover:bg-[#28292A] hover:border-[#4B4D50] focus:outline-none focus:border-[#8AB4F8] transition-colors cursor-pointer select-none ${
-          isOpen ? 'bg-[#28292A] border-[#8AB4F8]' : ''
+        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs hover:bg-[var(--surface-container-high)] hover:border-[#4B4D50] focus:outline-none focus:border-[var(--google-blue)] transition-colors cursor-pointer select-none ${
+          isOpen ? 'bg-[var(--surface-container-high)] border-[var(--google-blue)]' : ''
         } ${isMono ? 'font-mono' : ''} ${buttonClassName}`}
       >
         {prefixIcon && <span className="shrink-0">{prefixIcon}</span>}
@@ -154,8 +154,8 @@ function CustomDropdown<T extends string | number>({
         )}
         <span className="truncate">{selectedOption?.label ?? value}</span>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-[#9AA0A6] shrink-0 transition-transform duration-200 ${
-            isOpen ? 'rotate-180 text-[#8AB4F8]' : ''
+          className={`w-3.5 h-3.5 text-[var(--text-secondary)] shrink-0 transition-transform duration-200 ${
+            isOpen ? 'rotate-180 text-[var(--google-blue)]' : ''
           }`}
         />
       </button>
@@ -164,7 +164,7 @@ function CustomDropdown<T extends string | number>({
         <div
           className={`absolute ${dropUp ? 'bottom-full mb-1.5 origin-bottom-left' : 'top-full mt-1.5 origin-top-left'} ${
             align === 'right' ? 'right-0' : 'left-0'
-          } min-w-full w-max max-h-56 overflow-y-auto custom-scrollbar bg-[#242527] border border-[#333538] rounded-xl shadow-2xl shadow-black/80 p-1 z-50 space-y-0.5 animate-in fade-in zoom-in-95 duration-150 ${menuClassName}`}
+          } min-w-full w-max max-h-56 overflow-y-auto custom-scrollbar bg-[#242527] border border-[var(--border-subtle)] rounded-xl shadow-2xl shadow-black/80 p-1 z-50 space-y-0.5 animate-in fade-in zoom-in-95 duration-150 ${menuClassName}`}
         >
           {options.map((opt) => {
             const isSelected = opt.value === value;
@@ -178,8 +178,8 @@ function CustomDropdown<T extends string | number>({
                 }}
                 className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 rounded-lg cursor-pointer select-none ${
                   isSelected
-                    ? 'bg-[#1A73E8] text-white font-medium'
-                    : 'text-[#E3E2E3] hover:bg-[#3C4043]'
+                    ? 'bg-[var(--google-blue-primary)] text-white font-medium'
+                    : 'text-[var(--text-primary)] hover:bg-[#3C4043]'
                 }`}
               >
                 {opt.icon && <span className="shrink-0">{opt.icon}</span>}
@@ -232,9 +232,7 @@ export const CreateEventModal: React.FC = () => {
   const [location, setLocation] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [guestEmail, setGuestEmail] = useState<string>('');
-  const [guests, setGuests] = useState<string[]>([
-    'an.nguyen@routinepulse.com (Tổ chức)',
-  ]);
+  const [guests, setGuests] = useState<string[]>([]);
   const [selectedColor, setSelectedColor] = useState<string>('#8AB4F8');
   const [selectedCategory, setSelectedCategory] = useState<string>('event');
   const [status, setStatus] = useState<'busy' | 'free'>('busy');
@@ -321,7 +319,7 @@ export const CreateEventModal: React.FC = () => {
       setLocation('');
       setDescription('');
       setGuestEmail('');
-      setGuests(['an.nguyen@routinepulse.com (Tổ chức)']);
+      setGuests([]);
       setSelectedColor('#8AB4F8');
       setSelectedCategory(activeTab === 'task' ? 'task' : 'event');
       setStatus('busy');
@@ -330,8 +328,6 @@ export const CreateEventModal: React.FC = () => {
       setNewSubtaskInput('');
     }
   }, [activeModal, activeEditItem, eventsData, tasksData]);
-
-  console.log("RENDER CreateEventModal:", { activeModal, activeEditItem, title, errorMsg });
 
   if (activeModal !== 'create' && activeModal !== 'edit') return null;
 
@@ -385,19 +381,16 @@ export const CreateEventModal: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
     if (activeTab === 'task') {
-      let reminderText = 'Push App';
-      if (reminder === '15m') reminderText = 'Push App • 15m';
-      else if (reminder === '30m') reminderText = 'Push App • SMS';
-      else if (reminder === '60m') reminderText = 'Push App • SMS • Email';
+      const reminderText = reminder === 'none' ? undefined : reminder;
 
       const taskData = {
         title: title.trim(),
-        dueDate: `${selectedDay} ${monthNames[selectedMonth]}, ${dueTime}`,
+        dueDate: new Date(selectedYear, selectedMonth, selectedDay, Number(dueTime.split(':')[0]), Number(dueTime.split(':')[1].slice(0, 2))).toISOString(),
         priority,
         reminders: reminderText,
         subtasks: subtaskList.map((st, idx) => ({ id: idx + 1, title: st, completed: false })),
@@ -406,9 +399,9 @@ export const CreateEventModal: React.FC = () => {
       };
 
       if (activeModal === 'edit' && activeEditItem) {
-        updateTask(activeEditItem.id, taskData);
+        if (!await updateTask(activeEditItem.id, taskData)) return;
       } else {
-        addTask(taskData);
+        if (!await addTask(taskData)) return;
       }
 
       showToast(
@@ -447,18 +440,19 @@ export const CreateEventModal: React.FC = () => {
       streak: 1,
       completed: false,
       location: location.trim() || undefined,
-      travelTime: location.trim() ? '20 phút' : undefined,
+
       alertTime: reminder === '30m' ? 'Trước 30 phút' : 'Trước 15 phút',
       frequency: freqText,
       description: description.trim() || undefined,
       attendees: guests,
+      reminderMinutesBefore: reminder === 'none' ? undefined : parseInt(reminder),
       colorTag: selectedColor,
       categoryId: selectedCategory || 'event',
       status,
     };
 
     if (activeModal === 'edit' && activeEditItem) {
-      updateEvent(activeEditItem.id, eventData);
+      if (!await updateEvent(activeEditItem.id, eventData)) return;
       showToast(
         language === 'vi' ? 'Đã lưu thay đổi' : 'Changes saved',
         language === 'vi' ? `Đã cập nhật "${title}"` : `Updated "${title}"`,
@@ -466,7 +460,7 @@ export const CreateEventModal: React.FC = () => {
       );
       closeModal();
     } else {
-      const success = addEvent(eventData);
+      const success = await addEvent(eventData);
       if (success) {
         showToast(
           language === 'vi' ? 'Đã lưu lịch trình' : 'Event saved',
@@ -486,10 +480,10 @@ export const CreateEventModal: React.FC = () => {
       {/* Center Stage Floating Popover Modal (Ảnh 2 & Ảnh 4) */}
       <div className="relative w-full max-w-[540px] bg-[#242628] border border-[#3C4043] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-10">
         {/* Top Drag/Header Bar */}
-        <div className="flex items-center justify-between px-5 pt-3 pb-2.5 border-b border-[#333538] bg-[#1E1F20]/70">
-          <div className="flex items-center gap-2 text-[#9AA0A6]">
-            <CalendarIcon className="w-4 h-4 text-[#8AB4F8]" />
-            <span className="text-[11px] uppercase tracking-wider font-semibold text-[#9AA0A6]">
+        <div className="flex items-center justify-between px-5 pt-3 pb-2.5 border-b border-[var(--border-subtle)] bg-[var(--surface-container)]/70">
+          <div className="flex items-center gap-2 text-[var(--text-secondary)]">
+            <CalendarIcon className="w-4 h-4 text-[var(--google-blue)]" />
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-secondary)]">
               {activeModal === 'edit'
                 ? (language === 'vi' ? 'Chỉnh sửa chi tiết' : 'Edit details')
                 : (language === 'vi' ? 'Tạo sự kiện & công việc mới' : 'Create event or task')}
@@ -497,7 +491,7 @@ export const CreateEventModal: React.FC = () => {
           </div>
           <button
             onClick={closeModal}
-            className="w-7 h-7 rounded-full flex items-center justify-center text-[#9AA0A6] hover:bg-[#333538] hover:text-[#E3E2E3] transition-colors cursor-pointer"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             title={language === 'vi' ? 'Đóng' : 'Close'}
           >
             <X className="w-4 h-4" />
@@ -521,7 +515,7 @@ export const CreateEventModal: React.FC = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={language === 'vi' ? 'Thêm tiêu đề' : 'Add title'}
-                className="w-full bg-transparent border-0 border-b-2 border-[#8AB4F8]/80 pb-2 text-xl font-medium text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-[#8AB4F8] transition-colors"
+                className="w-full bg-transparent border-0 border-b-2 border-[var(--google-blue)]/80 pb-2 text-xl font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)] transition-colors"
               />
             </div>
 
@@ -532,8 +526,8 @@ export const CreateEventModal: React.FC = () => {
                 onClick={() => handleTabChange('event')}
                 className={`px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                   activeTab === 'event'
-                    ? 'bg-[#1A73E8] text-white shadow-sm'
-                    : 'text-[#9AA0A6] hover:bg-[#303336] hover:text-[#E3E2E3]'
+                    ? 'bg-[var(--google-blue-primary)] text-white shadow-sm'
+                    : 'text-[var(--text-secondary)] hover:bg-[#303336] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <CalendarIcon className="w-3.5 h-3.5" />
@@ -545,8 +539,8 @@ export const CreateEventModal: React.FC = () => {
                 onClick={() => handleTabChange('task')}
                 className={`px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                   activeTab === 'task'
-                    ? 'bg-[#1A73E8] text-white shadow-sm'
-                    : 'text-[#9AA0A6] hover:bg-[#303336] hover:text-[#E3E2E3]'
+                    ? 'bg-[var(--google-blue-primary)] text-white shadow-sm'
+                    : 'text-[var(--text-secondary)] hover:bg-[#303336] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -556,30 +550,30 @@ export const CreateEventModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleTabChange('appointment')}
-                className="px-3.5 py-1.5 rounded-full text-xs font-medium text-[#9AA0A6] hover:bg-[#303336] hover:text-[#E3E2E3] transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--text-secondary)] hover:bg-[#303336] hover:text-[var(--text-primary)] transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <CalendarPlus className="w-3.5 h-3.5 text-[#FDD663]" />
                 <span>{language === 'vi' ? 'Lên lịch hẹn' : 'Appointment'}</span>
-                <span className="px-1.5 py-0.5 rounded bg-[#01552C] text-[#8ED7A1] text-[9px] font-bold">
+                <span className="px-1.5 py-0.5 rounded bg-[#01552C] text-[#8ED7A1] text-[11px] font-bold">
                   {language === 'vi' ? 'MỚI' : 'NEW'}
                 </span>
               </button>
             </div>
 
             {/* 3. Detailed Fields with Google-Style Icons */}
-            <div className="space-y-4 pt-1 text-xs text-[#E3E2E3]">
+            <div className="space-y-4 pt-1 text-xs text-[var(--text-primary)]">
               {/* Row 1: Date & Time (Context-aware) */}
               <div className="flex items-start gap-3.5">
-                <Clock className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
+                <Clock className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-3 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] font-medium text-[#E3E2E3]">
+                    <span className="px-3 py-1.5 rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] font-medium text-[var(--text-primary)]">
                       {weekdayName}, {selectedDay} {monthNames[selectedMonth]}
                     </span>
 
                     {activeTab === 'task' ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-[#9AA0A6]">{language === 'vi' ? 'Hạn chót:' : 'Due:'}</span>
+                        <span className="text-[var(--text-secondary)]">{language === 'vi' ? 'Hạn chót:' : 'Due:'}</span>
                         <CustomDropdown
                           value={dueTime}
                           onChange={setDueTime}
@@ -590,14 +584,14 @@ export const CreateEventModal: React.FC = () => {
                       </div>
                     ) : (
                       <>
-                        <span className="text-[#9AA0A6]">•</span>
+                        <span className="text-[var(--text-secondary)]">•</span>
                         <CustomDropdown
                           value={startTime}
                           onChange={setStartTime}
                           options={timeOptions}
                           buttonClassName="py-1.5 px-2.5"
                         />
-                        <span className="text-[#9AA0A6]">–</span>
+                        <span className="text-[var(--text-secondary)]">–</span>
                         <CustomDropdown
                           value={endTime}
                           onChange={setEndTime}
@@ -609,7 +603,7 @@ export const CreateEventModal: React.FC = () => {
                   </div>
 
                   {activeTab === 'event' && (
-                    <div className="flex items-center gap-3 text-[11px] text-[#9AA0A6]">
+                    <div className="flex items-center gap-3 text-[11px] text-[var(--text-secondary)]">
                       <span>GMT+7 Giờ Đông Dương</span>
                       <span>•</span>
                       <CustomDropdown
@@ -621,7 +615,7 @@ export const CreateEventModal: React.FC = () => {
                           { value: 'weekly', label: language === 'vi' ? 'Hàng tuần' : 'Weekly' },
                           { value: 'monthly', label: language === 'vi' ? 'Hàng tháng' : 'Monthly' },
                         ]}
-                        buttonClassName="bg-transparent border-transparent hover:border-[#333538] text-[#8AB4F8] hover:text-[#A8C7FA] py-0.5 px-1.5"
+                        buttonClassName="bg-transparent border-transparent hover:border-[var(--border-subtle)] text-[var(--google-blue)] hover:text-[#A8C7FA] py-0.5 px-1.5"
                       />
                     </div>
                   )}
@@ -631,7 +625,7 @@ export const CreateEventModal: React.FC = () => {
               {/* Row 2: Add Guests (Chỉ dành cho Sự kiện) */}
               {activeTab === 'event' && (
                 <div className="flex items-start gap-3.5">
-                  <Users className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
+                  <Users className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
                   <div className="flex-1 space-y-2">
                     <input
                       type="text"
@@ -639,15 +633,15 @@ export const CreateEventModal: React.FC = () => {
                       onChange={(e) => setGuestEmail(e.target.value)}
                       onKeyDown={handleAddGuest}
                       placeholder={language === 'vi' ? 'Thêm khách (nhập email rồi nhấn Enter)...' : 'Add guests (press Enter)...'}
-                      className="w-full bg-[#1E1F20] border border-[#333538] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-[#8AB4F8]"
+                      className="w-full bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)]"
                     />
                     <div className="flex flex-wrap gap-1.5">
                       {guests.map((guest, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1E1F20] border border-[#333538] text-[11px] text-[#E3E2E3]"
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--surface-container)] border border-[var(--border-subtle)] text-[11px] text-[var(--text-primary)]"
                         >
-                          <div className="w-4 h-4 rounded-full bg-[#8AB4F8] text-[#121314] text-[9px] font-bold flex items-center justify-center">
+                          <div className="w-4 h-4 rounded-full bg-[var(--google-blue)] text-[var(--surface-canvas)] text-[11px] font-bold flex items-center justify-center">
                             {guest.charAt(0).toUpperCase()}
                           </div>
                           <span className="truncate max-w-[200px]">{guest}</span>
@@ -655,7 +649,7 @@ export const CreateEventModal: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleRemoveGuest(idx)}
-                              className="text-[#9AA0A6] hover:text-[#E3E2E3] cursor-pointer"
+                              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -670,14 +664,14 @@ export const CreateEventModal: React.FC = () => {
               {/* Row 3: Location (Chỉ dành cho Sự kiện) */}
               {activeTab === 'event' && (
                 <div className="flex items-center gap-3.5">
-                  <MapPin className="w-5 h-5 text-[#9AA0A6] shrink-0" />
+                  <MapPin className="w-5 h-5 text-[var(--text-secondary)] shrink-0" />
                   <div className="flex-1">
                     <input
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder={language === 'vi' ? 'Thêm vị trí hoặc phòng họp...' : 'Add location...'}
-                      className="w-full bg-[#1E1F20] border border-[#333538] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none focus:border-[#8AB4F8]"
+                      className="w-full bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)]"
                     />
                   </div>
                 </div>
@@ -686,14 +680,14 @@ export const CreateEventModal: React.FC = () => {
               {/* Row 4: Subtasks Checklist (Dành riêng cho Việc cần làm) */}
               {activeTab === 'task' && (
                 <div className="flex items-start gap-3.5 pt-1">
-                  <List className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
+                  <List className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-semibold text-[#9AA0A6]">
+                      <span className="font-semibold text-[var(--text-secondary)]">
                         {language === 'vi' ? 'Danh sách việc con (Checklist)' : 'Subtasks / Checklist'}
                       </span>
                       {subtaskList.length > 0 && (
-                        <span className="text-[#8AB4F8] font-mono font-medium">
+                        <span className="text-[var(--google-blue)] font-mono font-medium">
                           {subtaskList.length} {language === 'vi' ? 'việc' : 'items'}
                         </span>
                       )}
@@ -705,16 +699,16 @@ export const CreateEventModal: React.FC = () => {
                         {subtaskList.map((st, idx) => (
                           <div
                             key={idx}
-                            className="group flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-[#1E1F20] border border-[#333538] hover:border-[#3C4043] transition-colors"
+                            className="group flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] hover:border-[#3C4043] transition-colors"
                           >
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#8AB4F8] shrink-0" />
-                              <span className="text-xs text-[#E3E2E3] truncate">{st}</span>
+                              <span className="w-1.5 h-1.5 rounded-full bg-[var(--google-blue)] shrink-0" />
+                              <span className="text-xs text-[var(--text-primary)] truncate">{st}</span>
                             </div>
                             <button
                               type="button"
                               onClick={() => handleRemoveSubtask(idx)}
-                              className="text-[#70757A] hover:text-[#F28B82] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-0.5"
+                              className="text-[var(--text-muted)] hover:text-[#F28B82] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-0.5"
                               title={language === 'vi' ? 'Xóa việc con' : 'Delete subtask'}
                             >
                               <X className="w-3.5 h-3.5" />
@@ -732,7 +726,7 @@ export const CreateEventModal: React.FC = () => {
                         onChange={(e) => setNewSubtaskInput(e.target.value)}
                         onKeyDown={handleAddSubtask}
                         placeholder={language === 'vi' ? '+ Thêm việc con rồi nhấn Enter...' : '+ Add subtask item and press Enter...'}
-                        className="flex-1 bg-[#1E1F20] border border-[#333538] focus:border-[#8AB4F8] rounded-lg px-3 py-1.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none transition-colors"
+                        className="flex-1 bg-[var(--surface-container)] border border-[var(--border-subtle)] focus:border-[var(--google-blue)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none transition-colors"
                       />
                       <button
                         type="button"
@@ -742,7 +736,7 @@ export const CreateEventModal: React.FC = () => {
                             setNewSubtaskInput('');
                           }
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-[#28292A] hover:bg-[#333538] text-[#9AA0A6] hover:text-[#E3E2E3] text-xs font-medium border border-[#333538] transition-colors cursor-pointer shrink-0"
+                        className="px-3 py-1.5 rounded-lg bg-[var(--surface-container-high)] hover:bg-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium border border-[var(--border-subtle)] transition-colors cursor-pointer shrink-0"
                       >
                         {language === 'vi' ? 'Thêm' : 'Add'}
                       </button>
@@ -753,29 +747,29 @@ export const CreateEventModal: React.FC = () => {
 
               {/* Row 5: Description & Mini Toolbar (Ngữ cảnh hóa) */}
               <div className="flex items-start gap-3.5">
-                <AlignLeft className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
-                <div className="flex-1 border border-[#333538] rounded-lg bg-[#1E1F20] overflow-hidden">
+                <AlignLeft className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
+                <div className="flex-1 border border-[var(--border-subtle)] rounded-lg bg-[var(--surface-container)] overflow-hidden">
                   {activeTab === 'event' ? (
                     <>
                       {/* Mini Toolbar chỉ dành cho Sự kiện */}
-                      <div className="flex items-center gap-1 px-2.5 py-1 bg-[#28292A] border-b border-[#333538] text-[#9AA0A6]">
-                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Đậm">
+                      <div className="flex items-center gap-1 px-2.5 py-1 bg-[var(--surface-container-high)] border-b border-[var(--border-subtle)] text-[var(--text-secondary)]">
+                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Đậm">
                           <Bold className="w-3.5 h-3.5" />
                         </button>
-                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Nghiêng">
+                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Nghiêng">
                           <Italic className="w-3.5 h-3.5" />
                         </button>
-                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Gạch chân">
+                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Gạch chân">
                           <Underline className="w-3.5 h-3.5" />
                         </button>
                         <span className="w-[1px] h-3.5 bg-[#3C4043] mx-1" />
-                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Danh sách">
+                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Danh sách">
                           <List className="w-3.5 h-3.5" />
                         </button>
-                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Liên kết">
+                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Liên kết">
                           <Link className="w-3.5 h-3.5" />
                         </button>
-                        <button type="button" className="p-1 rounded hover:bg-[#333538] hover:text-[#E3E2E3] cursor-pointer" title="Đính kèm">
+                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Đính kèm">
                           <Paperclip className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -784,7 +778,7 @@ export const CreateEventModal: React.FC = () => {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder={language === 'vi' ? 'Thêm mô tả hoặc tài liệu đính kèm cho cuộc họp...' : 'Add description or attachments...'}
-                        className="w-full bg-transparent border-0 p-2.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none resize-none"
+                        className="w-full bg-transparent border-0 p-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none resize-none"
                       />
                     </>
                   ) : (
@@ -793,7 +787,7 @@ export const CreateEventModal: React.FC = () => {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder={language === 'vi' ? 'Thêm ghi chú ngắn cho công việc...' : 'Add quick notes...'}
-                      className="w-full bg-transparent border-0 p-2.5 text-xs text-[#E3E2E3] placeholder-[#70757A] focus:outline-none resize-none"
+                      className="w-full bg-transparent border-0 p-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none resize-none"
                     />
                   )}
                 </div>
@@ -801,12 +795,12 @@ export const CreateEventModal: React.FC = () => {
 
               {/* Row 6: Category Selector & Color Swatches & Native Color Picker */}
               <div className="flex items-start gap-3.5">
-                <Palette className="w-5 h-5 text-[#9AA0A6] mt-1 shrink-0" />
+                <Palette className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="flex flex-wrap items-center justify-between gap-2.5">
                     {/* Category Selector */}
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Danh mục / Tag:' : 'Category:'}</span>
+                      <span className="text-[11px] text-[var(--text-secondary)]">{language === 'vi' ? 'Danh mục / Tag:' : 'Category:'}</span>
                       <CustomDropdown
                         value={selectedCategory}
                         onChange={(catId) => {
@@ -832,7 +826,7 @@ export const CreateEventModal: React.FC = () => {
 
                     {/* Color Swatches & Native Color Picker */}
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-[#9AA0A6]">{language === 'vi' ? 'Màu:' : 'Color:'}</span>
+                      <span className="text-[11px] text-[var(--text-secondary)]">{language === 'vi' ? 'Màu:' : 'Color:'}</span>
                       <div className="flex items-center gap-1.5">
                         {colorPalette.map((cp) => (
                           <div
@@ -849,7 +843,7 @@ export const CreateEventModal: React.FC = () => {
                         ))}
                         {/* Native Color Picker for custom color picking */}
                         <label
-                          className="w-4.5 h-4.5 rounded-full border border-dashed border-[#5F6368] flex items-center justify-center cursor-pointer hover:border-[#8AB4F8] transition-colors relative overflow-hidden"
+                          className="w-4.5 h-4.5 rounded-full border border-dashed border-[#5F6368] flex items-center justify-center cursor-pointer hover:border-[var(--google-blue)] transition-colors relative overflow-hidden"
                           title={language === 'vi' ? 'Tự chọn màu khác từ Color Picker' : 'Custom color from Color Picker'}
                         >
                           <input
@@ -874,7 +868,7 @@ export const CreateEventModal: React.FC = () => {
                         { value: 'medium', label: language === 'vi' ? 'Ưu tiên TB' : 'Medium' },
                         { value: 'low', label: language === 'vi' ? 'Ưu tiên thấp' : 'Low' },
                       ]}
-                      buttonClassName="px-2 py-1 text-[11px] text-[#9AA0A6] hover:text-[#E3E2E3]"
+                      buttonClassName="px-2 py-1 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                     />
 
                     {activeTab === 'event' && (
@@ -885,7 +879,7 @@ export const CreateEventModal: React.FC = () => {
                           { value: 'busy', label: language === 'vi' ? 'Bận' : 'Busy' },
                           { value: 'free', label: language === 'vi' ? 'Rảnh' : 'Free' },
                         ]}
-                        buttonClassName="px-2 py-1 text-[11px] text-[#9AA0A6] hover:text-[#E3E2E3]"
+                        buttonClassName="px-2 py-1 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                       />
                     )}
 
@@ -898,8 +892,8 @@ export const CreateEventModal: React.FC = () => {
                         { value: '60m', label: language === 'vi' ? '1 giờ trước' : '1 hour before' },
                         { value: '1d', label: language === 'vi' ? '1 ngày trước' : '1 day before' },
                       ]}
-                      prefixIcon={<Bell className="w-3 h-3 text-[#8AB4F8]" />}
-                      buttonClassName="px-2 py-1 text-[11px] text-[#9AA0A6] hover:text-[#E3E2E3]"
+                      prefixIcon={<Bell className="w-3 h-3 text-[var(--google-blue)]" />}
+                      buttonClassName="px-2 py-1 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
@@ -908,9 +902,9 @@ export const CreateEventModal: React.FC = () => {
           </div>
 
           {/* Modal Footer Actions */}
-          <div className="flex items-center justify-between px-6 py-3.5 bg-[#1E1F20]/90 border-t border-[#333538]">
+          <div className="flex items-center justify-between px-6 py-3.5 bg-[var(--surface-container)]/90 border-t border-[var(--border-subtle)]">
             {/* Left: Context Info Hint */}
-            <span className="text-[11px] text-[#70757A]">
+            <span className="text-[11px] text-[var(--text-muted)]">
               {activeTab === 'task'
                 ? (language === 'vi' ? 'Được đồng bộ vào bảng Tasks bên phải' : 'Syncs to Tasks companion panel')
                 : (language === 'vi' ? 'Thời gian GMT+7 Đông Dương' : 'Indochina Time GMT+7')}
@@ -921,13 +915,13 @@ export const CreateEventModal: React.FC = () => {
               <button
                 type="button"
                 onClick={closeModal}
-                className="px-4 py-2 rounded-full text-xs font-medium text-[#E3E2E3] hover:bg-[#333538] transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--border-subtle)] transition-colors cursor-pointer"
               >
                 {language === 'vi' ? 'Hủy' : 'Cancel'}
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 rounded-full bg-[#1A73E8] hover:bg-[#1557B0] text-white text-xs font-semibold shadow-md transition-all cursor-pointer"
+                className="px-6 py-2 rounded-full bg-[var(--google-blue-primary)] hover:bg-[#1557B0] text-white text-xs font-semibold shadow-md transition-all cursor-pointer"
               >
                 {activeModal === 'edit'
                   ? (language === 'vi' ? 'Lưu thay đổi' : 'Save changes')

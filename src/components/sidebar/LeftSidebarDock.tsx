@@ -10,10 +10,10 @@ export const LeftSidebarDock: React.FC = () => {
   if (isLeftSidebarOpen) return null;
 
   return (
-    <div className="w-12 flex-shrink-0 h-full border-r border-[#2A2B2D] bg-[#121314] flex flex-col items-center justify-start py-3 px-1 z-20 select-none">
+    <div className="w-12 flex-shrink-0 h-full border-r border-[var(--border-grid)] bg-[var(--surface-canvas)] flex flex-col items-center justify-start py-3 px-1 z-20 select-none">
       <button
         onClick={toggleLeftSidebar}
-        className="w-10 h-10 rounded-full hover:bg-[#28292A] text-[#9AA0A6] hover:text-[#E3E2E3] flex items-center justify-center transition-colors cursor-pointer"
+        className="w-10 h-10 rounded-full hover:bg-[var(--surface-container-high)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center justify-center transition-colors cursor-pointer"
         title={t('sidebar.expandLeft') || 'Mở rộng'}
       >
         <PanelLeftOpen className="w-5 h-5" />

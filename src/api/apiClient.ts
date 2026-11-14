@@ -4,12 +4,14 @@ export class ApiError extends Error {
   status: number;
   data: any;
   isUpgradeRequired: boolean;
+  isGuest: boolean;
 
   constructor(status: number, message: string, data?: any) {
     super(message);
     this.status = status;
     this.data = data;
-    this.isUpgradeRequired = status === 403 || data?.errorCode === 'UPGRADE_REQUIRED';
+    this.isUpgradeRequired = data?.errorCode === 'UPGRADE_REQUIRED';
+    this.isGuest = Boolean(data?.isGuest);
   }
 }
 
@@ -25,9 +27,65 @@ export const setAuthToken = (token: string | null) => {
   }
 };
 
+export const getRefreshToken = (): string | null => {
+  return localStorage.getItem('refresh_token');
+};
+
+export const setRefreshToken = (token: string | null) => {
+  if (token) {
+    localStorage.setItem('refresh_token', token);
+  } else {
+    localStorage.removeItem('refresh_token');
+  }
+};
+
+const isPublicEndpoint = (endpoint: string): boolean => {
+  const ep = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return (
+    ep.startsWith('/user/auth/login') ||
+    ep.startsWith('/user/auth/register') ||
+    ep.startsWith('/user/auth/forgot-password') ||
+    ep.startsWith('/user/auth/reset-password') ||
+    ep.startsWith('/user/auth/refresh-token') ||
+    ep.startsWith('/payments/webhook') ||
+    ep.startsWith('/user/subscriptions/plans') ||
+    ep.startsWith('/user/routines/templates') ||
+    ep.startsWith('/user/appointments/public/') ||
+    ep.startsWith('/pricing')
+  );
+};
+
+let refreshInFlight: Promise<string> | null = null;
+const refreshAccessToken = (): Promise<string> => {
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) throw new ApiError(401, 'Phiên đăng nhập đã hết hạn');
+      const response = await fetch(`${API_BASE_URL}/user/auth/refresh-token`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken }),
+      });
+      if (!response.ok) {
+        if (response.status === 401) { setAuthToken(null); setRefreshToken(null); }
+        throw new ApiError(response.status, 'Không thể làm mới phiên đăng nhập');
+      }
+      const data = await response.json();
+      if (!data.token) throw new ApiError(401, 'Thiếu access token');
+      setAuthToken(data.token); if (data.refreshToken) setRefreshToken(data.refreshToken);
+      return data.token;
+    })().finally(() => { refreshInFlight = null; });
+  }
+  return refreshInFlight;
+};
+
 export const apiClient = {
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = getAuthToken();
+
+    // Guard: Prevent unauthenticated guest requests from triggering 401 network errors
+    if (!isPublicEndpoint(endpoint) && !token) {
+      throw new ApiError(401, 'Chưa đăng nhập (Guest Mode)', { isGuest: true });
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
@@ -40,10 +98,15 @@ export const apiClient = {
     const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
     try {
-      const response = await fetch(url, {
+      let response = await fetch(url, {
         ...options,
         headers,
       });
+
+      if (response.status === 401 && !endpoint.includes('/auth/')) {
+        headers.Authorization = `Bearer ${await refreshAccessToken()}`;
+        response = await fetch(url, { ...options, headers });
+      }
 
       if (!response.ok) {
         let errorData: any = {};
@@ -53,7 +116,7 @@ export const apiClient = {
           errorData = { message: response.statusText };
         }
 
-        if (response.status === 403 || errorData?.errorCode === 'UPGRADE_REQUIRED') {
+        if (errorData?.errorCode === 'UPGRADE_REQUIRED') {
           // Dispatch custom event for UI to pop Upgrade Modal automatically
           window.dispatchEvent(new CustomEvent('app:upgrade-required', { detail: errorData }));
         }

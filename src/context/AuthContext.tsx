@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, SubscriptionTier, AccountRole } from '../types';
 import { authApi } from '../api/authApi';
-import { setAuthToken, getAuthToken } from '../api/apiClient';
+import { setAuthToken, getAuthToken, setRefreshToken } from '../api/apiClient';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -9,45 +9,18 @@ interface AuthContextType {
   subscriptionTier: SubscriptionTier;
   isPremium: boolean;
   isLoggedIn: boolean;
-  login: (userData?: Partial<User>) => void;
   loginWithApi: (email: string, password: string) => Promise<boolean>;
   registerWithApi: (email: string, password: string, fullName: string, phone?: string) => Promise<boolean>;
   logout: () => void;
-  setRole: (role: AccountRole) => void;
-  upgradeToTier: (tier: SubscriptionTier, planName?: string) => void;
-  updateProfile: (name: string, email: string, phone: string, birthday?: string) => void;
-  activateFreeTrial: () => void;
+  updateProfile: (name: string, email: string, phone: string, birthday?: string) => Promise<boolean>;
+  refreshProfile: () => Promise<void>;
   hasFeature: (featureCode: string) => boolean;
 }
-
-const defaultFreeUser: User = {
-  isLoggedIn: true,
-  name: 'Nguyễn Văn An',
-  email: 'an.nguyen@routinepulse.com',
-  phone: '0987 654 321',
-  birthday: '1998-05-18',
-  role: 'FREE_USER',
-  subscriptionTier: 'FREE',
-  isPremium: false,
-  planName: 'Gói Miễn Phí',
-  avatarInitial: 'AN',
-  features: ['BASIC_CALENDAR', 'DAILY_ROUTINE'],
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const sessionStr = localStorage.getItem('rp_user_session');
-    if (sessionStr) {
-      try {
-        return JSON.parse(sessionStr);
-      } catch {
-        return defaultFreeUser;
-      }
-    }
-    return defaultFreeUser;
-  });
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const subscriptionTier: SubscriptionTier = currentUser?.subscriptionTier || 'FREE';
   const isPremium = subscriptionTier === 'PRO' || subscriptionTier === 'VIP' || Boolean(currentUser?.isPremium);
@@ -64,6 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const nameParts = (resUser.fullName || 'User').trim().split(' ');
             const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
             const updated: User = {
+              phone: resUser.phone,
+              birthday: resUser.birthday,
               id: resUser.id,
               isLoggedIn: true,
               name: resUser.fullName,
@@ -80,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         })
         .catch(() => {
-          // Keep local session if backend unreachable
+          setCurrentUser(null);
         });
     }
   }, []);
@@ -97,6 +72,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await authApi.login({ email, password });
       setAuthToken(res.token);
+      if (res.refreshToken) {
+        setRefreshToken(res.refreshToken);
+      }
       const nameParts = res.user.fullName.trim().split(' ');
       const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
       const user: User = {
@@ -123,6 +101,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await authApi.register({ email, password, fullName, phone });
       setAuthToken(res.token);
+      if (res.refreshToken) {
+        setRefreshToken(res.refreshToken);
+      }
       const nameParts = res.user.fullName.trim().split(' ');
       const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
       const user: User = {
@@ -143,66 +124,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = (userData?: Partial<User>) => {
-    const user: User = {
-      ...defaultFreeUser,
-      ...userData,
-      isLoggedIn: true,
-    };
-    setCurrentUser(user);
-  };
-
   const logout = () => {
-    setAuthToken(null);
-    setCurrentUser(null);
+    const refresh = localStorage.getItem('refresh_token');
+    if (refresh) void authApi.logout(refresh).catch(() => {});
+    setAuthToken(null); setRefreshToken(null); setCurrentUser(null);
     localStorage.removeItem('rp_user_session');
   };
-
-  const setRole = (role: AccountRole) => {
-    if (currentUser) {
-      const isPrem = role === 'PREMIUM_USER';
-      setCurrentUser({
-        ...currentUser,
-        role,
-        isPremium: isPrem,
-        subscriptionTier: isPrem ? 'PRO' : 'FREE',
-      });
-    }
+  const updateProfile = async (name: string, _email: string, phone: string, birthday?: string) => {
+    try {
+      await authApi.updateProfile({ fullName: name, phone, birthday });
+      await refreshProfile(); return true;
+    } catch { return false; }
   };
-
-  const upgradeToTier = (tier: SubscriptionTier, planName: string = 'Gói Chuyên Nghiệp (Pro)') => {
-    if (currentUser) {
-      const isPrem = tier === 'PRO' || tier === 'VIP';
-      setCurrentUser({
-        ...currentUser,
-        subscriptionTier: tier,
-        isPremium: isPrem,
-        role: isPrem ? 'PREMIUM_USER' : 'FREE_USER',
-        planName,
-        features: isPrem
-          ? ['UNLIMITED_TASKS', 'ADVANCED_ROUTINES', 'AI_PLANNER', 'CUSTOM_THEMES', 'TRAVEL_ALERT']
-          : ['BASIC_CALENDAR', 'DAILY_ROUTINE'],
-      });
-    }
-  };
-
-  const updateProfile = (name: string, email: string, phone: string, birthday?: string) => {
-    if (currentUser) {
-      const nameParts = name.trim().split(' ');
-      const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
-      setCurrentUser({
-        ...currentUser,
-        name,
-        email,
-        phone,
-        birthday: birthday ?? currentUser.birthday,
-        avatarInitial,
-      });
-    }
-  };
-
-  const activateFreeTrial = () => {
-    upgradeToTier('PRO', 'Dùng thử 14 ngày Pro');
+  const refreshProfile = async () => {
+    const user = await authApi.getProfile();
+    setCurrentUser({ id: user.id, isLoggedIn: true, name: user.fullName, email: user.email,
+      phone: user.phone, birthday: user.birthday, role: user.isPremium ? 'PREMIUM_USER' : 'FREE_USER',
+      subscriptionTier: user.subscriptionTier, isPremium: user.isPremium, planName: user.planName,
+      planExpiresAt: user.planExpiresAt, features: user.features, avatarInitial: user.fullName.slice(0, 2).toUpperCase() });
   };
 
   const hasFeature = (featureCode: string): boolean => {
@@ -218,14 +157,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscriptionTier,
         isPremium,
         isLoggedIn,
-        login,
         loginWithApi,
         registerWithApi,
         logout,
-        setRole,
-        upgradeToTier,
         updateProfile,
-        activateFreeTrial,
+        refreshProfile,
         hasFeature,
       }}
     >

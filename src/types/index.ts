@@ -35,11 +35,13 @@ export type CalendarViewMode = 'month' | 'week' | 'agenda';
 export type Priority = 'high' | 'medium' | 'low';
 
 export interface CalendarEvent {
+  backendId?: string;
   id: number;
   type: 'routine' | 'event';
   title: string;
   time: string;
   endTime?: string;
+  reminderMinutesBefore?: number;
   priority: Priority;
   year: number;
   month: number; // 0-11
@@ -71,6 +73,7 @@ export interface CreateRoutineInput {
 }
 
 export interface SubTask {
+  backendId?: string;
   id: number;
   title: string;
   completed: boolean;
@@ -87,6 +90,8 @@ export interface CreateTaskInput {
 }
 
 export interface TaskItem {
+  backendId?: string;
+  description?: string;
   id: number;
   title: string;
   dueDate: string;

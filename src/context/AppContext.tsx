@@ -14,9 +14,18 @@ import type {
   Priority,
   RightSidebarTab,
   KeepNote,
+  NoteChecklistItem,
 } from '../types';
 import { useAuth } from './AuthContext';
 import { getVietnamHolidays } from '../utils/vietnamHolidays';
+import { eventApi } from '../api/eventApi';
+import { routineApi } from '../api/routineApi';
+import { taskApi } from '../api/taskApi';
+import { eventFromDto, eventPayload, routineFromDto, taskFromDto, priorityNumber } from '../api/calendarMapping';
+import { noteApi } from '../api/noteApi';
+import { categoryApi } from '../api/categoryApi';
+import { syncHubClient } from '../services/syncHubClient';
+import { getAuthToken } from '../api/apiClient';
 
 interface AppContextType {
   // Calendar & Events
@@ -30,15 +39,15 @@ interface AppContextType {
   searchQuery: string;
   activeEventId: number | null;
   activeEditItem: { id: number, type: 'task' | 'event' } | null;
-  addEvent: (event: Omit<CalendarEvent, 'id'>) => boolean;
-  updateEvent: (id: number, updated: Partial<CalendarEvent>) => void;
+  addEvent: (event: Omit<CalendarEvent, 'id'>) => Promise<boolean>;
+  updateEvent: (id: number, updated: Partial<CalendarEvent>) => Promise<boolean>;
   deleteEvent: (id: number, deleteAllSeries?: boolean) => void;
   activeRecurringEvent: CalendarEvent | null;
   recurringActionType: 'delete' | 'edit';
   openRecurringModal: (event: CalendarEvent, action?: 'delete' | 'edit') => void;
   closeRecurringModal: () => void;
   toggleCheckInRoutine: (id: number) => void;
-  addRoutine: (input: CreateRoutineInput) => void;
+  addRoutine: (input: CreateRoutineInput) => Promise<boolean>;
   addSubroutine: (routineId: number, title: string) => void;
   toggleSubroutine: (routineId: number, subroutineId: number) => void;
   deleteSubroutine: (routineId: number, subroutineId: number) => void;
@@ -54,11 +63,11 @@ interface AppContextType {
 
   // Tasks & Subtasks
   tasksData: TaskItem[];
-  addTask: (input: string | CreateTaskInput, priority?: Priority) => void;
+  addTask: (input: string | CreateTaskInput, priority?: Priority) => Promise<boolean>;
   addSubtask: (taskId: number, title: string) => void;
   deleteSubtask: (taskId: number, subtaskId: number) => void;
   deleteTask: (id: number) => void;
-  updateTask: (id: number, updated: Partial<TaskItem>) => void;
+  updateTask: (id: number, updated: Partial<TaskItem>) => Promise<boolean>;
   toggleTask: (id: number) => void;
   toggleSubtask: (taskId: number, subtaskId: number) => void;
 
@@ -73,8 +82,8 @@ interface AppContextType {
 
   // Keep Notes
   notesData: KeepNote[];
-  addNote: (note: Omit<KeepNote, 'id' | 'updatedAt'>) => void;
-  updateNote: (id: string, updated: Partial<Omit<KeepNote, 'id'>>) => void;
+  addNote: (note: Omit<KeepNote, 'id' | 'updatedAt'>) => Promise<boolean>;
+  updateNote: (id: string, updated: Partial<Omit<KeepNote, 'id'>>) => Promise<boolean>;
   toggleNotePin: (id: string) => void;
   deleteNote: (id: string) => void;
   toggleNoteChecklistItem: (noteId: string, itemId: string) => void;
@@ -101,279 +110,38 @@ interface AppContextType {
   removeToast: (id: string) => void;
 }
 
-const getInitialSampleEvents = (year: number, month: number, day: number): CalendarEvent[] => [
-  {
-    id: 1,
-    type: 'routine',
-    title: 'Chạy bộ 30 phút buổi sáng',
-    time: '06:30 AM',
-    priority: 'high',
-    streak: 14,
-    completed: false,
-    year,
-    month,
-    day,
-    frequency: 'Hàng ngày',
-    subroutines: [
-      { id: 1, title: 'Uống 300ml nước ấm sau khi ngủ dậy', completed: true },
-      { id: 2, title: 'Khởi động khớp gối & cổ chân 5 phút', completed: true },
-      { id: 3, title: 'Chạy 3.5km với nhịp pace 6:15', completed: false },
-    ],
-  },
-  {
-    id: 2,
-    type: 'event',
-    title: 'Hội thảo Công Nghệ & AI Summit',
-    time: '14:00 PM',
-    priority: 'high',
-    location: 'Trung tâm Hội nghị Quốc gia, Hà Nội',
-    travelTime: '25 phút',
-    alertTime: '13:35 PM',
-    year,
-    month,
-    day,
-  },
-  {
-    id: 3,
-    type: 'routine',
-    title: 'Đọc sách chuyên ngành 20 trang',
-    time: '22:00 PM',
-    priority: 'medium',
-    streak: 7,
-    completed: false,
-    year,
-    month,
-    day,
-    frequency: 'Hàng ngày',
-    subroutines: [
-      { id: 1, title: 'Chọn 1 chương mục tiêu trong sách', completed: true },
-      { id: 2, title: 'Đọc tập trung 25 phút Pomodoro', completed: false },
-      { id: 3, title: 'Note lại 3 ý tưởng cốt lõi vào Keep', completed: false },
-    ],
-  },
-  {
-    id: 4,
-    type: 'routine',
-    title: 'Tập Gym chu kỳ interval',
-    time: '07:30 AM',
-    priority: 'high',
-    streak: 45,
-    isPremium: true,
-    frequency: 'Cứ 3 ngày 1 lần',
-    year,
-    month,
-    day: Math.min(day + 1, 28),
-    subroutines: [
-      { id: 1, title: 'Khởi động khớp & làm nóng 5 phút', completed: true },
-      { id: 2, title: '4 set Squats (8-10 reps)', completed: false },
-      { id: 3, title: '3 set Bench Press (tạ đòn)', completed: false },
-      { id: 4, title: 'Căng cơ hạ nhiệt 5 phút', completed: false },
-    ],
-  },
-  {
-    id: 5,
-    type: 'event',
-    title: 'Báo cáo Tiến độ Đồ án với Giảng viên',
-    time: '09:30 AM',
-    priority: 'high',
-    location: 'Đại học Bách Khoa',
-    travelTime: '15 phút',
-    alertTime: '09:15 AM',
-    year,
-    month,
-    day: Math.min(day + 2, 28),
-  },
-  {
-    id: 6,
-    type: 'routine',
-    title: 'Học 20 từ vựng Tiếng Anh',
-    time: '21:00 PM',
-    priority: 'low',
-    streak: 19,
-    completed: true,
-    year,
-    month,
-    day,
-    frequency: 'Hàng ngày',
-    subroutines: [
-      { id: 1, title: 'Ôn lại từ cũ trên Flashcard', completed: true },
-      { id: 2, title: 'Học 20 từ mới theo chủ đề', completed: true },
-      { id: 3, title: 'Đặt 5 câu ví dụ thực tế', completed: true },
-    ],
-  },
-  {
-    id: 7,
-    type: 'event',
-    title: 'Sprint Planning & Khởi động Mục tiêu Tháng',
-    time: '09:00 AM',
-    priority: 'high',
-    colorTag: '#8AB4F8',
-    location: 'Phòng họp Tầng 4 / Trực tuyến',
-    year,
-    month,
-    day: 4,
-    description: 'Rà soát backlog, phân bổ task công việc và chốt KPI quý.',
-    attendees: ['hoang.tran@bachkhoa.edu.vn', 'trang.le@routinepulse.com'],
-  },
-  {
-    id: 8,
-    type: 'event',
-    title: 'Phỏng vấn Người dùng AlphaTech (Google Meet)',
-    time: '15:30 PM',
-    priority: 'medium',
-    colorTag: '#81C995',
-    year,
-    month,
-    day: 8,
-    hasMeet: true,
-    description: 'Khảo sát trải nghiệm tính năng Companion Dock và Mini Calendar.',
-    attendees: ['khoa.nd@alphatech.vn'],
-  },
-  {
-    id: 9,
-    type: 'event',
-    title: 'Khám sức khỏe tổng quát định kỳ',
-    time: '08:30 AM',
-    priority: 'medium',
-    location: 'Bệnh viện Đa khoa Quốc tế Vinmec',
-    travelTime: '30 phút',
-    alertTime: '08:00 AM',
-    year,
-    month,
-    day: 12,
-  },
-  {
-    id: 10,
-    type: 'event',
-    title: 'Review Tiến độ & Demo sản phẩm nội bộ',
-    time: '14:30 PM',
-    priority: 'high',
-    colorTag: '#FCAD70',
-    year,
-    month,
-    day: 16,
-    description: 'Chạy thử nghiệm bản release v2.4 trước toàn thể team.',
-    attendees: ['trang.le@routinepulse.com', 'yen.vu@creativestudio.com'],
-  },
-  {
-    id: 11,
-    type: 'event',
-    title: 'Họp 1:1 Định hướng Phát triển & Mentoring',
-    time: '10:00 AM',
-    priority: 'medium',
-    colorTag: '#8AB4F8',
-    year,
-    month,
-    day: 20,
-    attendees: ['hoang.tran@bachkhoa.edu.vn'],
-  },
-  {
-    id: 12,
-    type: 'event',
-    title: 'Team Building Dinner & Tổng kết Sprint',
-    time: '18:30 PM',
-    priority: 'low',
-    colorTag: '#FF8BCB',
-    location: 'Nhà hàng Sen Tây Hồ, Hà Nội',
-    travelTime: '20 phút',
-    year,
-    month,
-    day: 24,
-  },
-  {
-    id: 13,
-    type: 'event',
-    title: 'Chốt Sổ Báo Cáo & Đóng Milestone Cuối Tháng',
-    time: '17:00 PM',
-    priority: 'high',
-    colorTag: '#F28B82',
-    year,
-    month,
-    day: 27,
-    description: 'Xuất báo cáo năng suất 30 ngày và đối soát số liệu.',
-  },
-];
-
-const getInitialSampleTasks = (): TaskItem[] => [
-  {
-    id: 101,
-    title: 'Nộp báo cáo Đồ án tốt nghiệp',
-    dueDate: '17:00 PM',
-    priority: 'high',
-    completed: false,
-    reminders: 'Push App • SMS • Email',
-    subtasks: [
-      { id: 1, title: 'Khảo sát yêu cầu & đặc tả bài toán', completed: true },
-      { id: 2, title: 'Viết tài liệu mô tả chức năng', completed: true },
-      { id: 3, title: 'Hoàn thiện báo cáo PDF cuối cùng', completed: false },
-    ],
-  },
-  {
-    id: 102,
-    title: 'Chuẩn bị Keynote thuyết trình',
-    dueDate: '09:00 AM',
-    priority: 'medium',
-    completed: false,
-    reminders: 'Push App • Voice Call',
-    subtasks: [
-      { id: 1, title: 'Thiết kế slide 15 trang', completed: false },
-      { id: 2, title: 'Chạy thử demo tính năng trực tiếp', completed: false },
-    ],
-  },
-  {
-    id: 103,
-    title: 'Mua quà biếu gia đình',
-    dueDate: 'Hôm nay',
-    priority: 'low',
-    completed: true,
-    reminders: 'Push App',
-    subtasks: [],
-  },
-];
-
-const getInitialSampleNotes = (): KeepNote[] => [
-  {
-    id: 'note-1',
-    title: 'Kỷ luật & Thói quen cốt lõi',
-    content: 'Nguyên tắc bất di bất dịch:\n• Ngủ trước 23:00, không màn hình xanh sau 22:30\n• Review tiến độ qua checklist mỗi 17:30',
-    isPinned: true,
-    color: 'amber',
-    tags: ['KỷLuật', 'Mindset'],
-    checklist: [
-      { id: 'c1', text: 'Ngủ trước 23:00, không màn hình xanh sau 22:30', completed: true },
-      { id: 'c2', text: 'Review tiến độ qua checklist mỗi 17:30', completed: false },
-    ],
-    updatedAt: 'Hôm nay',
-  },
-  {
-    id: 'note-2',
-    title: 'Kế hoạch Release v2.4 RoutinePulse',
-    content: 'Tích hợp companion dock vào core-engine; benchmark latency mini calendar; sync local state.',
-    isPinned: false,
-    color: 'blue',
-    tags: ['DựÁnQ3'],
-    updatedAt: '10:30 Hôm nay',
-  },
-  {
-    id: 'note-3',
-    title: 'Trích dẫn: Atomic Habits',
-    content: '“Bạn không vươn lên tới tầm của mục tiêu; bạn tụt xuống mức độ của các hệ thống thói quen.”',
-    isPinned: false,
-    color: 'purple',
-    tags: ['Reading'],
-    updatedAt: 'Hôm qua',
-  },
-];
-
 const defaultCategories: CalendarCategory[] = [
   { id: 'routine', name: 'Thói quen hằng ngày', color: '#FDD663', isBuiltIn: true },
   { id: 'event', name: 'Sự kiện & Hội thảo', color: '#8AB4F8', isBuiltIn: true },
   { id: 'task', name: 'Nhiệm vụ & Deadline', color: '#81C995', isBuiltIn: true },
   { id: 'birthday', name: 'Sinh nhật cá nhân', color: '#FF7597', isBuiltIn: true },
-  { id: 'holiday', name: 'Ngày lễ tại Việt Nam', color: '#C58AF9', isBuiltIn: true },
+  { id: 'holiday', name: 'Ngày lễ theo khu vực', color: '#C58AF9', isBuiltIn: true },
 ];
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
+
+// Helpers to map between local KeepNote types and backend KeepNoteDto
+const mapDtoToKeepNote = (dto: any): KeepNote => ({
+  id: dto.id,
+  title: dto.title,
+  content: dto.content,
+  isPinned: dto.isPinned,
+  color: (['amber', 'blue', 'green', 'purple'].includes(dto.color) ? dto.color : 'blue') as KeepNote['color'],
+  tags: dto.tags,
+  checklist: dto.checklist?.map((c: any) => ({
+    id: c.id,
+    text: c.text,
+    completed: c.isCompleted ?? c.completed ?? false,
+  })),
+  updatedAt: dto.updatedAt || 'Vừa xong',
+});
+
+const mapKeepNoteToDtoChecklist = (items?: NoteChecklistItem[]): any[] | undefined =>
+  items?.map((c) => ({
+    id: c.id,
+    text: c.text,
+    completed: c.completed,
+  }));
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentRole, currentUser } = useAuth();
@@ -385,61 +153,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedDay, setSelectedDay] = useState<number>(() => now.getDate());
 
   // Dynamic Categories state
-  const [categories, setCategories] = useState<CalendarCategory[]>(() => {
-    const saved = localStorage.getItem('routinepulse_categories');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const merged = [...defaultCategories];
-          parsed.forEach((cat: CalendarCategory) => {
-            if (!merged.some((m) => m.id === cat.id)) {
-              merged.push(cat);
-            }
-          });
-          return merged;
-        }
-      } catch (err) {
-        console.error('Error parsing routinepulse_categories', err);
-      }
-    }
-    return defaultCategories;
-  });
+  const [categories, setCategories] = useState<CalendarCategory[]>( defaultCategories );
 
-  useEffect(() => {
-    localStorage.setItem('routinepulse_categories', JSON.stringify(categories));
-  }, [categories]);
 
   // Persistent storage for Events and Tasks
-  const [eventsData, setEventsData] = useState<CalendarEvent[]>(() => {
-    const saved = localStorage.getItem('routinepulse_events');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (err) {
-        console.error('Error parsing routinepulse_events', err);
-      }
-    }
-    return getInitialSampleEvents(now.getFullYear(), now.getMonth(), now.getDate());
-  });
+  const [eventsData, setEventsData] = useState<CalendarEvent[]>( [] );
 
-  // Real-time Vietnam Holidays Sync: Automatically fetches public holidays & integrates into eventsData
+  // Read-only holidays come from the backend, never saved as user events.
   useEffect(() => {
-    let isMounted = true;
-    getVietnamHolidays(selectedYear).then((holidays) => {
-      if (!isMounted) return;
-      setEventsData((prev) => {
-        // Retain user custom events and replace previous holidays for the current year
-        const nonHolidays = prev.filter(
-          (e) => !(e.categoryId === 'holiday' && e.year === selectedYear)
-        );
-        return [...nonHolidays, ...holidays];
-      });
-    });
-    return () => {
-      isMounted = false;
+    if (!currentUser) return;
+    let active = true;
+    let request = 0;
+    const refresh = async () => {
+      const id = ++request;
+      try {
+        const holidays = await getVietnamHolidays(selectedYear);
+        if (active && id === request) setEventsData(prev => [...prev.filter(e => e.categoryId !== 'holiday'), ...holidays]);
+      } catch (e) {
+        if (active && id === request) {
+          setEventsData(prev => prev.filter(e => e.categoryId !== 'holiday'));
+          showToast('Chưa tải được ngày lễ', e instanceof Error ? e.message : 'Lỗi kết nối', 'error');
+        }
+      }
     };
-  }, [selectedYear]);
+    void refresh();
+    const interval = window.setInterval(refresh, 60 * 60 * 1000);
+    window.addEventListener('focus', refresh);
+    window.addEventListener('holiday-region-changed', refresh);
+    return () => { active = false; clearInterval(interval); window.removeEventListener('focus', refresh); window.removeEventListener('holiday-region-changed', refresh); };
+  }, [selectedYear, currentUser?.id]);
 
   // Real-time Personal Birthday Event Sync onto Calendar
   useEffect(() => {
@@ -484,25 +226,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [currentUser?.birthday, currentUser?.name, selectedYear]);
 
-  const [tasksData, setTasksData] = useState<TaskItem[]>(() => {
-    const saved = localStorage.getItem('routinepulse_tasks');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (err) {
-        console.error('Error parsing routinepulse_tasks', err);
-      }
-    }
-    return getInitialSampleTasks();
-  });
+  const [tasksData, setTasksData] = useState<TaskItem[]>( [] );
 
-  useEffect(() => {
-    localStorage.setItem('routinepulse_events', JSON.stringify(eventsData));
-  }, [eventsData]);
 
-  useEffect(() => {
-    localStorage.setItem('routinepulse_tasks', JSON.stringify(tasksData));
-  }, [tasksData]);
 
   const [calendarView, setCalendarViewMode] = useState<CalendarViewMode>('month');
   const [currentTheme, setCurrentTheme] = useState<ThemeName>(() => {
@@ -525,21 +251,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState<boolean>(true);
   const [rightSidebarTab, setRightSidebarTab] = useState<RightSidebarTab>('tasks');
 
-  const [notesData, setNotesData] = useState<KeepNote[]>(() => {
-    const saved = localStorage.getItem('routinepulse_notes');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (err) {
-        console.error('Error parsing routinepulse_notes', err);
-      }
-    }
-    return getInitialSampleNotes();
-  });
+  const [notesData, setNotesData] = useState<KeepNote[]>( [] );
+
 
   useEffect(() => {
-    localStorage.setItem('routinepulse_notes', JSON.stringify(notesData));
-  }, [notesData]);
+    let active = true;
+    setTasksData([]); setNotesData([]); setCategories(defaultCategories);
+    setEventsData(prev => prev.filter(e => e.categoryId === 'holiday' || (currentUser && e.categoryId === 'birthday')));
+    if (!currentUser || !getAuthToken()) { void syncHubClient.stop(); return; }
+    const load = async () => {
+      try {
+        const [events, routines, tasks, notes, cats] = await Promise.all([
+          eventApi.getEvents(), routineApi.getRoutines(), taskApi.getTasks(), noteApi.getNotes(), categoryApi.getCategories(),
+        ]);
+        if (!active) return;
+        setEventsData(prev => [...prev.filter(e => e.categoryId === 'holiday' || e.categoryId === 'birthday'), ...events.map(eventFromDto), ...routines.map(r => routineFromDto(r, selectedYear, selectedMonth, selectedDay))]);
+        setTasksData(tasks.filter(t => !t.parentId).map(taskFromDto));
+        setNotesData(notes.map(mapDtoToKeepNote));
+        setCategories([...defaultCategories, ...cats.filter(c => !defaultCategories.some(d => d.id === c.id))]);
+        setCategoryFilters(prev => ({ ...prev, ...Object.fromEntries(cats.map(c => [c.id, true])) }));
+      } catch (e) { if (active) showToast('Không tải được dữ liệu', e instanceof Error ? e.message : 'Lỗi kết nối', 'error'); }
+    };
+    void load(); void syncHubClient.start();
+    const unsubData = syncHubClient.onDataChanged(() => { void load(); });
+    const unsubNotif = syncHubClient.onNotificationReceived(n => showToast(n.title, n.message, 'info'));
+    return () => { active = false; unsubData(); unsubNotif(); void syncHubClient.stop(); };
+  }, [currentUser?.id, selectedYear, selectedMonth, selectedDay]);
 
   const openRightSidebarTab = (tab: RightSidebarTab) => {
     if (isRightSidebarOpen && rightSidebarTab === tab) {
@@ -550,54 +287,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const addNote = (note: Omit<KeepNote, 'id' | 'updatedAt'>) => {
-    const newNote: KeepNote = {
-      ...note,
-      id: 'note-' + Date.now(),
-      updatedAt: 'Vừa xong',
-    };
-    setNotesData((prev) => [newNote, ...prev]);
-    showToast('Ghi chú mới', `Đã lưu "${newNote.title || 'Ghi chú không tiêu đề'}"`, 'success');
+  const reportError = (e: unknown) => showToast('Không thể lưu', e instanceof Error ? e.message : 'Lỗi kết nối', 'error');
+  const addNote = async (note: Omit<KeepNote, 'id' | 'updatedAt'>) => {
+    try {
+      const saved = await noteApi.createNote({ ...note, checklist: mapKeepNoteToDtoChecklist(note.checklist) });
+      if (note.isPinned) { await noteApi.togglePin(saved.id); saved.isPinned = true; }
+      setNotesData(prev => [mapDtoToKeepNote(saved), ...prev.filter(n => n.id !== saved.id)]);
+      showToast('Đã lưu', 'Đã tạo ghi chú', 'success'); return true;
+    } catch (e) { reportError(e); return false; }
   };
-
-  const toggleNotePin = (id: string) => {
-    setNotesData((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isPinned: !n.isPinned } : n))
-    );
+  const toggleNotePin = async (id: string) => {
+    try { const res = await noteApi.togglePin(id); setNotesData(prev => prev.map(n => n.id === id ? { ...n, isPinned: res.isPinned } : n)); }
+    catch (e) { reportError(e); }
   };
-
-  const deleteNote = (id: string) => {
-    setNotesData((prev) => prev.filter((n) => n.id !== id));
-    showToast('Đã xóa', 'Ghi chú đã được xóa', 'info');
+  const deleteNote = async (id: string) => {
+    try { await noteApi.deleteNote(id); setNotesData(prev => prev.filter(n => n.id !== id)); }
+    catch (e) { reportError(e); }
   };
-
-  const updateNote = (id: string, updated: Partial<Omit<KeepNote, 'id'>>) => {
-    setNotesData((prev) =>
-      prev.map((n) =>
-        n.id === id
-          ? {
-              ...n,
-              ...updated,
-              updatedAt: 'Vừa xong',
-            }
-          : n
-      )
-    );
-    showToast('Đã cập nhật', 'Ghi chú đã được lưu thay đổi', 'success');
+  const updateNote = async (id: string, updated: Partial<Omit<KeepNote, 'id'>>) => {
+    const note = notesData.find(n => n.id === id); if (!note) return false;
+    try {
+      const next = { ...note, ...updated };
+      const saved = await noteApi.updateNote(id, { ...next, checklist: mapKeepNoteToDtoChecklist(next.checklist) });
+      setNotesData(prev => prev.map(n => n.id === id ? mapDtoToKeepNote(saved) : n)); return true;
+    } catch (e) { reportError(e); return false; }
   };
-
   const toggleNoteChecklistItem = (noteId: string, itemId: string) => {
-    setNotesData((prev) =>
-      prev.map((n) => {
-        if (n.id !== noteId || !n.checklist) return n;
-        return {
-          ...n,
-          checklist: n.checklist.map((c) =>
-            c.id === itemId ? { ...c, completed: !c.completed } : c
-          ),
-        };
-      })
-    );
+    const note = notesData.find(n => n.id === noteId);
+    if (note) void updateNote(noteId, { checklist: note.checklist?.map(c => c.id === itemId ? { ...c, completed: !c.completed } : c) });
   };
 
   const [activeModal, setActiveModal] = useState<ActiveModalType>(null);
@@ -687,15 +404,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     closeModal();
   };
 
-  const addEvent = (newEvent: Omit<CalendarEvent, 'id'>): boolean => {
-    if (newEvent.type === 'routine') {
-      const routineCount = eventsData.filter((e) => e.type === 'routine').length;
-      if (currentRole === 'FREE' && routineCount >= 10) {
-        triggerPremiumFeature('Tạo hơn 10 thói quen lặp lại');
-        return false;
-      }
-    }
-
+  const addEvent = async (newEvent: Omit<CalendarEvent, 'id'>): Promise<boolean> => {
+    if (newEvent.type === 'routine') return saveRoutine(newEvent);
     const year = newEvent.year || selectedYear;
     const month = newEvent.month !== undefined ? newEvent.month : selectedMonth;
     const baseDay = newEvent.day || selectedDay;
@@ -766,283 +476,131 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
     }
 
-    setEventsData((prev) => [...newEventsToAdd, ...prev]);
-    showToast(
-      'Khởi tạo thành công',
-      newEventsToAdd.length > 1
-        ? `Đã tạo chuỗi lặp [${newEvent.title}] cho ${newEventsToAdd.length} ngày trong tháng!`
-        : `Đã lưu [${newEvent.title}] vào lịch trình.`,
-      'success'
-    );
-    return true;
+    try {
+      for (const item of newEventsToAdd) {
+        const saved = eventFromDto(await eventApi.createEvent(eventPayload(item)));
+        setEventsData(prev => [saved, ...prev.filter(e => e.backendId !== saved.backendId)]);
+      }
+      return true;
+    } catch (e) { reportError(e); return false; }
   };
 
-  const deleteEvent = (id: number, deleteAllSeries: boolean = false) => {
-    const target = eventsData.find((e) => e.id === id);
-    if (!target) return;
-
-    if (deleteAllSeries) {
-      const targetSeriesId = target.seriesId;
-      const targetTitle = target.title.trim();
-      setEventsData((prev) =>
-        prev.filter((e) => {
-          if (targetSeriesId && e.seriesId === targetSeriesId) return false;
-          if (e.title.trim() === targetTitle && e.type === target.type) return false;
-          return true;
-        })
-      );
-      showToast('Đã xóa toàn bộ chuỗi', `Đã dọn dẹp toàn bộ chuỗi [${target.title}] khỏi lịch.`, 'info');
-    } else {
-      setEventsData((prev) => prev.filter((e) => e.id !== id));
-      showToast('Đã xóa sự kiện', `Đã xóa [${target.title}] cho ngày này.`, 'info');
-    }
+  const saveRoutine = async (event: Omit<CalendarEvent, 'id'>): Promise<boolean> => {
+    try {
+      const saved = await routineApi.createRoutine({ title: event.title, targetTime: event.time,
+        frequencyType: event.frequency?.includes('tuần') ? 1 : event.frequency?.includes('3 ngày') ? 2 : 0,
+        frequencyValue: event.frequency?.includes('3 ngày') ? 'INTERVAL_3' : undefined, subroutines: event.subroutines });
+      const item = routineFromDto(saved, selectedYear, selectedMonth, selectedDay);
+      setEventsData(prev => [item, ...prev.filter(e => e.backendId !== saved.id)]);
+      return true;
+    } catch (e) { reportError(e); return false; }
   };
-
-  const updateEvent = (id: number, updated: Partial<CalendarEvent>) => {
-    setEventsData((prev) => prev.map((e) => (e.id === id ? { ...e, ...updated } : e)));
-    showToast('Đã cập nhật', 'Thông tin đã được lưu lại.', 'success');
+  const deleteEvent = async (id: number, deleteAllSeries = false) => {
+    const target = eventsData.find(e => e.id === id); if (!target?.backendId) return;
+    const targets = deleteAllSeries && target.seriesId ? eventsData.filter(e => e.seriesId === target.seriesId) : [target];
+    try {
+      for (const e of targets) {
+        if (!e.backendId) continue;
+        if (e.type === 'routine') await routineApi.deleteRoutine(e.backendId); else await eventApi.deleteEvent(e.backendId);
+        setEventsData(prev => prev.filter(item => item.id !== e.id));
+      }
+    } catch (e) { reportError(e); }
   };
-
-  const toggleCheckInRoutine = (id: number) => {
-    const target = eventsData.find((e) => e.id === id);
-    if (!target) return;
-    const nextCompleted = !target.completed;
-    const nextStreak = nextCompleted ? (target.streak || 0) + 1 : Math.max(1, (target.streak || 1) - 1);
-    setEventsData((prev) =>
-      prev.map((e) => {
-        if (e.id === id) {
-          // Toggle all subroutines to match routine completed state
-          const updatedSubs = (e.subroutines || []).map((s) => ({
-            ...s,
-            completed: nextCompleted,
-          }));
-          return {
-            ...e,
-            completed: nextCompleted,
-            streak: nextStreak,
-            subroutines: updatedSubs,
-          };
+  const updateEvent = async (id: number, updated: Partial<CalendarEvent>) => {
+    const target = eventsData.find(e => e.id === id); if (!target?.backendId) return false;
+    try {
+      const next = { ...target, ...updated };
+      if (target.type === 'routine') {
+        const saved = await routineApi.updateRoutine(target.backendId, { title: next.title, targetTime: next.time, subroutines: next.subroutines, frequencyType: next.frequency?.includes('tuần') ? 1 : next.frequency?.includes('3 ngày') ? 2 : 0, frequencyValue: next.frequency?.includes('3 ngày') ? 'INTERVAL_3' : undefined });
+        setEventsData(prev => prev.map(e => e.id === id ? routineFromDto(saved, selectedYear, selectedMonth, selectedDay) : e));
+      } else {
+        const saved = eventFromDto(await eventApi.updateEvent(target.backendId, eventPayload(next)));
+        setEventsData(prev => prev.map(e => e.id === id ? saved : e));
+      }
+      return true;
+    } catch (e) { reportError(e); return false; }
+  };
+  const toggleCheckInRoutine = async (id: number) => {
+    const target = eventsData.find(e => e.id === id); if (!target?.backendId) return;
+    try {
+      const saved = await routineApi.checkIn(target.backendId);
+      setEventsData(prev => prev.map(e => e.id === id ? { ...e, completed: true, streak: saved.streakCount, subroutines: e.subroutines?.map(s => ({ ...s, completed: true })) } : e));
+    } catch (e) { reportError(e); }
+  };
+  const addRoutine = (input: CreateRoutineInput) => saveRoutine({ ...input, type: 'routine', time: input.time || '07:00', priority: input.priority || 'medium', year: selectedYear, month: selectedMonth, day: selectedDay,
+    subroutines: input.subroutines?.map((title, i) => ({ id: i + 1, title, completed: false })) });
+  const reloadRoutine = async (routineId: number) => {
+    const target = eventsData.find(e => e.id === routineId); if (!target?.backendId) return;
+    const saved = (await routineApi.getRoutines()).find(r => r.id === target.backendId);
+    if (saved) setEventsData(prev => prev.map(e => e.id === routineId ? routineFromDto(saved, selectedYear, selectedMonth, selectedDay) : e));
+  };
+  const addSubroutine = async (id: number, title: string) => {
+    const target = eventsData.find(e => e.id === id); if (!target?.backendId || !title.trim()) return;
+    try { await routineApi.addSubroutine(target.backendId, title); await reloadRoutine(id); } catch (e) { reportError(e); }
+  };
+  const toggleSubroutine = async (id: number, subId: number) => {
+    const target = eventsData.find(e => e.id === id); if (!target?.backendId) return;
+    try { await routineApi.toggleSubroutine(target.backendId, subId); await reloadRoutine(id); } catch (e) { reportError(e); }
+  };
+  const deleteSubroutine = async (id: number, subId: number) => {
+    const target = eventsData.find(e => e.id === id); if (!target?.backendId) return;
+    try { await routineApi.deleteSubroutine(target.backendId, subId); await reloadRoutine(id); } catch (e) { reportError(e); }
+  };
+  const reloadTasks = async () => setTasksData((await taskApi.getTasks()).filter(t => !t.parentId).map(taskFromDto));
+  const addTask = async (input: string | CreateTaskInput, priority: Priority = 'medium') => {
+    const data = typeof input === 'string' ? { title: input, priority } : input;
+    try {
+      const saved = await taskApi.createTask({ title: data.title, priority: priorityNumber(data.priority || 'medium'), dueDate: data.dueDate || undefined, categoryId: data.categoryId, colorTag: data.colorTag, reminderMinutesBefore: data.reminders ? parseInt(data.reminders) || undefined : undefined });
+      await reloadTasks();
+      for (const sub of data.subtasks || []) await taskApi.createTask({ title: sub.title, priority: 1, parentId: saved.id });
+      await reloadTasks();
+      return true;
+    } catch (e) { reportError(e); return false; }
+  };
+  const addSubtask = async (id: number, title: string) => {
+    const target = tasksData.find(t => t.id === id); if (!target?.backendId || !title.trim()) return;
+    try { await taskApi.createTask({ title, priority: 1, parentId: target.backendId }); await reloadTasks(); } catch (e) { reportError(e); }
+  };
+  const deleteSubtask = async (taskId: number, subId: number) => {
+    const sub = tasksData.find(t => t.id === taskId)?.subtasks.find(s => s.id === subId); if (!sub?.backendId) return;
+    try { await taskApi.deleteTask(sub.backendId); await reloadTasks(); } catch (e) { reportError(e); }
+  };
+  const deleteTask = async (id: number) => {
+    const target = tasksData.find(t => t.id === id); if (!target?.backendId) return;
+    try { await taskApi.deleteTask(target.backendId); await reloadTasks(); } catch (e) { reportError(e); }
+  };
+  const updateTask = async (id: number, updated: Partial<TaskItem>) => {
+    const target = tasksData.find(t => t.id === id); if (!target?.backendId) return false;
+    try {
+      const next = { ...target, ...updated };
+      await taskApi.updateTask(target.backendId, { title: next.title, description: next.description, priority: priorityNumber(next.priority), status: next.completed ? 1 : 0, dueDate: next.dueDate || undefined, categoryId: next.categoryId, colorTag: next.colorTag, reminderMinutesBefore: next.reminders ? parseInt(next.reminders) || undefined : undefined });
+      if (updated.subtasks) {
+        for (let i = 0; i < updated.subtasks.length; i++) {
+          const sub = updated.subtasks[i]; const old = target.subtasks[i];
+          if (old?.backendId) await taskApi.updateTask(old.backendId, { title: sub.title, priority: 1, status: old.completed ? 1 : 0 });
+          else await taskApi.createTask({ title: sub.title, priority: 1, parentId: target.backendId });
         }
-        return e;
-      })
-    );
-    if (nextCompleted) {
-      showToast('Điểm danh thành công', `Chuỗi thói quen [${target.title}] đạt ${nextStreak} ngày liên tục.`, 'success');
-    } else {
-      showToast('Hủy điểm danh', `Đã hoàn tác trạng thái [${target.title}].`, 'info');
-    }
+        for (const old of target.subtasks.slice(updated.subtasks.length)) if (old.backendId) await taskApi.deleteTask(old.backendId);
+      }
+      await reloadTasks(); return true;
+    } catch (e) { reportError(e); return false; }
   };
-
-  const addRoutine = (input: CreateRoutineInput) => {
-    const newRoutine: CalendarEvent = {
-      id: Date.now(),
-      type: 'routine',
-      title: input.title,
-      time: input.time || '07:00 AM',
-      priority: input.priority || 'medium',
-      year: selectedYear,
-      month: selectedMonth,
-      day: selectedDay,
-      streak: 1,
-      completed: false,
-      frequency: input.frequency || 'Hàng ngày',
-      subroutines: (input.subroutines || []).map((st, idx) => ({
-        id: Date.now() + idx + 1,
-        title: st,
-        completed: false,
-      })),
-    };
-    setEventsData((prev) => [newRoutine, ...prev]);
-    showToast('Tạo thói quen thành công', `[${input.title}]`, 'success');
+  const toggleTask = async (id: number) => {
+    const target = tasksData.find(t => t.id === id); if (!target?.backendId) return;
+    try { await taskApi.toggleTask(target.backendId); await reloadTasks(); } catch (e) { reportError(e); }
   };
-
-  const addSubroutine = (routineId: number, title: string) => {
-    if (!title.trim()) return;
-    setEventsData((prev) =>
-      prev.map((e) => {
-        if (e.id === routineId) {
-          const newSub = {
-            id: Date.now(),
-            title: title.trim(),
-            completed: false,
-          };
-          const currentSubs = e.subroutines || [];
-          return {
-            ...e,
-            completed: false,
-            subroutines: [...currentSubs, newSub],
-          };
-        }
-        return e;
-      })
-    );
+  const toggleSubtask = async (taskId: number, subId: number) => {
+    const sub = tasksData.find(t => t.id === taskId)?.subtasks.find(s => s.id === subId); if (!sub?.backendId) return;
+    try { await taskApi.toggleTask(sub.backendId); await reloadTasks(); } catch (e) { reportError(e); }
   };
-
-  const toggleSubroutine = (routineId: number, subroutineId: number) => {
-    setEventsData((prev) =>
-      prev.map((e) => {
-        if (e.id === routineId) {
-          const currentSubs = e.subroutines || [];
-          const updatedSubs = currentSubs.map((s) =>
-            s.id === subroutineId ? { ...s, completed: !s.completed } : s
-          );
-          const allDone = updatedSubs.length > 0 && updatedSubs.every((s) => s.completed);
-          const nextStreak = allDone && !e.completed
-            ? (e.streak || 0) + 1
-            : !allDone && e.completed
-            ? Math.max(1, (e.streak || 1) - 1)
-            : (e.streak || 1);
-          return {
-            ...e,
-            completed: allDone,
-            streak: nextStreak,
-            subroutines: updatedSubs,
-          };
-        }
-        return e;
-      })
-    );
+  const addCategory = async (name: string, color: string) => {
+    try { const saved = await categoryApi.createCategory({ name, color }); setCategories(prev => [...prev.filter(c => c.id !== saved.id), saved]); setCategoryFilters(prev => ({ ...prev, [saved.id]: true })); }
+    catch (e) { reportError(e); }
   };
-
-  const deleteSubroutine = (routineId: number, subroutineId: number) => {
-    setEventsData((prev) =>
-      prev.map((e) => {
-        if (e.id === routineId) {
-          const currentSubs = e.subroutines || [];
-          const updatedSubs = currentSubs.filter((s) => s.id !== subroutineId);
-          const allDone = updatedSubs.length > 0 && updatedSubs.every((s) => s.completed);
-          return {
-            ...e,
-            completed: allDone,
-            subroutines: updatedSubs,
-          };
-        }
-        return e;
-      })
-    );
-  };
-
-  const addTask = (input: string | CreateTaskInput, priority: Priority = 'medium') => {
-    let newTask: TaskItem;
-    if (typeof input === 'string') {
-      newTask = {
-        id: Date.now(),
-        title: input,
-        dueDate: 'Hôm nay',
-        priority,
-        completed: false,
-        reminders: 'Push App',
-        subtasks: [],
-      };
-    } else {
-      newTask = {
-        id: Date.now(),
-        title: input.title,
-        dueDate: input.dueDate || 'Hôm nay',
-        priority: input.priority || 'medium',
-        completed: false,
-        reminders: input.reminders || 'Push App',
-        colorTag: input.colorTag,
-        categoryId: input.categoryId,
-        subtasks: (input.subtasks || []).map((st, idx) => ({
-          id: Date.now() + idx + 1,
-          title: st.title,
-          completed: !!st.completed,
-        })),
-      };
-    }
-    setTasksData((prev) => [newTask, ...prev]);
-    showToast('Tạo công việc thành công', `[${newTask.title}]`, 'success');
-  };
-
-  const addSubtask = (taskId: number, title: string) => {
-    if (!title.trim()) return;
-    setTasksData((prev) =>
-      prev.map((t) => {
-        if (t.id === taskId) {
-          const newSubtask = {
-            id: Date.now(),
-            title: title.trim(),
-            completed: false,
-          };
-          return { ...t, subtasks: [...t.subtasks, newSubtask] };
-        }
-        return t;
-      })
-    );
-  };
-
-  const deleteSubtask = (taskId: number, subtaskId: number) => {
-    setTasksData((prev) =>
-      prev.map((t) => {
-        if (t.id === taskId) {
-          return {
-            ...t,
-            subtasks: t.subtasks.filter((s) => s.id !== subtaskId),
-          };
-        }
-        return t;
-      })
-    );
-  };
-
-  const deleteTask = (id: number) => {
-    setTasksData((prev) => prev.filter((t) => t.id !== id));
-    showToast('Đã xóa', 'Đã loại bỏ công việc khỏi danh sách.', 'info');
-  };
-
-  const updateTask = (id: number, updated: Partial<TaskItem>) => {
-    setTasksData((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t)));
-    showToast('Đã cập nhật', 'Thông tin công việc đã được lưu lại.', 'success');
-  };
-
-  const toggleTask = (id: number) => {
-    const target = tasksData.find((t) => t.id === id);
-    if (!target) return;
-    const next = !target.completed;
-    setTasksData((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: next } : t))
-    );
-    showToast(next ? 'Đã hoàn thành công việc' : 'Mở lại công việc', `[${target.title}]`, 'info');
-  };
-
-  const toggleSubtask = (taskId: number, subtaskId: number) => {
-    setTasksData((prev) =>
-      prev.map((t) => {
-        if (t.id === taskId) {
-          const updatedSubtasks = t.subtasks.map((s) =>
-            s.id === subtaskId ? { ...s, completed: !s.completed } : s
-          );
-          return { ...t, subtasks: updatedSubtasks };
-        }
-        return t;
-      })
-    );
-  };
-
-  const addCategory = (name: string, color: string) => {
-    if (!name.trim()) return;
-    const newCat: CalendarCategory = {
-      id: 'cat_' + Date.now(),
-      name: name.trim(),
-      color: color || '#8AB4F8',
-      isBuiltIn: false,
-    };
-    setCategories((prev) => [...prev, newCat]);
-    setCategoryFilters((prev) => ({ ...prev, [newCat.id]: true }));
-    showToast('Tạo danh mục mới', `Đã thêm "${newCat.name}"`, 'success');
-  };
-
-  const deleteCategory = (id: string) => {
-    const target = categories.find((c) => c.id === id);
-    if (!target || target.isBuiltIn) return;
-    setCategories((prev) => prev.filter((c) => c.id !== id));
-    setCategoryFilters((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
-    showToast('Đã xóa danh mục', `Đã xóa "${target.name}"`, 'info');
+  const deleteCategory = async (id: string) => {
+    if (categories.find(c => c.id === id)?.isBuiltIn) return;
+    try { await categoryApi.deleteCategory(id); setCategories(prev => prev.filter(c => c.id !== id)); }
+    catch (e) { reportError(e); }
   };
 
   const toggleLeftSidebar = () => setIsLeftSidebarOpen((prev) => !prev);
@@ -1051,6 +609,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [settingsInitialTab, setSettingsInitialTab] = useState<string>('profile');
 
   const openModal = (modal: ActiveModalType, param?: any) => {
+    if (modal === 'edit' && param?.type === 'event' && !eventsData.find(e => e.id === param.id)?.backendId) {
+      showToast('Lịch chỉ xem', 'Ngày lễ và ngày sinh không phải sự kiện cá nhân trong DB.', 'info');
+      return;
+    }
     setActiveModal(modal);
     if (modal === 'edit' && param) {
       setActiveEditItem(param);
