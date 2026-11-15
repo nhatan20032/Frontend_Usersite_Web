@@ -22,7 +22,7 @@ export const MiniCalendarPicker: React.FC = () => {
   const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-  const firstDayIndex = new Date(selectedYear, selectedMonth, 1).getDay();
+  const firstDayIndex = (new Date(selectedYear, selectedMonth, 1).getDay() + 6) % 7;
   const prevMonthDaysCount = new Date(selectedYear, selectedMonth, 0).getDate();
 
   const leadingPadding = Array.from(
@@ -40,13 +40,13 @@ export const MiniCalendarPicker: React.FC = () => {
   const nextYear = selectedMonth === 11 ? selectedYear + 1 : selectedYear;
 
   const miniWeekDays = [
-    t('calendar.sunShort'),
     t('calendar.monShort'),
     t('calendar.tueShort'),
     t('calendar.wedShort'),
     t('calendar.thuShort'),
     t('calendar.friShort'),
     t('calendar.satShort'),
+    t('calendar.sunShort'),
   ];
 
   return (

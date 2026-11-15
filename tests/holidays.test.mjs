@@ -18,7 +18,7 @@ test('holidays use the selected backend region and date without timezone shifts'
   const api = holidays(async (_, query) => { parameters = query; return { source: 'https://source.test', fetchedAt: '2026-01-01T00:00:00Z', holidays: [{ date: '2026-02-17', name: 'Tet Holiday' }] }; }, '{"country":"US","subdivision":"US-CA"}');
   const [event] = await api.getVietnamHolidays(2026);
   assert.equal(parameters.country, 'US'); assert.equal(parameters.subdivision, 'US-CA');
-  assert.equal(event.month, 2); assert.equal(event.day, 17); assert.equal(event.backendId, undefined);
+  assert.equal(event.month, 1); assert.equal(event.day, 17); assert.equal(event.backendId, undefined);
   assert.match(event.description, /source.test/);
 });
 test('an empty or unavailable holiday source never generates local holidays', async () => {
@@ -41,4 +41,12 @@ test('productivity summary reflects loaded server data without invented historic
   data = { tasksData: [{ completed: true }, { completed: false }], eventsData: [{ type: 'routine' }, { type: 'event' }] };
   assert.match(render(), /1\/2 công việc hoàn thành · 1 thói quen/);
   assert.doesNotMatch(render(), /87\.5|21 ngày|PDF|tuần trước/);
+});
+
+test('November holiday stays on November 24 in the web calendar', async () => {
+  const api = holidays(async () => ({source: 'backend', fetchedAt: '2026-11-15T00:00:00Z', holidays: [{date: '2026-11-24', name: 'Ngày Văn hoá Việt Nam'}]}));
+  const [event] = await api.getVietnamHolidays(2026);
+  assert.equal(event.month, 10);
+  assert.equal(new Date(event.year, event.month, event.day).getDay(), 2);
+  assert.equal(event.day, 24);
 });

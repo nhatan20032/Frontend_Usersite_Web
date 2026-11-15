@@ -14,7 +14,7 @@ export async function getVietnamHolidays(year = new Date().getFullYear()): Promi
   return result.holidays.map((h, index) => {
     const [eventYear, month, day] = h.date.split('-').map(Number);
     return { id: 910000000 + year * 1000 + index, type: 'event', title: h.name,
-      time: 'Cả ngày', priority: 'medium', year: eventYear, month, day,
+      time: 'Cả ngày', priority: 'medium', year: eventYear, month: month - 1, day,
       colorTag: '#C58AF9', categoryId: 'holiday', status: 'free',
       description: `Ngày lễ từ ${result.source}\nCập nhật: ${new Date(result.fetchedAt).toLocaleString()}. Theo công bố của nguồn; lịch nghỉ đơn vị có thể khác.` };
   });

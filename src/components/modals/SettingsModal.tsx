@@ -172,6 +172,7 @@ export const SettingsModal: React.FC = () => {
                 <p className="text-xs text-[var(--text-secondary)]">{t('modals.settings.profileSubtitle')}</p>
               </div>
 
+              <HolidayRegionSettings />
               <form onSubmit={handleProfileSubmit} className="space-y-3 pt-2">
                 <div className="space-y-1">
                   <label className="font-medium text-[var(--text-secondary)]">{t('modals.settings.nameLabel')}</label>
@@ -301,7 +302,7 @@ export const SettingsModal: React.FC = () => {
           {/* Tab 3: Language & Region */}
           {activeTab === 'language' && (
             <div className="space-y-5 text-xs">
-              <HolidayRegionSettings />
+
               <div className="pr-10 space-y-1">
                 <h4 className="text-base font-semibold text-[var(--text-primary)]">{t('modals.settings.langTitle')}</h4>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{t('modals.settings.langSubtitle')}</p>

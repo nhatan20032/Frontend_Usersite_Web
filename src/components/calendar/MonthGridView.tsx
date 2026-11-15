@@ -18,7 +18,7 @@ export const MonthGridView: React.FC = () => {
   const [itemDetailPopover, setItemDetailPopover] = useState<{ item: any, x: number, y: number, day: number, month: number, year: number } | null>(null);
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-  const firstDayIndex = new Date(selectedYear, selectedMonth, 1).getDay(); // 0 = Sunday
+  const firstDayIndex = (new Date(selectedYear, selectedMonth, 1).getDay() + 6) % 7; // 0 = Monday
   const prevMonthDaysCount = new Date(selectedYear, selectedMonth, 0).getDate();
 
   const leadingPadding = Array.from(
@@ -36,13 +36,13 @@ export const MonthGridView: React.FC = () => {
   const nextYear = selectedMonth === 11 ? selectedYear + 1 : selectedYear;
 
   const weekdayHeaders = [
-    t('calendar.sun'),
     t('calendar.mon'),
     t('calendar.tue'),
     t('calendar.wed'),
     t('calendar.thu'),
     t('calendar.fri'),
     t('calendar.sat'),
+    t('calendar.sun'),
   ];
 
   const handleCellClick = (day: number, month: number, year: number) => {

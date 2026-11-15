@@ -29,7 +29,7 @@ export const WeekTimelineView: React.FC = () => {
   const selectedDate = new Date(selectedYear, selectedMonth, selectedDay);
   const dayOfWeek = selectedDate.getDay(); // 0 is Sunday
   const startOfWeek = new Date(selectedDate);
-  startOfWeek.setDate(selectedDate.getDate() - dayOfWeek);
+  startOfWeek.setDate(selectedDate.getDate() - (dayOfWeek + 6) % 7);
 
   const shortNames = [
     t('calendar.sunShort'),

@@ -15,17 +15,17 @@ export function HolidayRegionSettings() {
       setStatus('Đã lưu tùy chọn trên trình duyệt này.');
     } catch (e) { setStatus(e instanceof Error ? e.message : 'Không tải được lịch'); }
   };
-  return <fieldset className="space-y-3 border border-[#3A3B3D] rounded-lg p-3">
+  return <fieldset className="space-y-3 border border-[var(--border-subtle)] rounded-lg p-3">
     <legend>Ngày lễ theo khu vực</legend>
-    <label className="block">Quốc gia <select aria-label="Quốc gia ngày lễ" className="bg-[#18191B] p-2" value={region.country} onChange={e => setRegion({ country: e.target.value, subdivision: '' })}>
+    <label className="block">Quốc gia <select aria-label="Quốc gia ngày lễ" className="bg-[var(--surface-container-high)] text-[var(--text-primary)] rounded-md w-full p-2" value={region.country} onChange={e => setRegion({ country: e.target.value, subdivision: '' })}>
       {!countries.length && <option value={region.country}>{region.country}</option>}
       {countries.map(c => <option key={c.countryCode} value={c.countryCode}>{c.name}</option>)}
     </select></label>
     <label className="block">Mã khu vực (tùy chọn, ví dụ US-CA)
-      <input aria-label="Mã khu vực ngày lễ" className="block bg-[#18191B] p-2" value={region.subdivision} maxLength={12} onChange={e => setRegion({ ...region, subdivision: e.target.value.toUpperCase() })} />
+      <input aria-label="Mã khu vực ngày lễ" className="block bg-[var(--surface-container-high)] text-[var(--text-primary)] rounded-md w-full p-2" value={region.subdivision} maxLength={12} onChange={e => setRegion({ ...region, subdivision: e.target.value.toUpperCase() })} />
     </label>
     <p>Nếu nguồn không hỗ trợ tỉnh/bang, chọn lịch quốc gia. Cập nhật trực tuyến định kỳ; ngày nghỉ cụ thể phụ thuộc công bố của nguồn.</p>
-    <button type="button" className="px-3 py-2 bg-blue-700 rounded" onClick={save}>Lưu khu vực ngày lễ</button>
+    <button type="button" className="px-3 py-2 bg-[var(--google-blue-primary)] text-white rounded" onClick={save}>Lưu khu vực ngày lễ</button>
     <p role="status">{status}</p>
   </fieldset>;
 }
