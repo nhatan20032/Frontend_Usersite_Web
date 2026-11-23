@@ -14,7 +14,7 @@ import { ModalManager } from '../modals/ModalManager';
 import { ToastContainer } from '../ui/ToastContainer';
 
 export const AppLayout: React.FC = () => {
-  const { calendarView } = useApp();
+  const { calendarView, isLeftSidebarOpen, toggleLeftSidebar, isRightSidebarOpen, toggleRightSidebar } = useApp();
 
   return (
     <div className="min-h-screen h-screen font-sans antialiased flex flex-col overflow-hidden bg-[var(--surface-canvas)] text-[var(--text-primary)] selection:bg-[var(--google-blue-primary)] selection:text-white relative transition-colors duration-200">
@@ -23,6 +23,14 @@ export const AppLayout: React.FC = () => {
 
       {/* 2. MAIN WORKSPACE (3-COLUMN LIQUID LAYOUT) */}
       <div className="flex-1 flex overflow-hidden relative z-10">
+        {/* Left Sidebar Mobile Backdrop */}
+        {isLeftSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 z-25 md:hidden animate-in fade-in duration-150 backdrop-blur-xs"
+            onClick={toggleLeftSidebar}
+          />
+        )}
+
         {/* Left Sidebar In-Place Expand Dock */}
         <LeftSidebarDock />
 
@@ -38,6 +46,14 @@ export const AppLayout: React.FC = () => {
           </div>
           <ProductivityKPI />
         </main>
+
+        {/* Right Sidebar Tablet/Mobile Backdrop */}
+        {isRightSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 z-25 lg:hidden animate-in fade-in duration-150 backdrop-blur-xs"
+            onClick={toggleRightSidebar}
+          />
+        )}
 
         {/* COLUMN C: RIGHT SIDEBAR */}
         <RightSidebar />

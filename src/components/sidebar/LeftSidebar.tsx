@@ -73,7 +73,7 @@ export const LeftSidebar: React.FC = () => {
   return (
     <aside
       id="leftSidebar"
-      className={`w-64 border-r border-[var(--border-grid)] bg-[var(--surface-container)] p-3 space-y-4 flex-shrink-0 flex flex-col overflow-y-auto sidebar-transition select-none transition-colors duration-200 ${
+      className={`fixed md:relative inset-y-0 left-0 z-30 md:z-auto w-64 border-r border-[var(--border-grid)] bg-[var(--surface-container)] p-3 space-y-4 flex-shrink-0 flex flex-col overflow-y-auto sidebar-transition select-none transition-colors duration-200 shadow-2xl md:shadow-none ${
         !isLeftSidebarOpen ? 'sidebar-collapsed' : ''
       }`}
     >
@@ -81,7 +81,7 @@ export const LeftSidebar: React.FC = () => {
       <div className="pt-1 flex items-center justify-between gap-2 relative" ref={createMenuRef}>
         <button
           onClick={() => setIsCreateMenuOpen(!isCreateMenuOpen)}
-          className="bg-[var(--surface-container-high)] hover:bg-[var(--border-subtle)] border border-[#3A3B3D] text-[var(--text-primary)] font-medium py-2.5 px-4 rounded-full shadow-sm hover:shadow-md transition-all flex items-center gap-2.5 text-sm cursor-pointer active:scale-98 flex-1"
+          className="bg-[var(--surface-container-high)] hover:bg-[var(--border-subtle)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-medium py-2.5 px-4 rounded-full shadow-sm hover:shadow-md transition-all flex items-center gap-2.5 text-sm cursor-pointer active:scale-98 flex-1"
         >
           <Plus className="w-4 h-4 text-[var(--google-blue)]" />
           <span>{language === 'vi' ? 'Tạo' : 'Create'}</span>
@@ -101,7 +101,7 @@ export const LeftSidebar: React.FC = () => {
 
         {/* Dropdown Menu */}
         {isCreateMenuOpen && (
-          <div className="absolute left-0 top-14 w-56 bg-[#242527] border border-[var(--border-subtle)] rounded-xl shadow-2xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute left-0 top-14 w-56 bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-xl shadow-2xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
             <button
               onClick={() => handleSelectCreateType('event')}
               className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-[var(--surface-container-high)] transition-colors text-left text-[var(--text-primary)] group cursor-pointer"
@@ -167,7 +167,7 @@ export const LeftSidebar: React.FC = () => {
 
         {/* Inline Add Category Popover with Color Picker */}
         {isAddCategoryOpen && (
-          <div className="p-2.5 bg-[#242527] border border-[#3A3B3D] rounded-xl shadow-xl space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="p-2.5 bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-xl shadow-xl space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between text-[11px] font-semibold text-[var(--text-primary)]">
               <span>{language === 'vi' ? 'Tạo danh mục mới' : 'New Category / Tag'}</span>
               <button
@@ -182,7 +182,7 @@ export const LeftSidebar: React.FC = () => {
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder={language === 'vi' ? 'Nhập tên danh mục...' : 'Category name...'}
-              className="w-full bg-[#18191A] border border-[#3A3B3D] rounded-lg px-2.5 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)]"
+              className="w-full bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)]"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSaveCategory();
@@ -192,7 +192,7 @@ export const LeftSidebar: React.FC = () => {
             <div>
               <div className="text-[11px] text-[var(--text-secondary)] mb-1.5 flex items-center justify-between">
                 <span>{language === 'vi' ? 'Màu sắc đại diện' : 'Color tag'}</span>
-                <span className="font-mono text-[11px] uppercase px-1.5 py-0.5 rounded bg-[#18191A] text-[var(--text-primary)] border border-[#3A3B3D]">
+                <span className="font-mono text-[11px] uppercase px-1.5 py-0.5 rounded bg-[var(--surface-container)] text-[var(--text-primary)] border border-[var(--border-subtle)]">
                   {newCategoryColor}
                 </span>
               </div>
@@ -269,7 +269,7 @@ export const LeftSidebar: React.FC = () => {
                         onChange={(e) =>
                           setCategoryFilters((prev) => ({ ...prev, [cat.id]: e.target.checked }))
                         }
-                        className="w-4 h-4 rounded bg-[var(--surface-container-high)] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                        className="w-4 h-4 rounded bg-[var(--surface-container-high)] border-[var(--border-subtle)] focus:ring-0 focus:ring-offset-0 cursor-pointer"
                         style={{ accentColor: cat.color }}
                       />
                       <span className="flex items-center gap-2 min-w-0 flex-1">

@@ -36,7 +36,7 @@ export const RightSidebar: React.FC = () => {
   return (
     <aside
       id="rightSidebar"
-      className={`w-[360px] border-l border-[var(--border-grid)] bg-[var(--surface-container)] p-3.5 flex-shrink-0 flex flex-col overflow-hidden sidebar-transition select-none transition-colors duration-200 ${!isRightSidebarOpen ? 'sidebar-collapsed' : ''
+      className={`fixed lg:relative inset-y-0 right-0 z-30 lg:z-auto w-[360px] max-w-[85vw] border-l border-[var(--border-grid)] bg-[var(--surface-container)] p-3.5 flex-shrink-0 flex flex-col overflow-hidden sidebar-transition select-none transition-colors duration-200 shadow-2xl lg:shadow-none ${!isRightSidebarOpen ? 'sidebar-collapsed' : ''
         }`}
     >
       {rightSidebarTab === 'notes-routine' ? (

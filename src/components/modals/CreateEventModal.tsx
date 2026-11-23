@@ -329,6 +329,15 @@ export const CreateEventModal: React.FC = () => {
     }
   }, [activeModal, activeEditItem, eventsData, tasksData]);
 
+  useEffect(() => {
+    if (activeModal !== 'create' && activeModal !== 'edit') return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeModal, closeModal]);
+
   if (activeModal !== 'create' && activeModal !== 'edit') return null;
 
   const targetDate = new Date(selectedYear, selectedMonth, selectedDay);
@@ -477,8 +486,13 @@ export const CreateEventModal: React.FC = () => {
       {/* Click outside backdrop to close */}
       <div className="absolute inset-0" onClick={closeModal} />
 
-      {/* Center Stage Floating Popover Modal (Ảnh 2 & Ảnh 4) */}
-      <div className="relative w-full max-w-[540px] bg-[#242628] border border-[#3C4043] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-10">
+      {/* Center Stage Floating Popover Modal */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={activeModal === 'edit' ? (language === 'vi' ? 'Chỉnh sửa chi tiết' : 'Edit details') : (language === 'vi' ? 'Tạo sự kiện & công việc mới' : 'Create event or task')}
+        className="relative w-full max-w-[540px] bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-10"
+      >
         {/* Top Drag/Header Bar */}
         <div className="flex items-center justify-between px-5 pt-3 pb-2.5 border-b border-[var(--border-subtle)] bg-[var(--surface-container)]/70">
           <div className="flex items-center gap-2 text-[var(--text-secondary)]">
@@ -491,6 +505,7 @@ export const CreateEventModal: React.FC = () => {
           </div>
           <button
             onClick={closeModal}
+            aria-label={language === 'vi' ? 'Đóng' : 'Close'}
             className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             title={language === 'vi' ? 'Đóng' : 'Close'}
           >

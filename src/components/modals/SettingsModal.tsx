@@ -58,6 +58,15 @@ export const SettingsModal: React.FC = () => {
     }
   }, [settingsInitialTab, activeModal]);
 
+  useEffect(() => {
+    if (activeModal !== 'settings') return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeModal, closeModal]);
+
   if (activeModal !== 'settings') return null;
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -77,9 +86,15 @@ export const SettingsModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 select-none animate-in fade-in duration-150">
-      <div className="bg-[var(--surface-container)] border border-[var(--border-subtle)] max-w-3xl lg:max-w-4xl w-full rounded-2xl overflow-hidden relative shadow-2xl flex flex-col md:flex-row h-[560px] md:h-[580px] max-h-[90vh] text-[var(--text-primary)]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('modals.settings.title')}
+        className="bg-[var(--surface-container)] border border-[var(--border-subtle)] max-w-3xl lg:max-w-4xl w-full rounded-2xl overflow-hidden relative shadow-2xl flex flex-col md:flex-row h-[560px] md:h-[580px] max-h-[90vh] text-[var(--text-primary)]"
+      >
         <button
           onClick={closeModal}
+          aria-label={language === 'vi' ? 'Đóng cài đặt' : 'Close settings'}
           className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1.5 rounded-full hover:bg-[var(--surface-container-high)] z-20 transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />

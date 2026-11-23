@@ -39,11 +39,11 @@ export const TaskItem: React.FC<TaskItemProps> = ({
           type="checkbox"
           checked={task.completed}
           onChange={() => onToggleTask(task.id)}
-          className="w-4 h-4 rounded-full text-[var(--google-blue-primary)] bg-[var(--surface-container-high)] border-[#3A3B3D] focus:ring-0 focus:ring-offset-0 mt-0.5 cursor-pointer accent-[var(--google-blue-primary)]"
+          className="w-4 h-4 rounded-full text-[var(--google-blue-primary)] bg-[var(--surface-container-high)] border-[var(--border-subtle)] focus-visible:ring-2 focus-visible:ring-[var(--google-blue)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--surface-container)] mt-0.5 cursor-pointer accent-[var(--google-blue-primary)] shrink-0"
         />
 
         <div className="space-y-1.5 flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 min-h-[22px]">
+          <div className="flex items-center justify-between gap-2 min-h-[24px]">
             <h4
               className={`font-medium text-xs text-[var(--text-primary)] truncate min-w-0 flex-1 ${
                 task.completed ? 'line-through text-[var(--text-muted)]' : ''
@@ -53,23 +53,24 @@ export const TaskItem: React.FC<TaskItemProps> = ({
               {task.title}
             </h4>
 
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 shrink-0">
               {task.priority === 'high' && (
-                <span className="text-[11px] bg-[var(--google-rose)]/10 text-[var(--google-rose)] font-bold px-1.5 py-0.5 rounded">
+                <span className="text-[11px] bg-[var(--google-rose)]/15 text-[var(--google-rose)] font-bold px-1.5 py-0.5 rounded border border-[var(--google-rose)]/30">
                   {language === 'vi' ? 'GẤP' : 'URGENT'}
                 </span>
               )}
               {task.priority === 'medium' && (
-                <span className="text-[11px] bg-[var(--google-amber)]/10 text-[var(--google-amber)] font-semibold px-1.5 py-0.5 rounded">
+                <span className="text-[11px] bg-[var(--google-amber)]/15 text-[var(--google-amber)] font-semibold px-1.5 py-0.5 rounded border border-[var(--google-amber)]/30">
                   {language === 'vi' ? 'TB' : 'MED'}
                 </span>
               )}
 
-              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+              <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 group-hover:opacity-100 transition-opacity">
                 <button
                   type="button"
                   onClick={() => onEditTask?.(task.id)}
-                  className="text-[var(--text-muted)] hover:text-[var(--google-blue)] p-1 rounded-full hover:bg-[var(--surface-container-high)] cursor-pointer transition-colors"
+                  aria-label={t('common.edit') || 'Chỉnh sửa'}
+                  className="text-[var(--text-muted)] hover:text-[var(--google-blue)] p-1.5 rounded-full hover:bg-[var(--surface-container-high)] cursor-pointer transition-colors min-w-[28px] min-h-[28px] flex items-center justify-center"
                   title={t('common.edit') || 'Chỉnh sửa'}
                 >
                   <Pencil className="w-3.5 h-3.5" />
@@ -77,7 +78,8 @@ export const TaskItem: React.FC<TaskItemProps> = ({
                 <button
                   type="button"
                   onClick={() => onDeleteTask(task.id)}
-                  className="text-[var(--text-muted)] hover:text-[#F28B82] p-1 rounded-full hover:bg-[var(--surface-container-high)] cursor-pointer transition-colors"
+                  aria-label={t('common.delete') || 'Xóa'}
+                  className="text-[var(--text-muted)] hover:text-[#F28B82] p-1.5 rounded-full hover:bg-[var(--surface-container-high)] cursor-pointer transition-colors min-w-[28px] min-h-[28px] flex items-center justify-center"
                   title={t('common.delete') || 'Xóa'}
                 >
                   <Trash2 className="w-3.5 h-3.5" />

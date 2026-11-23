@@ -29,6 +29,15 @@ export const EventDetailModal: React.FC = () => {
 
   const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
 
+  React.useEffect(() => {
+    if (activeModal !== 'detail') return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeModal, closeModal]);
+
   if (activeModal !== 'detail' || !activeEventId) return null;
 
   const event = eventsData.find((e) => e.id === activeEventId);
@@ -43,9 +52,15 @@ export const EventDetailModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="bg-[var(--surface-container)] border border-[var(--border-subtle)] max-w-md w-full rounded-2xl p-6 space-y-4 relative shadow-2xl text-[var(--text-primary)]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={event.title}
+        className="bg-[var(--surface-container)] border border-[var(--border-subtle)] max-w-md w-full rounded-2xl p-6 space-y-4 relative shadow-2xl text-[var(--text-primary)]"
+      >
         <button
           onClick={closeModal}
+          aria-label={language === 'vi' ? 'Đóng chi tiết sự kiện' : 'Close event details'}
           className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1.5 rounded-full hover:bg-[var(--surface-container-high)] cursor-pointer transition-colors"
         >
           <X className="w-5 h-5" />

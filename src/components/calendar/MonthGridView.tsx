@@ -51,7 +51,8 @@ export const MonthGridView: React.FC = () => {
     openModal('create');
   };
 
-  const handleCellDoubleClick = (day: number, month: number, year: number) => {
+  const handleInspectDay = (e: React.MouseEvent, day: number, month: number, year: number) => {
+    e.stopPropagation();
     selectDate(day, month, year);
     openDayInspector(day);
   };
@@ -87,7 +88,7 @@ export const MonthGridView: React.FC = () => {
             className="p-1 sm:p-1.5 h-full border-r border-[var(--border-grid)] last:border-r-0 bg-[var(--surface-container-low)]/40 hover:bg-[var(--surface-container-high)] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
           >
             <div className="flex flex-col items-center mb-1 mt-1">
-              <span className="text-[11px] font-medium text-[#4A4D51] px-1">{pad}</span>
+              <span className="text-[11px] font-medium text-[var(--text-muted)] px-1">{pad}</span>
             </div>
           </div>
         ))}
@@ -125,23 +126,25 @@ export const MonthGridView: React.FC = () => {
             <div
               key={d}
               onClick={() => handleCellClick(d, selectedMonth, selectedYear)}
-              onDoubleClick={() => handleCellDoubleClick(d, selectedMonth, selectedYear)}
-              title={language === 'vi' ? 'Nhấp để tạo sự kiện, nhấp đúp để xem chi tiết ngày' : 'Click to create event, double-click for day details'}
+              title={language === 'vi' ? 'Nhấp để tạo sự kiện, nhấp số ngày để xem chi tiết' : 'Click to create event, click date number to inspect'}
               className={`p-1 sm:p-[6px] h-full border-r border-[var(--border-grid)] last:border-r-0 transition-colors cursor-pointer flex flex-col justify-start overflow-hidden ${
                 isToday ? 'bg-[var(--surface-container-high)]' : 'hover:bg-[var(--surface-container-high)]'
               }`}
             >
-              {/* Day Header: Date Number */}
+              {/* Day Header: Date Number (Click to inspect day) */}
               <div className="flex flex-col items-center mb-1 mt-0.5">
-                {isToday ? (
-                  <span className="w-[22px] h-[22px] rounded-full bg-[var(--google-blue)] text-[#202124] font-bold text-xs flex items-center justify-center">
-                    {d}
-                  </span>
-                ) : (
-                  <span className="text-[11px] font-medium text-[#e8eaed]">
-                    {d === 1 ? (language === 'vi' ? `1 thg ${selectedMonth + 1}` : `1 ${monthNamesShortEn[selectedMonth]}`) : d}
-                  </span>
-                )}
+                <button
+                  type="button"
+                  onClick={(e) => handleInspectDay(e, d, selectedMonth, selectedYear)}
+                  title={language === 'vi' ? `Xem chi tiết ngày ${d}` : `Inspect day ${d}`}
+                  className={`flex items-center justify-center rounded-full transition-all cursor-pointer ${
+                    isToday
+                      ? 'w-[22px] h-[22px] bg-[var(--google-blue)] text-[#202124] font-bold text-xs shadow-xs hover:brightness-105'
+                      : 'min-w-[22px] h-[22px] px-1 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--surface-container-highest)] hover:text-white'
+                  }`}
+                >
+                  {d === 1 ? (language === 'vi' ? `1 thg ${selectedMonth + 1}` : `1 ${monthNamesShortEn[selectedMonth]}`) : d}
+                </button>
               </div>
 
               {/* Event & Task Chips List */}
@@ -209,10 +212,10 @@ export const MonthGridView: React.FC = () => {
             key={`grid-pad-next-${pad}`}
             onClick={() => handleCellClick(pad, nextMonthIndex, nextYear)}
             title={language === 'vi' ? 'Nhấp để tạo lịch trình mới' : 'Click to create new event'}
-            className="p-1 sm:p-1.5 h-full border-r border-[var(--border-grid)] last:border-r-0 bg-[#151618]/40 hover:bg-[#1C1D1F] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
+            className="p-1 sm:p-1.5 h-full border-r border-[var(--border-grid)] last:border-r-0 bg-[var(--surface-container-low)]/40 hover:bg-[var(--surface-container-high)] transition-colors cursor-pointer flex flex-col justify-start overflow-hidden"
           >
             <div className="flex flex-col items-center mb-1 mt-1">
-              <span className="text-[11px] font-normal text-[#4A4D51] px-1">{pad}</span>
+              <span className="text-[11px] font-medium text-[var(--text-muted)] px-1">{pad}</span>
             </div>
           </div>
         ))}

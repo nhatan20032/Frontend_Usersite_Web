@@ -10,6 +10,7 @@ import {
   Search,
   Settings,
   Bell,
+  Menu,
 } from 'lucide-react';
 import { notificationApi } from '../../api/notificationApi';
 import { syncHubClient } from '../../services/syncHubClient';
@@ -101,6 +102,7 @@ export const TopHeader: React.FC = () => {
     nextMonth,
     calendarView,
     setCalendarView,
+    toggleLeftSidebar,
   } = useApp();
   const { t, language } = useLanguage();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -192,8 +194,14 @@ export const TopHeader: React.FC = () => {
       className="h-14 border-b border-[var(--border-grid)] bg-[var(--surface-canvas)] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4 flex-shrink-0 z-30 relative select-none transition-colors duration-200"
     >
       {/* 1. Left: Hamburger + Logo & Navigation Controls */}
-      <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
-
+      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <button
+          onClick={toggleLeftSidebar}
+          aria-label={language === 'vi' ? 'Mở menu thanh bên' : 'Toggle sidebar menu'}
+          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-container-high)] rounded-full transition-colors cursor-pointer md:hidden"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
 
         {/* Calendar Brand Logo */}
         <div className="flex items-center gap-2.5 mr-1 sm:mr-2">

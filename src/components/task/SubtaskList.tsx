@@ -29,11 +29,11 @@ export const SubtaskList: React.FC<SubtaskListProps> = ({
               type="checkbox"
               checked={st.completed}
               onChange={() => onToggleSubtask(taskId, st.id)}
-              className="w-3.5 h-3.5 rounded bg-[var(--surface-container-high)] border-[#3A3B3D] text-[var(--google-blue-primary)] focus:ring-0 focus:ring-offset-0 accent-[var(--google-blue-primary)] cursor-pointer shrink-0"
+              className="w-4 h-4 rounded bg-[var(--surface-container-high)] border-[var(--border-subtle)] text-[var(--google-blue-primary)] focus-visible:ring-2 focus-visible:ring-[var(--google-blue)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--surface-container)] accent-[var(--google-blue-primary)] cursor-pointer shrink-0"
             />
             <span
               className={`truncate ${
-                st.completed ? 'line-through text-[var(--text-muted)]' : 'text-[#D0D2D5]'
+                st.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'
               }`}
               title={st.title}
             >
@@ -45,10 +45,11 @@ export const SubtaskList: React.FC<SubtaskListProps> = ({
             <button
               type="button"
               onClick={() => onDeleteSubtask(taskId, st.id)}
-              className="opacity-0 group-hover:opacity-100 text-[var(--text-muted)] hover:text-[#F28B82] p-0.5 rounded transition-opacity cursor-pointer shrink-0"
+              className="opacity-50 hover:opacity-100 group-hover:opacity-100 text-[var(--text-muted)] hover:text-[#F28B82] p-1.5 rounded-full hover:bg-[var(--surface-container-high)] transition-all cursor-pointer shrink-0 min-w-[28px] min-h-[28px] flex items-center justify-center"
               title="Xóa việc con"
+              aria-label="Xóa việc con"
             >
-              <X className="w-3 h-3" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
