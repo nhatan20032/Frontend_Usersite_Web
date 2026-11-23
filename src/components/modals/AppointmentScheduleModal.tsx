@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { DailyAvailabilitySlot, TimeRange } from '../../types';
+import { Select } from '../ui/Select';
+import { Input } from '../ui/Input';
 import { X, Plus, Copy, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 
 // ---- Grid geometry ----
@@ -117,79 +119,20 @@ const CustomTimePicker: React.FC<{ value: string; onChange: (val: string) => voi
           if (!Number.isNaN(m)) onChange(fmt(m));
           else setText(to12h(parse(value)));
         }}
-        className="h-9 w-[110px] px-3 rounded-lg bg-[#303134] border border-[#5f6368] hover:bg-[#3c4043] text-sm tabular-nums text-[#e8eaed] transition-colors focus:border-[var(--google-blue)] focus:outline-none"
+        className="h-9 w-[110px] px-3 rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] hover:bg-[var(--surface-container-high)] text-xs tabular-nums text-[var(--text-primary)] transition-colors focus:border-[var(--google-blue)] focus:ring-1 focus:ring-[var(--google-blue)] focus:outline-none"
       />
       {open && (
-        <div className="absolute z-[100] top-full left-0 mt-1 w-full max-h-60 overflow-y-auto custom-scrollbar bg-[#303134] border border-[#5f6368] rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.6)] py-1 origin-top-left animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute z-[100] top-full left-0 mt-1 w-full max-h-60 overflow-y-auto custom-scrollbar bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-xl shadow-2xl py-1 origin-top-left animate-in fade-in zoom-in-95 duration-150">
           {options.map((opt) => (
             <button
               key={opt}
               type="button"
               onMouseDown={(e) => { e.preventDefault(); onChange(opt); setOpen(false); }}
-              className={`w-full text-left px-4 py-2 text-sm hover:bg-[#3c4043] ${fmt(parse(value)) === opt ? 'bg-[#3c4043] text-[var(--google-blue)]' : 'text-[#e8eaed]'}`}
+              className={`w-full text-left px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${fmt(parse(value)) === opt ? 'bg-[var(--google-blue-primary)] text-white font-medium' : 'text-[var(--text-primary)] hover:bg-[#3C4043]'}`}
             >
               {to12h(parse(opt))}
             </button>
           ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-interface SelectOption {
-  value: string | number;
-  label: string;
-}
-
-const CustomSelect: React.FC<{
-  value: string | number;
-  onChange: (val: any) => void;
-  options: SelectOption[];
-  className?: string;
-}> = ({ value, onChange, options, className = "w-full max-w-[200px]" }) => {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handle = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    if (open) document.addEventListener('mousedown', handle);
-    return () => document.removeEventListener('mousedown', handle);
-  }, [open]);
-
-  const selectedOption = options.find((o) => o.value === value);
-
-  return (
-    <div ref={ref} className={`relative ${className}`}>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between h-10 px-3 rounded-lg bg-[#303134] border hover:bg-[#3c4043] text-sm text-[#e8eaed] transition-colors focus:outline-none ${open ? 'border-[var(--google-blue)]' : 'border-[#5f6368] focus:border-[var(--google-blue)]'}`}
-      >
-        <span className="truncate pr-2">{selectedOption?.label}</span>
-        <ChevronDown className={`w-4 h-4 text-[var(--text-secondary)] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open && (
-        <div className="absolute z-[100] top-full left-0 mt-1 w-full max-h-60 overflow-y-auto custom-scrollbar bg-[#303134] border border-[#5f6368] rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.6)] py-1.5 origin-top-left animate-in fade-in zoom-in-95 duration-200">
-          {options.map((opt) => {
-            const isSelected = value === opt.value;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => { onChange(opt.value); setOpen(false); }}
-                className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                  isSelected
-                    ? 'bg-[var(--google-blue-primary)] text-white'
-                    : 'text-[#e8eaed] hover:bg-[#3c4043]'
-                }`}
-              >
-                {opt.label}
-              </button>
-            );
-          })}
         </div>
       )}
     </div>
@@ -492,14 +435,14 @@ export const AppointmentScheduleModal: React.FC = () => {
             <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-5 flex flex-col gap-6">
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-medium tracking-wider text-[var(--text-secondary)] uppercase">Tiêu đề xem trước (không lưu máy chủ)</span>
-                <input
+                <Input
+                  variant="underline"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t('appt.titlePlaceholder')}
                   aria-label={t('appt.titlePlaceholder')}
                   autoFocus
-                  className="w-full bg-transparent border-0 border-b border-[#5f6368] focus:border-[var(--google-blue)] text-[20px] font-medium pb-2 focus:outline-none placeholder:text-[var(--text-secondary)] transition-colors"
                 />
               </div>
 
@@ -507,7 +450,7 @@ export const AppointmentScheduleModal: React.FC = () => {
             <div className="flex flex-col gap-2">
               <span className="text-[13px] font-medium tracking-wide text-[#e8eaed]">{t('appt.duration')}</span>
               <span className="text-[11px] text-[var(--text-secondary)]">Mỗi cuộc hẹn sẽ kéo dài bao lâu?</span>
-              <CustomSelect
+              <Select
                 value={duration}
                 onChange={setDuration}
                 options={DURATIONS.map(m => ({
@@ -525,7 +468,7 @@ export const AppointmentScheduleModal: React.FC = () => {
                 <span className="text-[11px] text-[var(--text-secondary)]">Thiết lập thời gian bạn thường rảnh để đặt cuộc hẹn.</span>
               </div>
               <div className="mb-4">
-                <CustomSelect
+                <Select
                   value={repeatMode}
                   onChange={setRepeatMode}
                   options={[
@@ -618,7 +561,7 @@ export const AppointmentScheduleModal: React.FC = () => {
             <section className="flex flex-col gap-4 pt-4 border-t border-[#3c4043]">
               <div className="flex flex-col gap-2">
                 <span className="text-[13px] font-medium text-[#e8eaed]">{t('appt.timezone')}</span>
-                <CustomSelect
+                <Select
                   value={timezone}
                   onChange={setTimezone}
                   options={TIMEZONES.map(tz => ({ value: tz.value, label: tz.label }))}
@@ -639,24 +582,24 @@ export const AppointmentScheduleModal: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3 mt-2">
                   <label className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
                     {t('appt.maxDays')}
-                    <input
+                    <Input
                       type="number"
                       min={1}
                       max={365}
                       value={maxDays}
                       onChange={(e) => setMaxDays(clamp(Number(e.target.value) || 1, 1, 365))}
-                      className={`h-10 px-3 rounded-lg bg-[#303134] border border-[#5f6368] text-[#e8eaed] tabular-nums focus:border-[var(--google-blue)] focus:outline-none`}
+                      className="tabular-nums"
                     />
                   </label>
                   <label className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
                     {t('appt.minHours')}
-                    <input
+                    <Input
                       type="number"
                       min={0}
                       max={168}
                       value={minHours}
                       onChange={(e) => setMinHours(clamp(Number(e.target.value) || 0, 0, 168))}
-                      className={`h-10 px-3 rounded-lg bg-[#303134] border border-[#5f6368] text-[#e8eaed] tabular-nums focus:border-[var(--google-blue)] focus:outline-none`}
+                      className="tabular-nums"
                     />
                   </label>
                 </div>

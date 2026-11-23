@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { Priority } from '../../types';
+import { Select } from '../ui/Select';
+import { Input } from '../ui/Input';
+import { DatePicker } from '../ui/DatePicker';
 import {
   X,
   Clock,
@@ -11,7 +14,6 @@ import {
   Palette,
   Bell,
   Check,
-  ChevronDown,
   Calendar as CalendarIcon,
   CheckCircle2,
   CalendarPlus,
@@ -22,18 +24,6 @@ import {
   Link,
   Paperclip,
 } from 'lucide-react';
-
-const monthNamesVi = [
-  'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
-  'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
-  'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
-];
-
-const monthNamesEn = [
-  'January', 'February', 'March', 'April',
-  'May', 'June', 'July', 'August',
-  'September', 'October', 'November', 'December',
-];
 
 const colorPalette = [
   { id: 'blue', color: '#8AB4F8', name: 'Google Blue' },
@@ -67,138 +57,7 @@ const timeOptions = [
   { value: '06:00 PM', label: '06:00 PM' },
 ];
 
-interface CustomSelectOption<T = string> {
-  value: T;
-  label: string;
-  icon?: React.ReactNode;
-  colorDot?: string;
-}
 
-interface CustomDropdownProps<T = string> {
-  value: T;
-  options: CustomSelectOption<T>[];
-  onChange: (value: T) => void;
-  className?: string;
-  buttonClassName?: string;
-  menuClassName?: string;
-  prefixIcon?: React.ReactNode;
-  isMono?: boolean;
-  align?: 'left' | 'right';
-  openDirection?: 'auto' | 'down' | 'up';
-}
-
-function CustomDropdown<T extends string | number>({
-  value,
-  options,
-  onChange,
-  className = '',
-  buttonClassName = '',
-  menuClassName = '',
-  prefixIcon,
-  isMono = false,
-  align = 'left',
-  openDirection = 'auto',
-}: CustomDropdownProps<T>) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [dropUp, setDropUp] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
-
-  const handleToggle = () => {
-    if (!isOpen && buttonRef.current) {
-      if (openDirection === 'up') {
-        setDropUp(true);
-      } else if (openDirection === 'down') {
-        setDropUp(false);
-      } else {
-        const rect = buttonRef.current.getBoundingClientRect();
-        const container = dropdownRef.current?.closest('.overflow-y-auto');
-        const containerBottom = container ? container.getBoundingClientRect().bottom : window.innerHeight;
-        const spaceBelow = containerBottom - rect.bottom;
-        setDropUp(spaceBelow < 180);
-      }
-    }
-    setIsOpen(!isOpen);
-  };
-
-  const selectedOption = options.find((opt) => opt.value === value);
-
-  return (
-    <div className={`relative inline-block ${className}`} ref={dropdownRef}>
-      <button
-        ref={buttonRef}
-        type="button"
-        onClick={handleToggle}
-        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs hover:bg-[var(--surface-container-high)] hover:border-[#4B4D50] focus:outline-none focus:border-[var(--google-blue)] transition-colors cursor-pointer select-none ${
-          isOpen ? 'bg-[var(--surface-container-high)] border-[var(--google-blue)]' : ''
-        } ${isMono ? 'font-mono' : ''} ${buttonClassName}`}
-      >
-        {prefixIcon && <span className="shrink-0">{prefixIcon}</span>}
-        {selectedOption?.colorDot && (
-          <span
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ backgroundColor: selectedOption.colorDot }}
-          />
-        )}
-        <span className="truncate">{selectedOption?.label ?? value}</span>
-        <ChevronDown
-          className={`w-3.5 h-3.5 text-[var(--text-secondary)] shrink-0 transition-transform duration-200 ${
-            isOpen ? 'rotate-180 text-[var(--google-blue)]' : ''
-          }`}
-        />
-      </button>
-
-      {isOpen && (
-        <div
-          className={`absolute ${dropUp ? 'bottom-full mb-1.5 origin-bottom-left' : 'top-full mt-1.5 origin-top-left'} ${
-            align === 'right' ? 'right-0' : 'left-0'
-          } min-w-full w-max max-h-56 overflow-y-auto custom-scrollbar bg-[#242527] border border-[var(--border-subtle)] rounded-xl shadow-2xl shadow-black/80 p-1 z-50 space-y-0.5 animate-in fade-in zoom-in-95 duration-150 ${menuClassName}`}
-        >
-          {options.map((opt) => {
-            const isSelected = opt.value === value;
-            return (
-              <button
-                key={String(opt.value)}
-                type="button"
-                onClick={() => {
-                  onChange(opt.value);
-                  setIsOpen(false);
-                }}
-                className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 rounded-lg cursor-pointer select-none ${
-                  isSelected
-                    ? 'bg-[var(--google-blue-primary)] text-white font-medium'
-                    : 'text-[var(--text-primary)] hover:bg-[#3C4043]'
-                }`}
-              >
-                {opt.icon && <span className="shrink-0">{opt.icon}</span>}
-                {opt.colorDot && (
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-black/20"
-                    style={{ backgroundColor: opt.colorDot }}
-                  />
-                )}
-                <span className="truncate flex-1">{opt.label}</span>
-                {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-white ml-2" />}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export const CreateEventModal: React.FC = () => {
   const {
@@ -339,10 +198,6 @@ export const CreateEventModal: React.FC = () => {
   }, [activeModal, closeModal]);
 
   if (activeModal !== 'create' && activeModal !== 'edit') return null;
-
-  const targetDate = new Date(selectedYear, selectedMonth, selectedDay);
-  const weekdayName = targetDate.toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', { weekday: 'long' });
-  const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
 
   const handleAddGuest = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && guestEmail.trim()) {
@@ -523,14 +378,14 @@ export const CreateEventModal: React.FC = () => {
             )}
             {/* 1. Large Title Input */}
             <div className="relative">
-              <input
+              <Input
+                variant="underline"
                 type="text"
                 required
                 autoFocus
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={language === 'vi' ? 'Thêm tiêu đề' : 'Add title'}
-                className="w-full bg-transparent border-0 border-b-2 border-[var(--google-blue)]/80 pb-2 text-xl font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)] transition-colors"
               />
             </div>
 
@@ -579,39 +434,37 @@ export const CreateEventModal: React.FC = () => {
             <div className="space-y-4 pt-1 text-xs text-[var(--text-primary)]">
               {/* Row 1: Date & Time (Context-aware) */}
               <div className="flex items-start gap-3.5">
-                <Clock className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
+                <Clock className="w-5 h-5 text-[var(--text-secondary)] mt-2 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-3 py-1.5 rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] font-medium text-[var(--text-primary)]">
-                      {weekdayName}, {selectedDay} {monthNames[selectedMonth]}
-                    </span>
+                    <DatePicker
+                      value={{ day: selectedDay, month: selectedMonth, year: selectedYear }}
+                      onChange={(newDate) => selectDate(newDate.day, newDate.month, newDate.year)}
+                    />
 
                     {activeTab === 'task' ? (
                       <div className="flex items-center gap-2">
                         <span className="text-[var(--text-secondary)]">{language === 'vi' ? 'Hạn chót:' : 'Due:'}</span>
-                        <CustomDropdown
+                        <Select
                           value={dueTime}
                           onChange={setDueTime}
                           options={dueTimeOptions}
                           isMono
-                          buttonClassName="py-1.5 px-2.5 font-mono"
                         />
                       </div>
                     ) : (
                       <>
                         <span className="text-[var(--text-secondary)]">•</span>
-                        <CustomDropdown
+                        <Select
                           value={startTime}
                           onChange={setStartTime}
                           options={timeOptions}
-                          buttonClassName="py-1.5 px-2.5"
                         />
                         <span className="text-[var(--text-secondary)]">–</span>
-                        <CustomDropdown
+                        <Select
                           value={endTime}
                           onChange={setEndTime}
                           options={timeOptions}
-                          buttonClassName="py-1.5 px-2.5"
                         />
                       </>
                     )}
@@ -621,7 +474,7 @@ export const CreateEventModal: React.FC = () => {
                     <div className="flex items-center gap-3 text-[11px] text-[var(--text-secondary)]">
                       <span>GMT+7 Giờ Đông Dương</span>
                       <span>•</span>
-                      <CustomDropdown
+                      <Select
                         value={frequency}
                         onChange={setFrequency}
                         options={[
@@ -630,7 +483,7 @@ export const CreateEventModal: React.FC = () => {
                           { value: 'weekly', label: language === 'vi' ? 'Hàng tuần' : 'Weekly' },
                           { value: 'monthly', label: language === 'vi' ? 'Hàng tháng' : 'Monthly' },
                         ]}
-                        buttonClassName="bg-transparent border-transparent hover:border-[var(--border-subtle)] text-[var(--google-blue)] hover:text-[#A8C7FA] py-0.5 px-1.5"
+                        buttonClassName="bg-transparent border-transparent hover:border-[var(--border-subtle)] text-[var(--google-blue)] hover:text-[#A8C7FA] py-0.5 px-1.5 h-auto"
                       />
                     </div>
                   )}
@@ -640,15 +493,14 @@ export const CreateEventModal: React.FC = () => {
               {/* Row 2: Add Guests (Chỉ dành cho Sự kiện) */}
               {activeTab === 'event' && (
                 <div className="flex items-start gap-3.5">
-                  <Users className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
+                  <Users className="w-5 h-5 text-[var(--text-secondary)] mt-2 shrink-0" />
                   <div className="flex-1 space-y-2">
-                    <input
+                    <Input
                       type="text"
                       value={guestEmail}
                       onChange={(e) => setGuestEmail(e.target.value)}
                       onKeyDown={handleAddGuest}
                       placeholder={language === 'vi' ? 'Thêm khách (nhập email rồi nhấn Enter)...' : 'Add guests (press Enter)...'}
-                      className="w-full bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)]"
                     />
                     <div className="flex flex-wrap gap-1.5">
                       {guests.map((guest, idx) => (
@@ -681,12 +533,11 @@ export const CreateEventModal: React.FC = () => {
                 <div className="flex items-center gap-3.5">
                   <MapPin className="w-5 h-5 text-[var(--text-secondary)] shrink-0" />
                   <div className="flex-1">
-                    <input
+                    <Input
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder={language === 'vi' ? 'Thêm vị trí hoặc phòng họp...' : 'Add location...'}
-                      className="w-full bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--google-blue)]"
                     />
                   </div>
                 </div>
@@ -735,13 +586,13 @@ export const CreateEventModal: React.FC = () => {
 
                     {/* Input thêm việc con */}
                     <div className="flex items-center gap-2">
-                      <input
+                      <Input
                         type="text"
                         value={newSubtaskInput}
                         onChange={(e) => setNewSubtaskInput(e.target.value)}
                         onKeyDown={handleAddSubtask}
                         placeholder={language === 'vi' ? '+ Thêm việc con rồi nhấn Enter...' : '+ Add subtask item and press Enter...'}
-                        className="flex-1 bg-[var(--surface-container)] border border-[var(--border-subtle)] focus:border-[var(--google-blue)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none transition-colors"
+                        className="flex-1"
                       />
                       <button
                         type="button"
@@ -751,7 +602,7 @@ export const CreateEventModal: React.FC = () => {
                             setNewSubtaskInput('');
                           }
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-[var(--surface-container-high)] hover:bg-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium border border-[var(--border-subtle)] transition-colors cursor-pointer shrink-0"
+                        className="h-9 px-3 rounded-lg bg-[var(--surface-container-high)] hover:bg-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium border border-[var(--border-subtle)] transition-colors cursor-pointer shrink-0"
                       >
                         {language === 'vi' ? 'Thêm' : 'Add'}
                       </button>
@@ -816,7 +667,7 @@ export const CreateEventModal: React.FC = () => {
                     {/* Category Selector */}
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] text-[var(--text-secondary)]">{language === 'vi' ? 'Danh mục / Tag:' : 'Category:'}</span>
-                      <CustomDropdown
+                      <Select
                         value={selectedCategory}
                         onChange={(catId) => {
                           setSelectedCategory(catId);
@@ -835,7 +686,6 @@ export const CreateEventModal: React.FC = () => {
                               : c.name,
                           colorDot: c.color,
                         }))}
-                        buttonClassName="px-2.5 py-1 text-xs"
                       />
                     </div>
 
@@ -874,8 +724,8 @@ export const CreateEventModal: React.FC = () => {
                   </div>
 
                   {/* Priority & Status (nếu có) & Reminder Badges */}
-                  <div className="flex items-center gap-2 text-[11px]">
-                    <CustomDropdown
+                  <div className="flex items-center gap-2 text-[11px] flex-wrap">
+                    <Select
                       value={priority}
                       onChange={(val) => setPriority(val as Priority)}
                       options={[
@@ -883,22 +733,20 @@ export const CreateEventModal: React.FC = () => {
                         { value: 'medium', label: language === 'vi' ? 'Ưu tiên TB' : 'Medium' },
                         { value: 'low', label: language === 'vi' ? 'Ưu tiên thấp' : 'Low' },
                       ]}
-                      buttonClassName="px-2 py-1 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                     />
 
                     {activeTab === 'event' && (
-                      <CustomDropdown
+                      <Select
                         value={status}
                         onChange={(val) => setStatus(val as 'busy' | 'free')}
                         options={[
                           { value: 'busy', label: language === 'vi' ? 'Bận' : 'Busy' },
                           { value: 'free', label: language === 'vi' ? 'Rảnh' : 'Free' },
                         ]}
-                        buttonClassName="px-2 py-1 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                       />
                     )}
 
-                    <CustomDropdown
+                    <Select
                       value={reminder}
                       onChange={setReminder}
                       options={[
@@ -907,8 +755,7 @@ export const CreateEventModal: React.FC = () => {
                         { value: '60m', label: language === 'vi' ? '1 giờ trước' : '1 hour before' },
                         { value: '1d', label: language === 'vi' ? '1 ngày trước' : '1 day before' },
                       ]}
-                      prefixIcon={<Bell className="w-3 h-3 text-[var(--google-blue)]" />}
-                      buttonClassName="px-2 py-1 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      prefixIcon={<Bell className="w-3.5 h-3.5 text-[var(--google-blue)]" />}
                     />
                   </div>
                 </div>

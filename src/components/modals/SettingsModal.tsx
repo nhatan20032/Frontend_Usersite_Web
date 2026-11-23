@@ -9,6 +9,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { Input } from '../ui/Input';
+import { DatePicker, type DatePickerValue } from '../ui/DatePicker';
 import type { ThemeName } from '../../types';
 import {
   X,
@@ -34,6 +36,27 @@ export const SettingsModal: React.FC = () => {
   const [email, setEmail] = useState<string>(currentUser?.email || '');
   const [phone, setPhone] = useState<string>(currentUser?.phone || '');
   const [birthday, setBirthday] = useState<string>(currentUser?.birthday || '');
+
+  const parsedBirthday = React.useMemo<DatePickerValue>(() => {
+    if (birthday) {
+      const parts = birthday.split('-');
+      if (parts.length === 3) {
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        const d = parseInt(parts[2], 10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+          return { day: d, month: m, year: y };
+        }
+      }
+    }
+    const now = new Date();
+    return { day: now.getDate(), month: now.getMonth(), year: now.getFullYear() - 20 };
+  }, [birthday]);
+
+  const handleBirthdayChange = (val: DatePickerValue) => {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    setBirthday(`${val.year}-${pad(val.month + 1)}-${pad(val.day)}`);
+  };
 
   const [devices, setDevices] = useState<Array<{ deviceId: string; deviceName: string; platform: string; ipAddress?: string; lastActiveAt: string }>>([]);
   const [transactions, setTransactions] = useState<Array<{ transactionCode: string; planName: string; amount: number; status: string; createdAt: string }>>([]);
@@ -196,31 +219,29 @@ export const SettingsModal: React.FC = () => {
               <form onSubmit={handleProfileSubmit} className="space-y-3 pt-2">
                 <div className="space-y-1">
                   <label className="font-medium text-[var(--text-secondary)]">{t('modals.settings.nameLabel')}</label>
-                  <input
+                  <Input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-[#18191B] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[var(--google-blue)]"
                   />
                 </div>
 
                 <div className="space-y-1">
                   <label className="font-medium text-[var(--text-secondary)]">{t('modals.settings.emailLabel')}</label>
-                  <input
+                  <Input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)} readOnly
-                    className="w-full bg-[#18191B] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[var(--google-blue)]"
+                    onChange={(e) => setEmail(e.target.value)}
+                    readOnly
                   />
                 </div>
 
                 <div className="space-y-1">
                   <label className="font-medium text-[var(--text-secondary)]">{t('modals.settings.phoneLabel')}</label>
-                  <input
+                  <Input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-[#18191B] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[var(--google-blue)]"
                   />
                 </div>
 
@@ -231,11 +252,11 @@ export const SettingsModal: React.FC = () => {
                       <span>🎂</span> Tự động đồng bộ Lịch
                     </span>
                   </div>
-                  <input
-                    type="date"
-                    value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
-                    className="w-full bg-[#18191B] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[var(--google-blue)] cursor-pointer"
+                  <DatePicker
+                    value={parsedBirthday}
+                    onChange={handleBirthdayChange}
+                    className="w-full"
+                    buttonClassName="w-full justify-between"
                   />
                   <p className="text-[11px] text-[var(--text-secondary)] leading-tight pt-0.5">
                     {t('modals.settings.birthdayHint')}
