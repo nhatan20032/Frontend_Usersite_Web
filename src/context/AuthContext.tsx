@@ -1,3 +1,5 @@
+import { syncHubClient } from '../services/syncHubClient';
+import { disableBrowserPush } from '../services/browserPush';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, SubscriptionTier, AccountRole } from '../types';
 import { authApi } from '../api/authApi';
@@ -10,7 +12,7 @@ interface AuthContextType {
   isPremium: boolean;
   isLoggedIn: boolean;
   loginWithApi: (email: string, password: string) => Promise<boolean>;
-  registerWithApi: (email: string, password: string, fullName: string, phone?: string) => Promise<boolean>;
+  registerWithApi: (email: string, password: string, fullName: string, phone?: string, referralCode?: string) => Promise<boolean>;
   logout: () => void;
   updateProfile: (name: string, email: string, phone: string, birthday?: string) => Promise<boolean>;
   refreshProfile: () => Promise<void>;
@@ -97,9 +99,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const registerWithApi = async (email: string, password: string, fullName: string, phone?: string): Promise<boolean> => {
+  const registerWithApi = async (email: string, password: string, fullName: string, phone?: string, referralCode?: string): Promise<boolean> => {
     try {
-      const res = await authApi.register({ email, password, fullName, phone });
+      const res = await authApi.register({ email, password, fullName, phone, referralCode });
       setAuthToken(res.token);
       if (res.refreshToken) {
         setRefreshToken(res.refreshToken);
@@ -124,9 +126,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try { await disableBrowserPush(); } catch { /* Session revocation still prevents delivery to this device. */ }
     const refresh = localStorage.getItem('refresh_token');
-    if (refresh) void authApi.logout(refresh).catch(() => {});
+    if (refresh) { try { await authApi.logout(refresh); } catch { /* Report offline logout limit in notification settings. */ } }
     setAuthToken(null); setRefreshToken(null); setCurrentUser(null);
     localStorage.removeItem('rp_user_session');
   };
@@ -137,12 +140,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch { return false; }
   };
   const refreshProfile = async () => {
+    const expectedId = currentUser?.id;
     const user = await authApi.getProfile();
-    setCurrentUser({ id: user.id, isLoggedIn: true, name: user.fullName, email: user.email,
+    setCurrentUser(previous => previous?.id !== expectedId ? previous : ({ id: user.id, isLoggedIn: true, name: user.fullName, email: user.email,
       phone: user.phone, birthday: user.birthday, role: user.isPremium ? 'PREMIUM_USER' : 'FREE_USER',
       subscriptionTier: user.subscriptionTier, isPremium: user.isPremium, planName: user.planName,
-      planExpiresAt: user.planExpiresAt, features: user.features, avatarInitial: user.fullName.slice(0, 2).toUpperCase() });
+      planExpiresAt: user.planExpiresAt, features: user.features, avatarInitial: user.fullName.slice(0, 2).toUpperCase() }));
   };
+  useEffect(() => {
+    if (!currentUser) return;
+    return syncHubClient.onDataChanged(event => { if (event.entityType === 'subscription') void refreshProfile().catch(() => {}); });
+  }, [currentUser?.id]);
+
 
   const hasFeature = (featureCode: string): boolean => {
     if (isPremium) return true;

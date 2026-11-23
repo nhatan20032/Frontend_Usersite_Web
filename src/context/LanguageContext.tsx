@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePreferences } from './PreferencesContext';
+import React, { createContext, useContext } from 'react';
 import type { Language } from '../types';
 import { translations } from '../i18n/translations';
 
@@ -12,24 +13,10 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem('routinepulse_lang');
-    if (saved === 'vi' || saved === 'en') return saved;
-    return 'vi';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('routinepulse_lang', language);
-    document.documentElement.lang = language;
-  }, [language]);
-
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-  };
-
-  const toggleLanguage = () => {
-    setLanguageState((prev) => (prev === 'vi' ? 'en' : 'vi'));
-  };
+  const { preferences, save } = usePreferences();
+  const language = preferences.language;
+  const setLanguage = (lang: Language) => { void save({ language: lang }); };
+  const toggleLanguage = () => setLanguage(language === 'vi' ? 'en' : 'vi');
 
   // Safe nested translation lookup with optional interpolation: {key}
   const t = (path: string, params?: Record<string, string | number>): string => {

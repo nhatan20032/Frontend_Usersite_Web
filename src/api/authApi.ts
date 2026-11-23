@@ -5,6 +5,7 @@ export interface RegisterDto {
   password: string;
   fullName: string;
   phone?: string;
+  referralCode?: string;
 }
 
 export interface LoginDto {
@@ -38,7 +39,9 @@ export const authApi = {
     return apiClient.post<AuthResponse>('/user/auth/register', data);
   },
   login(data: LoginDto) {
-    return apiClient.post<AuthResponse>('/user/auth/login', data);
+    let deviceId = localStorage.getItem('web_device_id');
+    if (!deviceId) { deviceId = crypto.randomUUID(); localStorage.setItem('web_device_id', deviceId); }
+    return apiClient.post<AuthResponse>('/user/auth/login', { ...data, deviceId, deviceName: 'RoutinePulse Web', platform: 0 });
   },
   getProfile() {
     return apiClient.get<AuthResponse['user']>('/user/auth/me');

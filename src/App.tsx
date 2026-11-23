@@ -1,3 +1,5 @@
+import { BrowserPushLifecycle } from './components/notifications/BrowserPushSettings';
+import { PreferencesProvider } from './context/PreferencesContext';
 import { PublicBookingPage } from './components/appointments/PublicBookingPage';
 import React from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -20,13 +22,16 @@ const MainContent: React.FC = () => {
 
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <PreferencesProvider>
+      <LanguageProvider>
         <AppProvider>
+          <BrowserPushLifecycle />
           <MainContent />
         </AppProvider>
-      </AuthProvider>
-    </LanguageProvider>
+      </LanguageProvider>
+      </PreferencesProvider>
+    </AuthProvider>
   );
 }
 

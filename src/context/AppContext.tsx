@@ -1,3 +1,4 @@
+import { usePreferences } from './PreferencesContext';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type {
   CalendarEvent,
@@ -95,7 +96,7 @@ interface AppContextType {
 
   // Theme
   currentTheme: ThemeName;
-  setTheme: (theme: ThemeName) => void;
+  setTheme: (theme: ThemeName) => Promise<boolean>;
 
   // Modals & Navigation
   activeModal: ActiveModalType;
@@ -231,13 +232,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
 
   const [calendarView, setCalendarViewMode] = useState<CalendarViewMode>('month');
-  const [currentTheme, setCurrentTheme] = useState<ThemeName>(() => {
-    const saved = localStorage.getItem('routinepulse_theme');
-    if (saved && ['default', 'dark', 'tet', 'christmas', 'sakura'].includes(saved)) {
-      return saved as ThemeName;
-    }
-    return 'default';
-  });
+  const { preferences, save: savePreferences } = usePreferences();
+  const currentTheme = preferences.currentTheme;
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilters>(() => {
     const initial: CategoryFilters = { routine: true, event: true, task: true, holiday: true };
     categories.forEach((cat) => {
@@ -321,18 +317,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeEventId, setActiveEventId] = useState<number | null>(null);
   const [activeEditItem, setActiveEditItem] = useState<{ id: number, type: 'task' | 'event' } | null>(null);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
-
-  // Apply Theme to html and body class and persist to localStorage
-  useEffect(() => {
-    localStorage.setItem('routinepulse_theme', currentTheme);
-    const root = document.documentElement;
-    const body = document.body;
-    root.setAttribute('data-theme', currentTheme);
-    body.className = body.className.replace(/theme-\w+/g, '').trim();
-    if (currentTheme !== 'default') {
-      body.classList.add(`theme-${currentTheme}`);
-    }
-  }, [currentTheme]);
 
   const showToast = (title: string, message: string, type: ToastType = 'info', duration = 3000) => {
     const id = Date.now().toString() + Math.random().toString(36).substring(2, 5);
@@ -692,7 +676,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         openDayInspector,
         closeDayInspector,
         currentTheme,
-        setTheme: setCurrentTheme,
+        setTheme: (theme) => savePreferences({ themeCode: theme }),
         activeModal,
         settingsInitialTab,
         openModal,

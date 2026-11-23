@@ -33,6 +33,7 @@ test('server tasks use their UUID for writes and empty server data stays empty',
   await page.route('**/hubs/**', route => route.fulfill({ status: 503, body: '' }));
   await page.route('**/api/v1/**', route => {
     const path = new URL(route.request().url()).pathname;
+    if (path.endsWith('/settings')) return route.fulfill({ json: { currentTheme: 'default', language: 'vi', enableSound: true, availableThemes: [] } });
     if (path.endsWith('/auth/me')) return route.fulfill({ json: user });
     if (path.endsWith(`/tasks/${id}/toggle`)) { writes.push(path); completed = true; return route.fulfill({ json: { id, status: 'COMPLETED' } }); }
     if (path.endsWith('/tasks')) return route.fulfill({ json: [{ id, title: 'Task from server', priority: 0, status: completed ? 1 : 0, subTasks: [] }] });
@@ -67,4 +68,36 @@ test('public booking works without an authenticated session', async ({ page }) =
   await expect(page.getByRole('status')).toContainText('booking-from-server');
   expect(payload?.clientEmail).toBe('guest@example.com');
   expect(await page.evaluate(() => localStorage.getItem('access_token'))).toBeNull();
+});
+
+
+test('account preferences persist and apply the dynamic theme palette', async ({ page }) => {
+  let settings = { currentTheme: 'OCEAN', language: 'vi', enableSound: true, availableThemes: [{ id: 'theme-id', code: 'OCEAN', name: 'Ocean', primaryColor: '#123456', backgroundColor: '#102030', isLocked: false, palette: { textColor: '#ffffff', surfaceColor: '#203040' } }] };
+  const patches: unknown[] = [];
+  await page.addInitScript(() => localStorage.setItem('access_token', 'test-access'));
+  await page.route('**/hubs/**', route => route.fulfill({ status: 503, body: '' }));
+  await page.route('**/api/v1/**', async route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith('/auth/me')) return route.fulfill({ json: user });
+    if (path.endsWith('/settings')) {
+      if (route.request().method() === 'PUT') { const patch = route.request().postDataJSON(); patches.push(patch); settings = { ...settings, ...patch, currentTheme: patch.themeCode ?? settings.currentTheme }; }
+      return route.fulfill({ json: settings });
+    }
+    if (path.endsWith('/notifications')) return route.fulfill({ json: { data: [], unreadCount: 0 } });
+    return route.fulfill({ json: [] });
+  });
+  await page.goto('/');
+  await expect(page.locator('#topHeader')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--google-blue'))).toBe('#123456');
+  await page.locator('#topHeader button').filter({ has: page.locator('svg.lucide-settings') }).click();
+  await page.getByRole('button', { name: 'Thông báo & Nhắc', exact: true }).click();
+  await page.getByRole('checkbox', { name: 'Âm thanh thông báo' }).click();
+  await expect(page.getByRole('checkbox', { name: 'Âm thanh thông báo' })).not.toBeChecked();
+  await expect.poll(() => patches.length).toBe(1);
+  expect(patches[0]).toEqual({ enableSound: false });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--google-blue'))).toBe('#123456');
+  await page.locator('#topHeader button').filter({ has: page.locator('svg.lucide-settings') }).click();
+  await page.getByRole('button', { name: 'Thông báo & Nhắc', exact: true }).click();
+  await expect(page.getByRole('checkbox', { name: 'Âm thanh thông báo' })).not.toBeChecked();
 });

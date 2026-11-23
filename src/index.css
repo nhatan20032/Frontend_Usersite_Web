@@ -327,3 +327,5 @@ body[class*="theme-"] [class*="hover:bg-[#333538]"]:hover {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+body { background-image: var(--theme-background-image, none); background-size: cover; background-attachment: fixed; }

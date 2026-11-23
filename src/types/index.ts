@@ -28,7 +28,7 @@ export interface SubscriptionPlanDto {
   isActive: boolean;
 }
 
-export type ThemeName = 'default' | 'dark' | 'tet' | 'christmas' | 'sakura';
+export type ThemeName = string;
 
 export type CalendarViewMode = 'month' | 'week' | 'agenda';
 

@@ -1,3 +1,7 @@
+import { ReferralPanel } from './ReferralPanel';
+import { usePreferences } from '../../context/PreferencesContext';
+import { downloadReceipt } from '../../api/downloads';
+import { BrowserPushSettings } from '../notifications/BrowserPushSettings';
 import { HolidayRegionSettings } from './HolidayRegionSettings';
 import { authApi } from '../../api/authApi';
 import { subscriptionApi } from '../../api/subscriptionApi';
@@ -20,6 +24,7 @@ import {
 } from 'lucide-react';
 
 export const SettingsModal: React.FC = () => {
+  const { preferences, save: savePreferences } = usePreferences();
   const { currentUser, isPremium, updateProfile } = useAuth();
   const { activeModal, closeModal, currentTheme, setTheme, showToast, openModal, triggerPremiumFeature, settingsInitialTab } = useApp();
   const { language, setLanguage, t } = useLanguage();
@@ -245,21 +250,21 @@ export const SettingsModal: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
-                {themes.map((th) => {
+                {[...themes, ...preferences.availableThemes.map(th => ({ id: th.code, name: th.name, desc: 'Giao diện từ kho Admin', previewClass: 'from-slate-600 to-slate-900' }))].map((th) => {
                   const isCurrent = currentTheme === th.id;
                   const isVipTheme = th.id !== 'default' && th.id !== 'dark';
-                  const isLocked = isVipTheme && !isPremium;
+                  const remote = preferences.availableThemes.find(t => t.code === th.id);
+                  const isLocked = remote ? remote.isLocked : isVipTheme && !isPremium;
 
                   return (
                     <div
                       key={th.id}
-                      onClick={() => {
+                      onClick={async () => {
                         if (isLocked) {
                           triggerPremiumFeature(`Giao diện ${th.name}`);
                           return;
                         }
-                        setTheme(th.id);
-                        showToast(t('toasts.themeChangedTitle'), t('toasts.themeChangedDesc'), 'success');
+                        if (await setTheme(th.id)) showToast(t('toasts.themeChangedTitle'), t('toasts.themeChangedDesc'), 'success');
                       }}
                       className={`p-3.5 rounded-xl border cursor-pointer transition-colors flex items-start gap-3 relative ${
                         isCurrent
@@ -358,7 +363,7 @@ export const SettingsModal: React.FC = () => {
           )}
 
           {/* Tab 4: Notifications */}
-          {activeTab === 'notifications' && <p className="text-sm">Thông báo trong ứng dụng được nhận từ máy chủ. Firebase push hiện hỗ trợ ứng dụng mobile; trình duyệt nhận thông báo khi đang mở ứng dụng.</p>}
+          {activeTab === 'notifications' && <div className="space-y-4"><label className="flex items-center gap-2"><input type="checkbox" checked={preferences.enableSound} onChange={e => { void savePreferences({ enableSound: e.target.checked }); }} />Âm thanh thông báo</label><BrowserPushSettings /></div>}
 
           {/* Tab 5: Devices */}
           {activeTab === 'devices' && (
@@ -413,12 +418,13 @@ export const SettingsModal: React.FC = () => {
               </div>
 
               <div className="space-y-2">
+                <ReferralPanel />
                 <h5>Lịch sử giao dịch</h5>
                 {transactions.length === 0 && <p>Chưa có giao dịch.</p>}
                 {transactions.map(tx => <div key={tx.transactionCode} className="p-3 border border-[var(--border-subtle)] rounded-xl">
-                  <p>{tx.transactionCode} · {tx.planName}</p><p>{tx.amount.toLocaleString('vi-VN')} đ · {tx.status} · {new Date(tx.createdAt).toLocaleDateString()}</p>
+                  <p>{tx.transactionCode} · {tx.planName}</p>{tx.status === 'SUCCESS' && <button onClick={() => downloadReceipt(tx.transactionCode).catch((e: Error) => showToast('Không tải được chứng từ', e.message, 'error'))}>Tải chứng từ PDF</button>}<p>{tx.amount.toLocaleString('vi-VN')} đ · {tx.status} · {new Date(tx.createdAt).toLocaleDateString()}</p>
                 </div>)}
-                <p className="text-[var(--text-secondary)]">Chưa hỗ trợ tải hóa đơn PDF.</p>
+                <p className="text-[var(--text-secondary)]">Chứng từ thanh toán không thay thế hóa đơn điện tử thuế.</p>
               </div>
             </div>
           )}
