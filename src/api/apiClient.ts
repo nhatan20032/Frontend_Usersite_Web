@@ -17,8 +17,6 @@ export class ApiError extends Error {
 
 let refreshInFlight: Promise<void> | null = null;
 const notifyAuthExpired = () => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
   window.dispatchEvent(new CustomEvent('app:auth-expired'));
 };
 

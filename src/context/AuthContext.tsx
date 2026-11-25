@@ -30,8 +30,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Auto fetch latest profile from backend using HttpOnly session cookie
   useEffect(() => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
     authApi.getProfile()
       .then((resUser) => {
         if (resUser) {
@@ -66,13 +64,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => window.removeEventListener('app:auth-expired', handleAuthExpired);
   }, []);
 
-  useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('rp_user_session', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('rp_user_session');
-    }
-  }, [currentUser]);
 
   const loginWithApi = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -126,7 +117,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try { await disableBrowserPush(); } catch { /* Session revocation still prevents delivery to this device. */ }
     try { await authApi.logout(); } catch { /* Report offline logout limit in notification settings. */ }
     setCurrentUser(null);
-    localStorage.removeItem('rp_user_session');
   };
   const updateProfile = async (name: string, _email: string, phone: string, birthday?: string) => {
     try {
