@@ -17,12 +17,7 @@ import {
   Calendar as CalendarIcon,
   CheckCircle2,
   CalendarPlus,
-  Bold,
-  Italic,
-  Underline,
   List,
-  Link,
-  Paperclip,
 } from 'lucide-react';
 
 const colorPalette = [
@@ -370,7 +365,7 @@ export const CreateEventModal: React.FC = () => {
 
         {/* Modal Form Body */}
         <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="p-5 sm:p-6 flex flex-col gap-4.5 max-h-[78vh] overflow-y-auto custom-scrollbar">
+          <div className="p-5 sm:p-6 flex flex-col gap-4.5 max-h-[78vh] overflow-y-auto [scrollbar-gutter:stable] custom-scrollbar">
             {errorMsg && (
               <div className="bg-red-500/20 text-red-200 p-3 rounded-lg border border-red-500/50 text-xs break-all">
                 {errorMsg}
@@ -616,37 +611,13 @@ export const CreateEventModal: React.FC = () => {
                 <AlignLeft className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
                 <div className="flex-1 border border-[var(--border-subtle)] rounded-lg bg-[var(--surface-container)] overflow-hidden">
                   {activeTab === 'event' ? (
-                    <>
-                      {/* Mini Toolbar chỉ dành cho Sự kiện */}
-                      <div className="flex items-center gap-1 px-2.5 py-1 bg-[var(--surface-container-high)] border-b border-[var(--border-subtle)] text-[var(--text-secondary)]">
-                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Đậm">
-                          <Bold className="w-3.5 h-3.5" />
-                        </button>
-                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Nghiêng">
-                          <Italic className="w-3.5 h-3.5" />
-                        </button>
-                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Gạch chân">
-                          <Underline className="w-3.5 h-3.5" />
-                        </button>
-                        <span className="w-[1px] h-3.5 bg-[#3C4043] mx-1" />
-                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Danh sách">
-                          <List className="w-3.5 h-3.5" />
-                        </button>
-                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Liên kết">
-                          <Link className="w-3.5 h-3.5" />
-                        </button>
-                        <button type="button" className="p-1 rounded hover:bg-[var(--border-subtle)] hover:text-[var(--text-primary)] cursor-pointer" title="Đính kèm">
-                          <Paperclip className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                      <textarea
-                        rows={3}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder={language === 'vi' ? 'Thêm mô tả hoặc tài liệu đính kèm cho cuộc họp...' : 'Add description or attachments...'}
-                        className="w-full bg-transparent border-0 p-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none resize-none"
-                      />
-                    </>
+                    <textarea
+                      rows={4}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder={language === 'vi' ? 'Thêm mô tả hoặc ghi chú cho sự kiện...' : 'Add description or notes...'}
+                      className="w-full bg-transparent border-0 p-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none resize-none"
+                    />
                   ) : (
                     <textarea
                       rows={2}
@@ -661,14 +632,15 @@ export const CreateEventModal: React.FC = () => {
 
               {/* Row 6: Category Selector & Color Swatches & Native Color Picker */}
               <div className="flex items-start gap-3.5">
-                <Palette className="w-5 h-5 text-[var(--text-secondary)] mt-1 shrink-0" />
-                <div className="flex-1 space-y-2">
+                <Palette className="w-5 h-5 text-[var(--text-secondary)] mt-1.5 shrink-0" />
+                <div className="flex-1 space-y-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-2.5">
                     {/* Category Selector */}
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] text-[var(--text-secondary)]">{language === 'vi' ? 'Danh mục / Tag:' : 'Category:'}</span>
                       <Select
                         value={selectedCategory}
+                        buttonClassName="h-8 px-2.5 text-[11px]"
                         onChange={(catId) => {
                           setSelectedCategory(catId);
                           const cat = categories.find((c) => c.id === catId);
@@ -699,7 +671,7 @@ export const CreateEventModal: React.FC = () => {
                             onClick={() => setSelectedColor(cp.color)}
                             style={{ backgroundColor: cp.color }}
                             className={`w-4.5 h-4.5 rounded-full cursor-pointer transition-transform flex items-center justify-center ${
-                              selectedColor.toLowerCase() === cp.color.toLowerCase() ? 'ring-2 ring-white ring-offset-2 ring-offset-[#242628] scale-110' : 'hover:scale-110'
+                              selectedColor.toLowerCase() === cp.color.toLowerCase() ? 'ring-2 ring-white ring-offset-2 ring-offset-[var(--surface-container)] scale-110' : 'hover:scale-110'
                             }`}
                             title={cp.name}
                           >
@@ -708,7 +680,7 @@ export const CreateEventModal: React.FC = () => {
                         ))}
                         {/* Native Color Picker for custom color picking */}
                         <label
-                          className="w-4.5 h-4.5 rounded-full border border-dashed border-[#5F6368] flex items-center justify-center cursor-pointer hover:border-[var(--google-blue)] transition-colors relative overflow-hidden"
+                          className="w-4.5 h-4.5 rounded-full border border-dashed border-[var(--border-subtle)] flex items-center justify-center cursor-pointer hover:border-[var(--google-blue)] transition-colors relative overflow-hidden"
                           title={language === 'vi' ? 'Tự chọn màu khác từ Color Picker' : 'Custom color from Color Picker'}
                         >
                           <input
@@ -727,6 +699,7 @@ export const CreateEventModal: React.FC = () => {
                   <div className="flex items-center gap-2 text-[11px] flex-wrap">
                     <Select
                       value={priority}
+                      buttonClassName="h-8 px-2.5 text-[11px]"
                       onChange={(val) => setPriority(val as Priority)}
                       options={[
                         { value: 'high', label: language === 'vi' ? 'Ưu tiên cao' : 'High' },
@@ -738,6 +711,7 @@ export const CreateEventModal: React.FC = () => {
                     {activeTab === 'event' && (
                       <Select
                         value={status}
+                        buttonClassName="h-8 px-2.5 text-[11px]"
                         onChange={(val) => setStatus(val as 'busy' | 'free')}
                         options={[
                           { value: 'busy', label: language === 'vi' ? 'Bận' : 'Busy' },
@@ -748,6 +722,7 @@ export const CreateEventModal: React.FC = () => {
 
                     <Select
                       value={reminder}
+                      buttonClassName="h-8 px-2.5 text-[11px]"
                       onChange={setReminder}
                       options={[
                         { value: '15m', label: language === 'vi' ? '15 phút trước' : '15 min before' },

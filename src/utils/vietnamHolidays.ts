@@ -9,8 +9,8 @@ export interface HolidayResponse {
   source: string; fetchedAt: string;
   holidays: { date: string; name: string; regions: string[] }[];
 }
-export async function getVietnamHolidays(year = new Date().getFullYear()): Promise<CalendarEvent[]> {
-  const result = await apiClient.get<HolidayResponse>('/user/holidays', { year, ...holidayRegion() });
+export async function getVietnamHolidays(year = new Date().getFullYear(), lang?: string): Promise<CalendarEvent[]> {
+  const result = await apiClient.get<HolidayResponse>('/user/holidays', { year, ...holidayRegion(), ...(lang ? { lang } : {}) });
   return result.holidays.map((h, index) => {
     const [eventYear, month, day] = h.date.split('-').map(Number);
     return { id: 910000000 + year * 1000 + index, type: 'event', title: h.name,

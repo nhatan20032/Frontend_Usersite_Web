@@ -1,5 +1,4 @@
 import * as signalR from '@microsoft/signalr';
-import { getAuthToken } from '../api/apiClient';
 
 export interface DataChangeEvent {
   entityType: string;
@@ -27,9 +26,6 @@ class SyncHubService {
   private notificationListeners: Set<NotificationHandler> = new Set();
 
   public async start(): Promise<void> {
-    const token = getAuthToken();
-    if (!token) return;
-
     if (this.connection && this.connection.state === signalR.HubConnectionState.Connected) {
       return;
     }
@@ -41,7 +37,7 @@ class SyncHubService {
 
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
-        accessTokenFactory: () => getAuthToken() || '',
+        withCredentials: true,
       })
       .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
       .configureLogging(signalR.LogLevel.Warning)

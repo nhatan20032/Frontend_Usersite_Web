@@ -3,7 +3,6 @@ import { disableBrowserPush } from '../services/browserPush';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, SubscriptionTier, AccountRole } from '../types';
 import { authApi } from '../api/authApi';
-import { setAuthToken, getAuthToken, setRefreshToken } from '../api/apiClient';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -29,37 +28,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const currentRole: AccountRole = isPremium ? 'PREMIUM_USER' : 'FREE_USER';
   const isLoggedIn = Boolean(currentUser && currentUser.isLoggedIn);
 
-  // Auto fetch latest profile from backend if token exists
+  // Auto fetch latest profile from backend using HttpOnly session cookie
   useEffect(() => {
-    const token = getAuthToken();
-    if (token) {
-      authApi.getProfile()
-        .then((resUser) => {
-          if (resUser) {
-            const nameParts = (resUser.fullName || 'User').trim().split(' ');
-            const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
-            const updated: User = {
-              phone: resUser.phone,
-              birthday: resUser.birthday,
-              id: resUser.id,
-              isLoggedIn: true,
-              name: resUser.fullName,
-              email: resUser.email,
-              role: resUser.isPremium ? 'PREMIUM_USER' : 'FREE_USER',
-              subscriptionTier: resUser.subscriptionTier as SubscriptionTier,
-              isPremium: resUser.isPremium,
-              planName: resUser.planName,
-              planExpiresAt: resUser.planExpiresAt,
-              features: resUser.features,
-              avatarInitial,
-            };
-            setCurrentUser(updated);
-          }
-        })
-        .catch(() => {
-          setCurrentUser(null);
-        });
-    }
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    authApi.getProfile()
+      .then((resUser) => {
+        if (resUser) {
+          const nameParts = (resUser.fullName || 'User').trim().split(' ');
+          const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
+          const updated: User = {
+            phone: resUser.phone,
+            birthday: resUser.birthday,
+            id: resUser.id,
+            isLoggedIn: true,
+            name: resUser.fullName,
+            email: resUser.email,
+            role: resUser.isPremium ? 'PREMIUM_USER' : 'FREE_USER',
+            subscriptionTier: resUser.subscriptionTier as SubscriptionTier,
+            isPremium: resUser.isPremium,
+            planName: resUser.planName,
+            planExpiresAt: resUser.planExpiresAt,
+            features: resUser.features,
+            avatarInitial,
+          };
+          setCurrentUser(updated);
+        }
+      })
+      .catch(() => {
+        setCurrentUser(null);
+      });
+
+    const handleAuthExpired = () => {
+      setCurrentUser(null);
+    };
+    window.addEventListener('app:auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('app:auth-expired', handleAuthExpired);
   }, []);
 
   useEffect(() => {
@@ -73,10 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithApi = async (email: string, password: string): Promise<boolean> => {
     try {
       const res = await authApi.login({ email, password });
-      setAuthToken(res.token);
-      if (res.refreshToken) {
-        setRefreshToken(res.refreshToken);
-      }
       const nameParts = res.user.fullName.trim().split(' ');
       const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
       const user: User = {
@@ -102,10 +102,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const registerWithApi = async (email: string, password: string, fullName: string, phone?: string, referralCode?: string): Promise<boolean> => {
     try {
       const res = await authApi.register({ email, password, fullName, phone, referralCode });
-      setAuthToken(res.token);
-      if (res.refreshToken) {
-        setRefreshToken(res.refreshToken);
-      }
       const nameParts = res.user.fullName.trim().split(' ');
       const avatarInitial = nameParts.length > 0 ? nameParts[nameParts.length - 1].substring(0, 2).toUpperCase() : 'RP';
       const user: User = {
@@ -128,9 +124,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try { await disableBrowserPush(); } catch { /* Session revocation still prevents delivery to this device. */ }
-    const refresh = localStorage.getItem('refresh_token');
-    if (refresh) { try { await authApi.logout(refresh); } catch { /* Report offline logout limit in notification settings. */ } }
-    setAuthToken(null); setRefreshToken(null); setCurrentUser(null);
+    try { await authApi.logout(); } catch { /* Report offline logout limit in notification settings. */ }
+    setCurrentUser(null);
     localStorage.removeItem('rp_user_session');
   };
   const updateProfile = async (name: string, _email: string, phone: string, birthday?: string) => {

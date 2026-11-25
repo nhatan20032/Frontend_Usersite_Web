@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { UserProfileDropdown } from './UserProfileDropdown';
+import { Select } from '../ui/Select';
+import { DatePicker } from '../ui/DatePicker';
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,80 +13,10 @@ import {
   Settings,
   Bell,
   Menu,
+  X,
 } from 'lucide-react';
 import { notificationApi } from '../../api/notificationApi';
 import { syncHubClient } from '../../services/syncHubClient';
-import { getAuthToken } from '../../api/apiClient';
-
-interface CustomSelectProps {
-  value: number;
-  options: { label: string | number; value: number }[];
-  onChange: (value: number) => void;
-  className?: string;
-  isMono?: boolean;
-}
-
-const CustomSelect: React.FC<CustomSelectProps> = ({ value, options, onChange, className = '', isMono }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
-
-  const selectedOption = options.find((opt) => opt.value === value);
-
-  return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1 bg-transparent hover:bg-[var(--surface-container-high)] text-sm sm:text-base font-medium text-[var(--text-primary)] py-0.5 px-1.5 rounded border border-transparent hover:border-[var(--border-subtle)] focus:outline-none focus:border-[var(--google-blue)] transition-colors ${isOpen ? 'bg-[var(--surface-container-high)] border-[var(--border-subtle)]' : ''} ${isMono ? 'font-mono px-1' : ''}`}
-      >
-        <span>{selectedOption?.label}</span>
-        <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1 max-h-64 overflow-y-auto w-full bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-md shadow-lg z-50 py-1 custom-scrollbar">
-          {options.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => {
-                onChange(opt.value);
-                setIsOpen(false);
-              }}
-              className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${value === opt.value ? 'bg-[var(--google-blue-primary)] text-white' : 'text-[var(--text-primary)] hover:bg-[#3C4043]'}`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const monthNamesVi = [
-  'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
-  'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
-  'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
-];
-
-const monthNamesEn = [
-  'January', 'February', 'March', 'April',
-  'May', 'June', 'July', 'August',
-  'September', 'October', 'November', 'December',
-];
-
-const yearsList = Array.from({ length: 16 }, (_, i) => 2020 + i); // 2020 to 2035
 
 export const TopHeader: React.FC = () => {
   const { currentUser } = useAuth();
@@ -107,6 +39,7 @@ export const TopHeader: React.FC = () => {
   const { t, language } = useLanguage();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isNotifOpen, setIsNotifOpen] = useState<boolean>(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState<boolean>(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
   const [notifications, setNotifications] = useState<Array<{
@@ -121,9 +54,8 @@ export const TopHeader: React.FC = () => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
-    const token = getAuthToken();
     setNotifications([]);
-    if (!currentUser || !token) return;
+    if (!currentUser) return;
 
     notificationApi.getNotifications({ page: 1, pageSize: 20 }).then((res) => {
       if (res?.data) {
@@ -186,8 +118,6 @@ export const TopHeader: React.FC = () => {
     } catch (e) { showToast('Không thể xóa thông báo', (e as Error).message, 'error'); }
   };
 
-  const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
-
   return (
     <header
       id="topHeader"
@@ -216,11 +146,11 @@ export const TopHeader: React.FC = () => {
           <span className="hidden xs:inline font-semibold text-base tracking-tight text-[var(--text-primary)]">Lịch</span>
         </div>
 
-        {/* Navigation: Hôm nay + Chevrons + Month/Year Selectors */}
+          {/* Navigation: Hôm nay + Chevrons + Month/Year Selectors */}
         <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={selectToday}
-            className="px-3 py-1 text-xs font-semibold text-[var(--text-primary)] border border-[var(--border-subtle)] hover:bg-[var(--surface-container-high)] rounded-md transition-colors cursor-pointer"
+            className="hidden sm:inline-block px-3 py-1 text-xs font-semibold text-[var(--text-primary)] border border-[var(--border-subtle)] hover:bg-[var(--surface-container-high)] rounded-md transition-colors cursor-pointer"
           >
             {t('calendar.todayBtn') || 'Hôm nay'}
           </button>
@@ -242,21 +172,31 @@ export const TopHeader: React.FC = () => {
             </button>
           </div>
 
-          {/* Quick Month & Year Selectors (Clean & Integrated) */}
-          <div className="flex items-center gap-0.5 ml-1">
-            <CustomSelect
-              value={selectedMonth}
-              onChange={(val) => selectDate(selectedDay, val, selectedYear)}
-              options={monthNames.map((name, idx) => ({ label: name, value: idx }))}
-            />
-
-            <CustomSelect
-              value={selectedYear}
-              onChange={(val) => selectDate(selectedDay, selectedMonth, val)}
-              options={yearsList.map((y) => ({ label: y, value: y }))}
-              isMono
-            />
-          </div>
+          {/* Quick Month & Year Picker */}
+          <DatePicker
+            mode="month-year"
+            minYear={2020}
+            maxYear={Math.max(2035, new Date().getFullYear() + 2)}
+            hideIcon
+            value={{ day: 1, month: selectedMonth, year: selectedYear }}
+            onChange={(val) => {
+              const clampedDay = Math.min(selectedDay, new Date(val.year, val.month + 1, 0).getDate());
+              selectDate(clampedDay, val.month, val.year);
+            }}
+            aria-label={language === 'vi' ? 'Chọn tháng và năm' : 'Select month and year'}
+            buttonClassName="h-8 px-2 ml-0.5 sm:ml-1 bg-transparent border-transparent hover:bg-[var(--surface-container-high)] text-sm sm:text-base font-medium text-[var(--text-primary)]"
+            triggerLabel={
+              <span className="inline-flex items-center gap-1.5 tabular-nums">
+                <span>
+                  {new Date(selectedYear, selectedMonth, 1).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+              </span>
+            }
+          />
         </div>
       </div>
 
@@ -275,9 +215,24 @@ export const TopHeader: React.FC = () => {
       </div>
 
       {/* 3. Right: View switcher, Settings, Profile */}
-      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-        {/* View Switcher Dropdown / Toggle */}
-        <div className="flex items-center bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-md p-0.5 text-xs">
+      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        {/* View Switcher: Compact Select on Mobile, Segmented Control on Desktop */}
+        <div className="sm:hidden">
+          <Select
+            value={calendarView}
+            onChange={(val) => setCalendarView(val as 'month' | 'week' | 'agenda')}
+            aria-label={language === 'vi' ? 'Chế độ xem lịch' : 'Calendar view'}
+            buttonClassName="h-8 px-2 text-[11px] font-medium"
+            align="right"
+            options={[
+              { value: 'month', label: language === 'vi' ? 'Tháng' : 'Month' },
+              { value: 'week', label: language === 'vi' ? 'Tuần' : 'Week' },
+              { value: 'agenda', label: language === 'vi' ? 'Lịch biểu' : 'Schedule' },
+            ]}
+          />
+        </div>
+
+        <div className="hidden sm:flex items-center bg-[var(--surface-container)] border border-[var(--border-subtle)] rounded-md p-0.5 text-xs">
           <button
             onClick={() => setCalendarView('month')}
             className={`px-2.5 py-1 rounded transition-colors cursor-pointer font-medium ${
@@ -309,6 +264,20 @@ export const TopHeader: React.FC = () => {
             {language === 'vi' ? 'Lịch biểu' : 'Schedule'}
           </button>
         </div>
+
+        {/* Mobile Search Toggle */}
+        <button
+          onClick={() => setIsMobileSearchOpen((prev) => !prev)}
+          aria-label={language === 'vi' ? 'Tìm kiếm' : 'Search'}
+          aria-expanded={isMobileSearchOpen}
+          className={`p-2 rounded-full transition-colors cursor-pointer md:hidden ${
+            isMobileSearchOpen || searchQuery
+              ? 'text-[var(--google-blue)] bg-[var(--surface-container-high)]'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-container-high)]'
+          }`}
+        >
+          <Search className="w-4 h-4" />
+        </button>
 
         {/* Notification Center Bell */}
         <div className="relative" ref={notifRef}>
@@ -406,6 +375,34 @@ export const TopHeader: React.FC = () => {
           <UserProfileDropdown isOpen={isDropdownOpen} onClose={() => setIsDropdownOpen(false)} />
         </div>
       </div>
+
+      {/* Mobile Slide-Down Search Bar */}
+      {isMobileSearchOpen && (
+        <div className="absolute top-full left-0 right-0 bg-[var(--surface-canvas)] border-b border-[var(--border-grid)] px-3 py-2 z-40 md:hidden shadow-lg animate-in fade-in slide-in-from-top-1 duration-150">
+          <div className="relative flex items-center">
+            <Search className="w-4 h-4 text-[var(--text-secondary)] absolute left-3 pointer-events-none" />
+            <input
+              type="text"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('header.searchPlaceholder') || 'Tìm kiếm sự kiện, công việc...'}
+              className="w-full bg-[var(--surface-container)] border border-[var(--border-subtle)] focus:border-[var(--google-blue)] text-[var(--text-primary)] rounded-full pl-9 pr-9 py-2 text-xs placeholder-[var(--text-muted)] focus:outline-none focus:bg-[var(--surface-container-high)]"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setIsMobileSearchOpen(false);
+              }}
+              aria-label={language === 'vi' ? 'Đóng tìm kiếm' : 'Close search'}
+              className="absolute right-2 p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-full cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

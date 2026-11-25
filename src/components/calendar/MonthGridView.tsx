@@ -225,21 +225,21 @@ export const MonthGridView: React.FC = () => {
           <>
             <div className="fixed inset-0 z-40" onClick={() => setPopoverState(null)} />
             <div
-              className="fixed z-50 bg-[#28292c] border border-[#3c4043] rounded-lg shadow-xl w-52 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+              className="fixed z-50 bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-lg shadow-xl w-52 max-w-[calc(100vw-24px)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
               style={{
-                top: Math.min(popoverState.y - 40, window.innerHeight - 350),
-                left: Math.min(popoverState.x - 20, window.innerWidth - 220)
+                top: Math.max(12, Math.min(popoverState.y - 40, window.innerHeight - 350)),
+                left: Math.max(12, Math.min(popoverState.x - 20, window.innerWidth - 220))
               }}
             >
               <div className="flex flex-col items-center pt-3 pb-2 relative">
                 <span className="text-[11px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">
                   {weekdayHeaders[(firstDayIndex + popoverState.day - 1) % 7]}
                 </span>
-                <span className="text-xl text-[#202124] font-medium leading-tight h-8 w-8 flex items-center justify-center rounded-full bg-[#aecbfa]">
+                <span className="text-xl text-[#202124] font-medium leading-tight h-8 w-8 flex items-center justify-center rounded-full bg-[var(--google-blue-hover)]">
                   {popoverState.day}
                 </span>
                 <button
-                  className="absolute top-2 right-2 text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#3c4043] rounded-full p-1 transition-colors"
+                  className="absolute top-2 right-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-container-highest)] rounded-full p-1 transition-colors"
                   onClick={() => setPopoverState(null)}
                 >
                   <X className="w-3.5 h-3.5" />
@@ -267,7 +267,7 @@ export const MonthGridView: React.FC = () => {
                     return (
                       <div
                         key={item.id}
-                        className="text-[11px] hover:bg-[#3c4043] truncate px-2 py-1 rounded-[3px] font-medium transition-colors cursor-pointer flex items-center gap-[5px]"
+                        className="text-[11px] hover:bg-[var(--surface-container-highest)] truncate px-2 py-1 rounded-[3px] font-medium transition-colors cursor-pointer flex items-center gap-[5px]"
                         style={{ color: item.colorTag || '#8AB4F8' }}
                         title={item.title}
                         onClick={(e) => {
@@ -295,14 +295,14 @@ export const MonthGridView: React.FC = () => {
           <>
             <div className="fixed inset-0 z-[60]" onClick={(e) => { e.stopPropagation(); setItemDetailPopover(null); }} />
             <div
-              className="fixed z-[70] bg-[#28292c] rounded-lg shadow-xl w-[350px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+              className="fixed z-[70] bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-lg shadow-xl w-[350px] max-w-[calc(100vw-24px)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
               style={{
-                top: Math.min(itemDetailPopover.y - 20, window.innerHeight - 250),
-                left: Math.min(itemDetailPopover.x + 10, window.innerWidth - 370)
+                top: Math.max(12, Math.min(itemDetailPopover.y - 20, window.innerHeight - 250)),
+                left: Math.max(12, Math.min(itemDetailPopover.x + 10, window.innerWidth - 370))
               }}
             >
               {/* Header Actions */}
-              <div className="flex items-center justify-end p-1.5 bg-[#3c4043] rounded-t-lg">
+              <div className="flex items-center justify-end p-1.5 bg-[var(--surface-container-highest)] rounded-t-lg">
                 <button
                   className="p-2 text-[var(--text-secondary)] hover:bg-white/10 rounded-full transition-colors"
                   disabled={itemDetailPopover.item.readOnly}
@@ -344,7 +344,7 @@ export const MonthGridView: React.FC = () => {
               </div>
 
               {/* Content */}
-              <div className="p-4 flex flex-col gap-4 bg-[#28292c] rounded-b-lg">
+              <div className="p-4 flex flex-col gap-4 bg-[var(--surface-container-high)] rounded-b-lg">
                 <div className="flex gap-4 items-start">
                   <div className="mt-1.5 shrink-0">
                     <div
@@ -353,10 +353,10 @@ export const MonthGridView: React.FC = () => {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <h3 className="text-[22px] text-[#e8eaed] font-normal leading-tight mb-1">
+                    <h3 className="text-[22px] text-[var(--text-primary)] font-normal leading-tight mb-1">
                       {itemDetailPopover.item.title}
                     </h3>
-                    <p className="text-[14px] text-[#e8eaed]">
+                    <p className="text-[14px] text-[var(--text-primary)]">
                       {language === 'vi'
                         ? `${weekdayHeaders[(firstDayIndex + itemDetailPopover.day - 1) % 7]}, ${itemDetailPopover.day} tháng ${itemDetailPopover.month + 1}`
                         : `${weekdayHeaders[(firstDayIndex + itemDetailPopover.day - 1) % 7]}, ${itemDetailPopover.day} ${monthNamesShortEn[itemDetailPopover.month]}`
@@ -369,7 +369,7 @@ export const MonthGridView: React.FC = () => {
                   <div className="shrink-0 flex justify-center w-[14px]">
                     <Bell className="w-5 h-5 text-[var(--text-secondary)]" />
                   </div>
-                  <p className="text-[14px] text-[#e8eaed]">
+                  <p className="text-[14px] text-[var(--text-primary)]">
                     {itemDetailPopover.item.alertTime || (language === 'vi' ? 'Không có lời nhắc' : 'No reminder')}
                   </p>
                 </div>
@@ -378,7 +378,7 @@ export const MonthGridView: React.FC = () => {
                   <div className="shrink-0 flex justify-center w-[14px]">
                     <CalendarIcon className="w-5 h-5 text-[var(--text-secondary)]" />
                   </div>
-                  <p className="text-[14px] text-[#e8eaed]">
+                  <p className="text-[14px] text-[var(--text-primary)]">
                     {itemDetailPopover.item.readOnly ? 'Lịch chỉ xem • nguồn bên ngoài hoặc ngày sinh hồ sơ' : currentUser?.name || 'Người dùng'}
                   </p>
                 </div>

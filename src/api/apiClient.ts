@@ -15,63 +15,28 @@ export class ApiError extends Error {
   }
 }
 
-export const getAuthToken = (): string | null => {
-  return localStorage.getItem('access_token');
+let refreshInFlight: Promise<void> | null = null;
+const notifyAuthExpired = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  window.dispatchEvent(new CustomEvent('app:auth-expired'));
 };
 
-export const setAuthToken = (token: string | null) => {
-  if (token) {
-    localStorage.setItem('access_token', token);
-  } else {
-    localStorage.removeItem('access_token');
-  }
-};
-
-export const getRefreshToken = (): string | null => {
-  return localStorage.getItem('refresh_token');
-};
-
-export const setRefreshToken = (token: string | null) => {
-  if (token) {
-    localStorage.setItem('refresh_token', token);
-  } else {
-    localStorage.removeItem('refresh_token');
-  }
-};
-
-const isPublicEndpoint = (endpoint: string): boolean => {
-  const ep = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  return (
-    ep.startsWith('/user/auth/login') ||
-    ep.startsWith('/user/auth/register') ||
-    ep.startsWith('/user/auth/forgot-password') ||
-    ep.startsWith('/user/auth/reset-password') ||
-    ep.startsWith('/user/auth/refresh-token') ||
-    ep.startsWith('/payments/webhook') ||
-    ep.startsWith('/user/subscriptions/plans') ||
-    ep.startsWith('/user/routines/templates') ||
-    ep.startsWith('/user/appointments/public/') ||
-    ep.startsWith('/pricing')
-  );
-};
-
-let refreshInFlight: Promise<string> | null = null;
-const refreshAccessToken = (): Promise<string> => {
+const refreshAccessToken = (): Promise<void> => {
   if (!refreshInFlight) {
     refreshInFlight = (async () => {
-      const refreshToken = getRefreshToken();
-      if (!refreshToken) throw new ApiError(401, 'Phiên đăng nhập đã hết hạn');
       const response = await fetch(`${API_BASE_URL}/user/auth/refresh-token`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken }),
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
       });
       if (!response.ok) {
-        if (response.status === 401) { setAuthToken(null); setRefreshToken(null); }
-        throw new ApiError(response.status, 'Không thể làm mới phiên đăng nhập');
+        if (response.status === 401 || response.status === 403) {
+          notifyAuthExpired();
+        }
+        throw new ApiError(response.status, 'Phiên đăng nhập đã hết hạn');
       }
-      const data = await response.json();
-      if (!data.token) throw new ApiError(401, 'Thiếu access token');
-      setAuthToken(data.token); if (data.refreshToken) setRefreshToken(data.refreshToken);
-      return data.token;
     })().finally(() => { refreshInFlight = null; });
   }
   return refreshInFlight;
@@ -79,33 +44,26 @@ const refreshAccessToken = (): Promise<string> => {
 
 export const apiClient = {
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const token = getAuthToken();
-
-    // Guard: Prevent unauthenticated guest requests from triggering 401 network errors
-    if (!isPublicEndpoint(endpoint) && !token) {
-      throw new ApiError(401, 'Chưa đăng nhập (Guest Mode)', { isGuest: true });
-    }
-
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
     };
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
 
     const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
     try {
       let response = await fetch(url, {
         ...options,
+        credentials: 'include',
         headers,
       });
 
       if (response.status === 401 && !endpoint.includes('/auth/')) {
-        headers.Authorization = `Bearer ${await refreshAccessToken()}`;
-        response = await fetch(url, { ...options, headers });
+        await refreshAccessToken();
+        response = await fetch(url, { ...options, credentials: 'include', headers });
+        if (response.status === 401) {
+          notifyAuthExpired();
+        }
       }
 
       if (!response.ok) {

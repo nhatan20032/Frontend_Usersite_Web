@@ -4,7 +4,6 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { contactApi } from '../../api/contactApi';
 import { syncHubClient } from '../../services/syncHubClient';
-import { getAuthToken } from '../../api/apiClient';
 import {
   Users,
   Search,
@@ -39,9 +38,8 @@ export const ContactsCompanionPanel: React.FC<ContactsCompanionPanelProps> = ({ 
 
   // Sync contacts with backend & listen to SignalR changes (Only when authenticated)
   useEffect(() => {
-    const token = getAuthToken();
     setContacts([]);
-    if (!currentUser || !token) return;
+    if (!currentUser) return;
 
     contactApi.getContacts().then((remoteContacts) => {
       if (remoteContacts) {

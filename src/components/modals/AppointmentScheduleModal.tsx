@@ -1,10 +1,12 @@
 import { appointmentApi } from '../../api/appointmentApi';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { DailyAvailabilitySlot, TimeRange } from '../../types';
 import { Select } from '../ui/Select';
 import { Input } from '../ui/Input';
+import { DatePicker } from '../ui/DatePicker';
 import { X, Plus, Copy, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 
 // ---- Grid geometry ----
@@ -90,50 +92,101 @@ const CustomTimePicker: React.FC<{ value: string; onChange: (val: string) => voi
     const m = parse(value);
     return Number.isNaN(m) ? value : to12h(m);
   });
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const m = parse(value);
     setText(Number.isNaN(m) ? value : to12h(m));
   }, [value]);
 
-  useEffect(() => {
-    const handle = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+  const updatePosition = useCallback(() => {
+    if (!inputRef.current) return;
+    const rect = inputRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom - 12;
+    const spaceAbove = rect.top - 12;
+    const dropUp = spaceBelow < 220 && spaceAbove > spaceBelow;
+
+    const style: React.CSSProperties = {
+      position: 'fixed',
+      left: Math.max(12, Math.min(rect.left, window.innerWidth - 120)),
+      minWidth: Math.max(rect.width, 108),
+      maxHeight: Math.max(120, Math.min(240, dropUp ? spaceAbove : spaceBelow)),
+      zIndex: 120,
     };
-    if (open) document.addEventListener('mousedown', handle);
-    return () => document.removeEventListener('mousedown', handle);
-  }, [open]);
+
+    if (dropUp) {
+      style.bottom = window.innerHeight - rect.top + 4;
+    } else {
+      style.top = rect.bottom + 4;
+    }
+
+    setMenuStyle(style);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+
+    const handle = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        ref.current && !ref.current.contains(target) &&
+        (!menuRef.current || !menuRef.current.contains(target))
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handle);
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      document.removeEventListener('mousedown', handle);
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [open, updatePosition]);
 
   const options = Array.from({ length: 24 * 2 }, (_, i) => fmt(i * 30));
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative shrink-0">
       <input
+        ref={inputRef}
         type="text"
         value={text}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          updatePosition();
+          setOpen(true);
+        }}
         onChange={(e) => setText(e.target.value)}
         onBlur={() => {
           const m = parse(text);
           if (!Number.isNaN(m)) onChange(fmt(m));
           else setText(to12h(parse(value)));
         }}
-        className="h-9 w-[110px] px-3 rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] hover:bg-[var(--surface-container-high)] text-xs tabular-nums text-[var(--text-primary)] transition-colors focus:border-[var(--google-blue)] focus:ring-1 focus:ring-[var(--google-blue)] focus:outline-none"
+        className="h-8 w-[84px] sm:w-[88px] px-2 text-center rounded-lg bg-[var(--surface-container)] border border-[var(--border-subtle)] hover:bg-[var(--surface-container-high)] text-xs tabular-nums text-[var(--text-primary)] transition-colors focus:border-[var(--google-blue)] focus-visible:ring-1 focus-visible:ring-[var(--google-blue)] focus:outline-none"
       />
-      {open && (
-        <div className="absolute z-[100] top-full left-0 mt-1 w-full max-h-60 overflow-y-auto custom-scrollbar bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-xl shadow-2xl py-1 origin-top-left animate-in fade-in zoom-in-95 duration-150">
+      {open && createPortal(
+        <div
+          ref={menuRef}
+          style={menuStyle}
+          className="overflow-y-auto custom-scrollbar bg-[var(--surface-container-high)] border border-[var(--border-subtle)] rounded-xl shadow-2xl p-1 animate-in fade-in zoom-in-95 duration-150"
+        >
           {options.map((opt) => (
             <button
               key={opt}
               type="button"
               onMouseDown={(e) => { e.preventDefault(); onChange(opt); setOpen(false); }}
-              className={`w-full text-left px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${fmt(parse(value)) === opt ? 'bg-[var(--google-blue-primary)] text-white font-medium' : 'text-[var(--text-primary)] hover:bg-[#3C4043]'}`}
+              className={`w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${fmt(parse(value)) === opt ? 'bg-[var(--google-blue-primary)] text-white font-medium' : 'text-[var(--text-primary)] hover:bg-[var(--surface-container-highest)]'}`}
             >
               {to12h(parse(opt))}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -141,7 +194,7 @@ const CustomTimePicker: React.FC<{ value: string; onChange: (val: string) => voi
 
 export const AppointmentScheduleModal: React.FC = () => {
   const { activeModal, closeModal, showToast, selectedMonth, selectedYear, selectedDay } = useApp();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [title, setTitle] = useState<string>('');
   const [duration, setDuration] = useState<number>(60); // minutes
@@ -432,7 +485,7 @@ export const AppointmentScheduleModal: React.FC = () => {
         <div className="flex-1 flex flex-col md:flex-row min-h-0 border-t border-[#3c4043]">
           {/* ================= LEFT PANEL ================= */}
           <aside className="w-full md:w-[460px] shrink-0 bg-[#28292c] border-r border-[#3c4043] flex flex-col">
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-5 flex flex-col gap-6">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar px-5 py-5 flex flex-col gap-6">
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-medium tracking-wider text-[var(--text-secondary)] uppercase">Tiêu đề xem trước (không lưu máy chủ)</span>
                 <Input
@@ -483,22 +536,22 @@ export const AppointmentScheduleModal: React.FC = () => {
                 {availability.map((slot) => {
                   const hasRanges = slot.isAvailable && slot.ranges.length > 0;
                   return (
-                  <li key={slot.id} className="group flex items-start gap-3 py-1.5 min-h-[44px]">
+                  <li key={slot.id} className="group flex items-start gap-2 py-1.5 min-h-[40px]">
                     <span
-                      className={`w-14 mt-1.5 text-[13px] font-medium shrink-0 ${hasRanges ? 'text-[#e8eaed]' : 'text-[var(--text-secondary)]'}`}
+                      className={`w-10 mt-1.5 text-[13px] font-medium shrink-0 ${hasRanges ? 'text-[#e8eaed]' : 'text-[var(--text-secondary)]'}`}
                     >
                       {dayNames[slot.dayIndex]}
                     </span>
 
                     {hasRanges ? (
-                      <div className="flex-1 flex flex-col gap-1.5">
+                      <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                         {slot.ranges.map((r, i) => (
-                          <div key={r.id} className="flex items-center gap-1.5">
+                          <div key={r.id} className="flex items-center gap-1">
                             <CustomTimePicker
                               value={fmt(r.start)}
                               onChange={(val) => editRange(slot.dayIndex, r.id, 'start', val)}
                             />
-                            <span className="text-[var(--text-secondary)] text-xs">–</span>
+                            <span className="text-[var(--text-secondary)] text-xs shrink-0">–</span>
                             <CustomTimePicker
                               value={fmt(r.end)}
                               onChange={(val) => editRange(slot.dayIndex, r.id, 'end', val)}
@@ -508,30 +561,30 @@ export const AppointmentScheduleModal: React.FC = () => {
                               onClick={() => removeRange(slot.dayIndex, r.id)}
                               aria-label={t('appt.removeRange')}
                               title={t('appt.removeRange')}
-                              className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                              className={`w-7 h-7 rounded-full grid place-items-center shrink-0 text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] cursor-pointer ${focusRing}`}
                             >
-                              <X className="w-5 h-5" />
+                              <X className="w-4 h-4" />
                             </button>
 
                             {i === slot.ranges.length - 1 && (
-                              <div className="flex items-center gap-0.5 ml-1">
+                              <div className="flex items-center gap-0.5 shrink-0">
                                 <button
                                   type="button"
                                   onClick={() => addRange(slot.dayIndex)}
                                   aria-label={t('appt.addRange')}
                                   title={t('appt.addRange')}
-                                  className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                                  className={`w-7 h-7 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] cursor-pointer ${focusRing}`}
                                 >
-                                  <Plus className="w-5 h-5" />
+                                  <Plus className="w-4 h-4" />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleCopyAll(slot.dayIndex)}
                                   aria-label={t('appt.applyWeekdays')}
                                   title={t('appt.applyWeekdays')}
-                                  className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                                  className={`w-7 h-7 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] cursor-pointer ${focusRing}`}
                                 >
-                                  <Copy className="w-[18px] h-[18px]" />
+                                  <Copy className="w-[15px] h-[15px]" />
                                 </button>
                               </div>
                             )}
@@ -539,16 +592,16 @@ export const AppointmentScheduleModal: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="flex-1 flex items-center h-9">
+                      <div className="flex-1 min-w-0 flex items-center h-8">
                         <span className="text-[13px] text-[var(--text-secondary)] font-medium mr-auto">Bận</span>
                         <button
                           type="button"
                           onClick={() => toggleDayAvailable(slot.dayIndex)}
                           aria-label={t('appt.addRange')}
                           title={t('appt.addRange')}
-                          className={`w-9 h-9 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] ${focusRing}`}
+                          className={`w-7 h-7 rounded-full grid place-items-center text-[var(--text-secondary)] hover:text-[#e8eaed] hover:bg-[#303134] cursor-pointer ${focusRing}`}
                         >
-                          <Plus className="w-5 h-5" />
+                          <Plus className="w-4 h-4" />
                         </button>
                       </div>
                     )}
@@ -628,25 +681,75 @@ export const AppointmentScheduleModal: React.FC = () => {
 
           {/* ================= RIGHT WEEK GRID ================= */}
           <main className="flex-1 min-w-0 flex flex-col bg-[#202124]">
-            <div className={`${gridCols} border-b border-[#3c4043] shrink-0 pt-2`}>
-              <div className="flex flex-col items-end pr-3 pb-2 gap-2">
-                <div className="flex items-center gap-1 mt-1">
+            {/* Calendar Week Navigation Sub-Toolbar */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-[#3c4043] shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5">
                   <button
                     type="button"
                     onClick={() => setWeekOffset((w) => w - 1)}
-                    className="w-8 h-8 rounded-full grid place-items-center text-[var(--text-secondary)] hover:bg-[#303134]"
+                    aria-label={language === 'vi' ? 'Tuần trước' : 'Previous week'}
+                    title={language === 'vi' ? 'Tuần trước' : 'Previous week'}
+                    className={`w-8 h-8 rounded-full grid place-items-center text-[var(--text-secondary)] hover:bg-[#303134] hover:text-[#e8eaed] transition-colors cursor-pointer ${focusRing}`}
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setWeekOffset((w) => w + 1)}
-                    className="w-8 h-8 rounded-full grid place-items-center text-[var(--text-secondary)] hover:bg-[#303134]"
+                    aria-label={language === 'vi' ? 'Tuần sau' : 'Next week'}
+                    title={language === 'vi' ? 'Tuần sau' : 'Next week'}
+                    className={`w-8 h-8 rounded-full grid place-items-center text-[var(--text-secondary)] hover:bg-[#303134] hover:text-[#e8eaed] transition-colors cursor-pointer ${focusRing}`}
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="text-[11px] text-[var(--text-secondary)]">{tzShort}</div>
+                {weekOffset !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setWeekOffset(0)}
+                    className={`h-7 px-2.5 rounded-md border border-[#3c4043] text-xs font-medium text-[#e8eaed] hover:bg-[#303134] transition-colors cursor-pointer ${focusRing}`}
+                  >
+                    {language === 'vi' ? 'Hôm nay' : 'Today'}
+                  </button>
+                )}
+                <DatePicker
+                  mode="date"
+                  minYear={2020}
+                  maxYear={Math.max(2035, now.getFullYear() + 2)}
+                  hideIcon
+                  value={{
+                    day: weekDays[0].date.getDate(),
+                    month: weekDays[0].date.getMonth(),
+                    year: weekDays[0].date.getFullYear(),
+                  }}
+                  onChange={(picked) => {
+                    const anchorBase = new Date(selectedYear, selectedMonth, selectedDay || 1);
+                    const anchorSunday = new Date(anchorBase.getFullYear(), anchorBase.getMonth(), anchorBase.getDate() - anchorBase.getDay());
+                    const pickedDate = new Date(picked.year, picked.month, picked.day);
+                    const pickedSunday = new Date(pickedDate.getFullYear(), pickedDate.getMonth(), pickedDate.getDate() - pickedDate.getDay());
+                    setWeekOffset(Math.round((pickedSunday.getTime() - anchorSunday.getTime()) / (7 * 86400000)));
+                  }}
+                  aria-label={language === 'vi' ? 'Chọn nhanh ngày' : 'Quick select date'}
+                  buttonClassName="h-8 px-2.5 ml-1 bg-transparent border-transparent hover:bg-[#303134] hover:border-transparent text-sm font-medium text-[#e8eaed]"
+                  triggerLabel={
+                    <span className="inline-flex items-center gap-1.5">
+                      <span>
+                        {weekDays[0].date.toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', {
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                    </span>
+                  }
+                />
+              </div>
+            </div>
+
+            <div className={`${gridCols} border-b border-[#3c4043] shrink-0 pt-2`}>
+              <div className="flex items-end justify-center pb-2">
+                <span className="text-[11px] text-[var(--text-secondary)] font-mono">{tzShort}</span>
               </div>
               {weekDays.map((d) => (
                 <div key={d.dayIndex} className="py-2 flex flex-col items-center justify-center gap-1 border-l border-transparent">

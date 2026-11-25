@@ -26,7 +26,6 @@ import { eventFromDto, eventPayload, routineFromDto, taskFromDto, priorityNumber
 import { noteApi } from '../api/noteApi';
 import { categoryApi } from '../api/categoryApi';
 import { syncHubClient } from '../services/syncHubClient';
-import { getAuthToken } from '../api/apiClient';
 
 interface AppContextType {
   // Calendar & Events
@@ -159,6 +158,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Persistent storage for Events and Tasks
   const [eventsData, setEventsData] = useState<CalendarEvent[]>( [] );
+  const { preferences, save: savePreferences } = usePreferences();
 
   // Read-only holidays come from the backend, never saved as user events.
   useEffect(() => {
@@ -168,12 +168,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const refresh = async () => {
       const id = ++request;
       try {
-        const holidays = await getVietnamHolidays(selectedYear);
+        const holidays = await getVietnamHolidays(selectedYear, preferences.language);
         if (active && id === request) setEventsData(prev => [...prev.filter(e => e.categoryId !== 'holiday'), ...holidays]);
       } catch (e) {
         if (active && id === request) {
           setEventsData(prev => prev.filter(e => e.categoryId !== 'holiday'));
-          showToast('Chưa tải được ngày lễ', e instanceof Error ? e.message : 'Lỗi kết nối', 'error');
+          if ((e as { status?: number })?.status !== 401) {
+            showToast('Chưa tải được ngày lễ', e instanceof Error ? e.message : 'Lỗi kết nối', 'error');
+          }
         }
       }
     };
@@ -182,7 +184,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     window.addEventListener('focus', refresh);
     window.addEventListener('holiday-region-changed', refresh);
     return () => { active = false; clearInterval(interval); window.removeEventListener('focus', refresh); window.removeEventListener('holiday-region-changed', refresh); };
-  }, [selectedYear, currentUser?.id]);
+  }, [selectedYear, currentUser?.id, preferences.language]);
 
   // Real-time Personal Birthday Event Sync onto Calendar
   useEffect(() => {
@@ -232,7 +234,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
 
   const [calendarView, setCalendarViewMode] = useState<CalendarViewMode>('month');
-  const { preferences, save: savePreferences } = usePreferences();
   const currentTheme = preferences.currentTheme;
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilters>(() => {
     const initial: CategoryFilters = { routine: true, event: true, task: true, holiday: true };
@@ -254,7 +255,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     let active = true;
     setTasksData([]); setNotesData([]); setCategories(defaultCategories);
     setEventsData(prev => prev.filter(e => e.categoryId === 'holiday' || (currentUser && e.categoryId === 'birthday')));
-    if (!currentUser || !getAuthToken()) { void syncHubClient.stop(); return; }
+    if (!currentUser) { void syncHubClient.stop(); return; }
     const load = async () => {
       try {
         const [events, routines, tasks, notes, cats] = await Promise.all([
@@ -266,7 +267,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setNotesData(notes.map(mapDtoToKeepNote));
         setCategories([...defaultCategories, ...cats.filter(c => !defaultCategories.some(d => d.id === c.id))]);
         setCategoryFilters(prev => ({ ...prev, ...Object.fromEntries(cats.map(c => [c.id, true])) }));
-      } catch (e) { if (active) showToast('Không tải được dữ liệu', e instanceof Error ? e.message : 'Lỗi kết nối', 'error'); }
+      } catch (e) { if (active && (e as { status?: number })?.status !== 401) showToast('Không tải được dữ liệu', e instanceof Error ? e.message : 'Lỗi kết nối', 'error'); }
     };
     void load(); void syncHubClient.start();
     const unsubData = syncHubClient.onDataChanged(() => { void load(); });
