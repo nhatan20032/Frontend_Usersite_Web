@@ -5,4 +5,4 @@ export const settingsApi = {
   get: () => apiClient.get<Preferences>('/user/settings'),
   save: (data: { themeCode?: string; language?: 'vi' | 'en'; enableSound?: boolean }) => apiClient.put<Preferences>('/user/settings', data),
 };
-export const assetUrl = (path: string) => new URL(path, import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1').href;
+export { getAssetUrl as assetUrl } from '../config/apiConfig';

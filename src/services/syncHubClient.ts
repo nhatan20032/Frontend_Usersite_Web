@@ -1,4 +1,5 @@
 import * as signalR from '@microsoft/signalr';
+import { SYNC_HUB_URL } from '../config/apiConfig';
 
 export interface DataChangeEvent {
   entityType: string;
@@ -30,13 +31,8 @@ class SyncHubService {
       return;
     }
 
-    const baseHost = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace(/\/api\/v1\/?$/, '')
-      : 'http://localhost:5000';
-    const hubUrl = `${baseHost}/hubs/sync`;
-
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(hubUrl, {
+      .withUrl(SYNC_HUB_URL, {
         withCredentials: true,
       })
       .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
