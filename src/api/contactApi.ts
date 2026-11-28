@@ -9,6 +9,20 @@ export interface UserContactDto {
   group: 'work' | 'client' | 'personal';
   avatarBg: string;
   status: 'online' | 'busy' | 'offline';
+  connectionStatus?: 'NONE' | 'PENDING' | 'OUTGOING' | 'INCOMING' | 'CONNECTED';
+  friendUserId?: string;
+}
+
+export interface UserLookupResult {
+  exists: boolean;
+  isSelf: boolean;
+  message?: string;
+  userId?: string;
+  fullName?: string;
+  email?: string;
+  connectionStatus?: 'NONE' | 'PENDING' | 'OUTGOING' | 'INCOMING' | 'CONNECTED';
+  isIncomingRequest?: boolean;
+  contactId?: string;
 }
 
 export const contactApi = {
@@ -43,5 +57,22 @@ export const contactApi = {
   deleteContact(id: string) {
     return apiClient.delete<{ message: string }>(`/user/contacts/${id}`);
   },
+  requestConnect(id: string) {
+    return apiClient.post<{ message: string; contact: UserContactDto }>(`/user/contacts/${id}/request-connect`);
+  },
+  acceptConnect(id: string) {
+    return apiClient.post<{ message: string; contact: UserContactDto }>(`/user/contacts/${id}/accept-connect`);
+  },
+  disconnect(id: string) {
+    return apiClient.post<{ message: string; contact: UserContactDto }>(`/user/contacts/${id}/disconnect`);
+  },
+  lookupUser(email: string) {
+    return apiClient.get<UserLookupResult>('/user/contacts/lookup-user', { email });
+  },
+  sendFriendRequest(targetUserId: string) {
+    return apiClient.post<{ message: string; contact: UserContactDto }>('/user/contacts/send-friend-request', { targetUserId });
+  },
+  acceptFriend(targetUserId: string) {
+    return apiClient.post<{ message: string; contact: UserContactDto }>(`/user/contacts/accept-friend/${targetUserId}`);
+  },
 };
-

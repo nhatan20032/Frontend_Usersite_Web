@@ -29,6 +29,9 @@ export const LeftSidebar: React.FC = () => {
     addCategory,
     deleteCategory,
     openModal,
+    connectedFriends,
+    selectedFriendIds,
+    toggleFriendCalendar,
   } = useApp();
   const { t, language } = useLanguage();
 
@@ -324,6 +327,39 @@ export const LeftSidebar: React.FC = () => {
                   <span className="truncate text-xs">{language === 'vi' ? 'Ngày lễ tại Việt Nam' : 'Holidays in Vietnam'}</span>
                 </span>
               </label>
+
+              {/* Danh sách bạn bè đã kết nối chia sẻ lịch */}
+              {connectedFriends && connectedFriends.length > 0 && (
+                <div className="pt-2 border-t border-[var(--border-grid)]/60 space-y-1">
+                  <div className="text-[10px] uppercase font-semibold text-[var(--text-muted)] px-1">
+                    {language === 'vi' ? 'Lịch bạn bè' : 'Friends Calendars'}
+                  </div>
+                  {connectedFriends.map((friend) => {
+                    const isChecked = selectedFriendIds.includes(friend.id);
+                    return (
+                      <label
+                        key={friend.id}
+                        className="flex items-center gap-3 text-[var(--text-primary)] cursor-pointer py-1 px-1.5 rounded hover:bg-[var(--surface-container-high)] transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleFriendCalendar(friend.id)}
+                          className="w-4 h-4 rounded cursor-pointer"
+                          style={{ accentColor: friend.avatarBg }}
+                        />
+                        <span className="flex items-center gap-2 min-w-0 flex-1">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: friend.avatarBg }}
+                          />
+                          <span className="truncate text-xs font-medium">{friend.name}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>

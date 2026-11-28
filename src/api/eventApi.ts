@@ -6,6 +6,7 @@ export interface EventDto {
   attendees?: string[];
   priority?: number;
   availabilityStatus?: 'busy' | 'free';
+  visibility?: 'private' | 'friends' | 'public';
   alertTime?: string;
   title: string;
   description?: string;
@@ -17,6 +18,36 @@ export interface EventDto {
   recurrenceRule?: string;
   colorTag?: string;
   seriesId?: string;
+  isMasked?: boolean;
+  ownerId?: string;
+  ownerName?: string;
+  attendeeResponses?: Record<string, 'PENDING' | 'ACCEPTED' | 'DECLINED'>;
+  isInvited?: boolean;
+  myResponseStatus?: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  organizerEmail?: string;
+  organizerName?: string;
+}
+
+export interface FreeBusySlotDto {
+  startTime: string;
+  endTime: string;
+  title: string;
+  isPrivate: boolean;
+}
+
+export interface FreeBusyUserDto {
+  email: string;
+  fullName?: string;
+  exists: boolean;
+  busySlots: FreeBusySlotDto[];
+}
+
+export interface ConnectedFriendDto {
+  id: string;
+  friendUserId: string;
+  name: string;
+  email: string;
+  avatarBg: string;
 }
 
 export const eventApi = {
@@ -32,8 +63,14 @@ export const eventApi = {
     startTime: string;
     endTime: string;
     recurrenceRule?: string;
-  colorTag?: string;
-  seriesId?: string;
+    colorTag?: string;
+    seriesId?: string;
+    visibility?: string;
+    categoryId?: string;
+    attendees?: string[];
+    priority?: number;
+    availabilityStatus?: string;
+    reminderMinutesBefore?: number;
   }) {
     return apiClient.post<EventDto>('/user/events', data);
   },
@@ -48,5 +85,24 @@ export const eventApi = {
       `/user/events/${id}/travel-alert`,
       alertMinutesBefore
     );
+  },
+  getConnectedFriends() {
+    return apiClient.get<ConnectedFriendDto[]>('/user/events/friends');
+  },
+  getSharedFriendEvents(friendUserId: string, year?: number, month?: number) {
+    return apiClient.get<EventDto[]>('/user/events/shared', { friendUserId, year, month });
+  },
+  getFreeBusy(emails: string[], date: string) {
+    return apiClient.get<FreeBusyUserDto[]>('/user/events/free-busy', {
+      emails: emails.join(','),
+      date,
+    });
+  },
+  respondToEvent(id: string, status: 'ACCEPTED' | 'DECLINED' | 'PENDING') {
+    return apiClient.post<{
+      message: string;
+      status: string;
+      attendeeResponses: Record<string, 'PENDING' | 'ACCEPTED' | 'DECLINED'>;
+    }>(`/user/events/${id}/respond`, { status });
   },
 };

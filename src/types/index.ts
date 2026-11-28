@@ -61,6 +61,16 @@ export interface CalendarEvent {
   categoryId?: string;
   status?: 'busy' | 'free';
   subroutines?: SubTask[];
+  visibility?: 'private' | 'friends' | 'public';
+  isShared?: boolean;
+  isMasked?: boolean;
+  ownerId?: string;
+  ownerName?: string;
+  attendeeResponses?: Record<string, 'PENDING' | 'ACCEPTED' | 'DECLINED'>;
+  isInvited?: boolean;
+  myResponseStatus?: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  organizerEmail?: string;
+  organizerName?: string;
 }
 
 export interface CreateRoutineInput {

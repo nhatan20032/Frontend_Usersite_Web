@@ -10,7 +10,7 @@ const monthNamesShortEn = [
 ];
 
 export const MonthGridView: React.FC = () => {
-  const { eventsData, tasksData, categoryFilters, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector, deleteEvent, deleteTask } = useApp();
+  const { eventsData, tasksData, categoryFilters, selectedDay, selectedMonth, selectedYear, selectDate, openModal, openDayInspector, closeDayInspector, deleteEvent, deleteTask, respondToEvent } = useApp();
   const { language, t } = useLanguage();
   const { currentUser } = useAuth();
 
@@ -116,7 +116,20 @@ export const MonthGridView: React.FC = () => {
           });
 
           const allItems = [
-            ...dayEvents.map(e => ({ id: e.id, title: e.title, itemType: e.type, time: e.time, colorTag: e.colorTag, readOnly: !e.backendId, alertTime: e.alertTime, description: e.description })),
+            ...dayEvents.map(e => ({
+              id: e.id,
+              title: e.isShared && e.ownerName ? `[${e.ownerName}] ${e.title}` : e.title,
+              itemType: e.type,
+              time: e.time,
+              colorTag: e.colorTag,
+              readOnly: !e.backendId || e.isShared || e.isInvited,
+              alertTime: e.alertTime,
+              description: e.description,
+              isInvited: e.isInvited,
+              myResponseStatus: e.myResponseStatus,
+              organizerName: e.organizerName,
+              organizerEmail: e.organizerEmail,
+            })),
             ...dayTasks.map(t => ({ id: t.id + 10000, title: t.title, itemType: 'task', time: t.dueDate, colorTag: t.colorTag }))
           ];
 
@@ -159,7 +172,13 @@ export const MonthGridView: React.FC = () => {
                           const rect = e.currentTarget.getBoundingClientRect();
                           setItemDetailPopover({ item, x: rect.right, y: rect.top, day: d, month: selectedMonth, year: selectedYear });
                         }}
-                        className="text-[11px] text-[#202124] truncate px-1.5 py-0.5 rounded-[3px] font-medium transition-opacity hover:opacity-90 shadow-none"
+                        className={`text-[11px] text-[#202124] truncate px-1.5 py-0.5 rounded-[3px] font-medium transition-opacity hover:opacity-90 shadow-none ${
+                          item.isInvited && item.myResponseStatus === 'DECLINED'
+                            ? 'line-through opacity-55'
+                            : item.isInvited && item.myResponseStatus === 'PENDING'
+                            ? 'border border-dashed border-white/70'
+                            : ''
+                        }`}
                         style={{ backgroundColor: item.colorTag || '#8AB4F8' }}
                         title={item.title}
                       >
@@ -379,10 +398,61 @@ export const MonthGridView: React.FC = () => {
                     <CalendarIcon className="w-5 h-5 text-[var(--text-secondary)]" />
                   </div>
                   <p className="text-[14px] text-[var(--text-primary)]">
-                    {itemDetailPopover.item.readOnly ? 'Lịch chỉ xem • nguồn bên ngoài hoặc ngày sinh hồ sơ' : currentUser?.name || 'Người dùng'}
+                    {itemDetailPopover.item.isInvited
+                      ? `${language === 'vi' ? 'Lời mời từ' : 'Invited by'}: ${itemDetailPopover.item.organizerName || itemDetailPopover.item.organizerEmail}`
+                      : itemDetailPopover.item.readOnly
+                      ? 'Lịch chỉ xem • nguồn bên ngoài hoặc ngày sinh hồ sơ'
+                      : currentUser?.name || 'Người dùng'}
                   </p>
                 </div>
                 {itemDetailPopover.item.description && <p className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap break-words">{itemDetailPopover.item.description}</p>}
+
+                {/* Thanh Phản hồi Lời mời (RSVP) chuẩn Google Calendar */}
+                {itemDetailPopover.item.isInvited && (
+                  <div className="pt-3 mt-1 border-t border-[var(--border-grid)] flex items-center justify-between gap-2">
+                    <span className="text-xs font-medium text-[var(--text-secondary)]">
+                      {language === 'vi' ? 'Tham gia?' : 'Going?'}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const ok = await respondToEvent(itemDetailPopover.item.id, 'ACCEPTED');
+                          if (ok) {
+                            setItemDetailPopover((prev) =>
+                              prev ? { ...prev, item: { ...prev.item, myResponseStatus: 'ACCEPTED' } } : null
+                            );
+                          }
+                        }}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+                          itemDetailPopover.item.myResponseStatus === 'ACCEPTED'
+                            ? 'bg-[#1E8E3E] text-white border-[#1E8E3E]'
+                            : 'bg-transparent text-[var(--text-primary)] border-[var(--border-subtle)] hover:bg-white/10'
+                        }`}
+                      >
+                        ✓ {language === 'vi' ? 'Có' : 'Yes'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const ok = await respondToEvent(itemDetailPopover.item.id, 'DECLINED');
+                          if (ok) {
+                            setItemDetailPopover((prev) =>
+                              prev ? { ...prev, item: { ...prev.item, myResponseStatus: 'DECLINED' } } : null
+                            );
+                          }
+                        }}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+                          itemDetailPopover.item.myResponseStatus === 'DECLINED'
+                            ? 'bg-[#D93025] text-white border-[#D93025]'
+                            : 'bg-transparent text-[var(--text-primary)] border-[var(--border-subtle)] hover:bg-white/10'
+                        }`}
+                      >
+                        ✕ {language === 'vi' ? 'Không' : 'No'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </>

@@ -25,6 +25,9 @@ export const eventFromDto = (e: EventDto): CalendarEvent => {
     categoryId: e.categoryId, attendees: e.attendees, status: e.availabilityStatus, reminderMinutesBefore: e.alertTime ? Math.round((start.getTime() - new Date(e.alertTime).getTime()) / 60000) : undefined,
     alertTime: e.alertTime ? new Date(e.alertTime).toLocaleString() : undefined,
     location: e.locationText, description: e.description, colorTag: e.colorTag, seriesId: e.seriesId,
+    visibility: e.visibility, isMasked: e.isMasked, ownerId: e.ownerId, ownerName: e.ownerName, isShared: !!e.ownerId,
+    attendeeResponses: e.attendeeResponses, isInvited: e.isInvited, myResponseStatus: e.myResponseStatus,
+    organizerEmail: e.organizerEmail, organizerName: e.organizerName,
   };
 };
 export const routineFromDto = (r: RoutineDto, year: number, month: number, day: number): CalendarEvent => ({
@@ -43,5 +46,5 @@ export const eventPayload = (e: Omit<CalendarEvent, 'id'>) => {
   const start = dateAt(e.time);
   const end = e.endTime ? dateAt(e.endTime) : new Date(start.getTime() + 3600000);
   if (end <= start) throw new Error('Giờ kết thúc phải sau giờ bắt đầu');
-  return { title: e.title, description: e.description, locationText: e.location, startTime: start.toISOString(), endTime: end.toISOString(), colorTag: e.colorTag, seriesId: e.seriesId, categoryId: e.categoryId, attendees: e.attendees, priority: priorityNumber(e.priority), availabilityStatus: e.status, reminderMinutesBefore: e.reminderMinutesBefore };
+  return { title: e.title, description: e.description, locationText: e.location, startTime: start.toISOString(), endTime: end.toISOString(), colorTag: e.colorTag, seriesId: e.seriesId, categoryId: e.categoryId, attendees: e.attendees, priority: priorityNumber(e.priority), availabilityStatus: e.status, reminderMinutesBefore: e.reminderMinutesBefore, visibility: e.visibility || 'private' };
 };

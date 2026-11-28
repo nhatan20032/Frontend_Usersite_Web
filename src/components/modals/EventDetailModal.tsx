@@ -9,6 +9,9 @@ import {
   Navigation,
   Bell,
   Trash2,
+  Users,
+  Lock,
+  Globe,
 } from 'lucide-react';
 
 const monthNamesVi = [
@@ -24,7 +27,7 @@ const monthNamesEn = [
 ];
 
 export const EventDetailModal: React.FC = () => {
-  const { activeModal, activeEventId, closeModal, eventsData, deleteEvent, selectedMonth } = useApp();
+  const { activeModal, activeEventId, closeModal, eventsData, deleteEvent, selectedMonth, respondToEvent } = useApp();
   const { language, t } = useLanguage();
 
   const monthNames = language === 'vi' ? monthNamesVi : monthNamesEn;
@@ -68,7 +71,7 @@ export const EventDetailModal: React.FC = () => {
 
         {/* Modal Header */}
         <div className="space-y-1.5 border-b border-[var(--border-grid)] pb-3 pr-8">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span
               className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold shadow-xs ${
                 isRoutine
@@ -89,12 +92,56 @@ export const EventDetailModal: React.FC = () => {
             >
               {event.priority === 'high' ? t('common.high') : event.priority === 'medium' ? t('common.medium') : t('common.low')}
             </span>
+
+            {/* Visibility Badge */}
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--surface-container-high)] text-[var(--text-secondary)] border border-[var(--border-subtle)] flex items-center gap-1 font-medium">
+              {event.visibility === 'public' ? (
+                <>
+                  <Globe className="w-3 h-3 text-[#81C995]" />
+                  <span>{language === 'vi' ? 'Công khai' : 'Public'}</span>
+                </>
+              ) : event.visibility === 'friends' ? (
+                <>
+                  <Users className="w-3 h-3 text-[var(--google-blue)]" />
+                  <span>{language === 'vi' ? 'Bạn bè' : 'Friends'}</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-3 h-3 text-[#FDD663]" />
+                  <span>{language === 'vi' ? 'Riêng tư' : 'Private'}</span>
+                </>
+              )}
+            </span>
           </div>
           <h3 className="text-base font-bold text-[var(--text-primary)] pt-0.5 leading-snug">{event.title}</h3>
         </div>
 
         {/* Event Details Content */}
         <div className="space-y-3 text-xs text-[var(--text-primary)]">
+          {event.isShared && (
+            <div className="bg-[var(--google-blue-primary)]/15 border border-[var(--google-blue-primary)]/30 rounded-xl p-2.5 text-xs text-[var(--google-blue)] flex items-center gap-2 font-medium">
+              <Users className="w-4 h-4 shrink-0" />
+              <span>
+                {language === 'vi'
+                  ? `Lịch được chia sẻ bởi ${event.ownerName || 'Bạn bè'}`
+                  : `Shared calendar from ${event.ownerName || 'Friend'}`}
+              </span>
+            </div>
+          )}
+
+          {event.isInvited && (
+            <div className="bg-[#8AB4F8]/10 border border-[#8AB4F8]/30 rounded-xl p-2.5 text-xs text-[#8AB4F8] flex items-center justify-between gap-2 font-medium">
+              <span className="flex items-center gap-2">
+                <Users className="w-4 h-4 shrink-0" />
+                <span>
+                  {language === 'vi'
+                    ? `Lời mời từ ${event.organizerName || event.organizerEmail}`
+                    : `Invited by ${event.organizerName || event.organizerEmail}`}
+                </span>
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center gap-2.5 text-[var(--text-secondary)]">
             <Clock className="w-4 h-4 text-[var(--google-blue)] shrink-0" />
             <span className="text-[var(--text-primary)]">
@@ -163,9 +210,42 @@ export const EventDetailModal: React.FC = () => {
           )}
         </div>
 
+        {/* Thanh Phản hồi Lời mời (RSVP) */}
+        {event.isInvited && (
+          <div className="pt-2 border-t border-[var(--border-grid)] flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-[var(--text-secondary)]">
+              {language === 'vi' ? 'Tham gia?' : 'Going?'}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void respondToEvent(event.id, 'ACCEPTED')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+                  event.myResponseStatus === 'ACCEPTED'
+                    ? 'bg-[#1E8E3E] text-white border-[#1E8E3E]'
+                    : 'bg-transparent text-[var(--text-primary)] border-[var(--border-subtle)] hover:bg-white/10'
+                }`}
+              >
+                ✓ {language === 'vi' ? 'Có' : 'Yes'}
+              </button>
+              <button
+                type="button"
+                onClick={() => void respondToEvent(event.id, 'DECLINED')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+                  event.myResponseStatus === 'DECLINED'
+                    ? 'bg-[#D93025] text-white border-[#D93025]'
+                    : 'bg-transparent text-[var(--text-primary)] border-[var(--border-subtle)] hover:bg-white/10'
+                }`}
+              >
+                ✕ {language === 'vi' ? 'Không' : 'No'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Modal Actions */}
         <div className="flex gap-2 pt-2 border-t border-[var(--border-grid)]">
-          {event.backendId && <button
+          {event.backendId && !event.isShared && !event.isInvited && <button
             onClick={handleDelete}
             className="bg-[var(--surface-container-high)] hover:bg-[#D93025] text-[#F28B82] hover:text-white border border-[#3A3B3D] hover:border-transparent font-medium px-3.5 py-2 rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >

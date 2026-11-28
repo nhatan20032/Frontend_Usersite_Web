@@ -61,6 +61,13 @@ interface AppContextType {
   setCategoryFilters: React.Dispatch<React.SetStateAction<CategoryFilters>>;
   setSearchQuery: (query: string) => void;
 
+  // Friends Calendar Sharing
+  connectedFriends: Array<{ id: string; name: string; email: string; avatarBg: string }>;
+  selectedFriendIds: string[];
+  toggleFriendCalendar: (friendUserId: string) => void;
+  refreshFriends: () => Promise<void>;
+  respondToEvent: (eventId: number, status: 'ACCEPTED' | 'DECLINED') => Promise<boolean>;
+
   // Tasks & Subtasks
   tasksData: TaskItem[];
   addTask: (input: string | CreateTaskInput, priority?: Priority) => Promise<boolean>;
@@ -181,9 +188,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     void refresh();
     const interval = window.setInterval(refresh, 60 * 60 * 1000);
-    window.addEventListener('focus', refresh);
     window.addEventListener('holiday-region-changed', refresh);
-    return () => { active = false; clearInterval(interval); window.removeEventListener('focus', refresh); window.removeEventListener('holiday-region-changed', refresh); };
+    return () => { active = false; clearInterval(interval); window.removeEventListener('holiday-region-changed', refresh); };
   }, [selectedYear, currentUser?.id, preferences.language]);
 
   // Real-time Personal Birthday Event Sync onto Calendar
@@ -250,10 +256,107 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [notesData, setNotesData] = useState<KeepNote[]>( [] );
 
+  // Friends Calendar Sharing State
+  const [connectedFriends, setConnectedFriends] = useState<Array<{ id: string; name: string; email: string; avatarBg: string }>>([]);
+  const [selectedFriendIds, setSelectedFriendIds] = useState<string[]>([]);
+
+  const refreshFriends = useCallback(async () => {
+    if (!currentUser) {
+      setConnectedFriends([]);
+      setSelectedFriendIds([]);
+      return;
+    }
+    try {
+      const friends = await eventApi.getConnectedFriends();
+      const colors = ['#8AB4F8', '#81C995', '#FDD663', '#F28B82', '#C58AF9', '#78D9EC'];
+      const mapped = friends.map((f, i) => ({
+        id: (f as any).friendUserId || f.id,
+        name: f.name,
+        email: f.email,
+        avatarBg: colors[i % colors.length],
+      }));
+      setConnectedFriends(mapped);
+
+      // Chỉ giữ lại các friendId hợp lệ của user hiện tại và tự động bật hiển thị
+      const friendIds = mapped.map((m) => m.id);
+      const validSet = new Set(friendIds);
+      setSelectedFriendIds((prev) => Array.from(new Set([...prev.filter((id) => validSet.has(id)), ...friendIds])));
+    } catch (err) {
+      console.warn('Lỗi tải danh sách bạn bè:', err);
+    }
+  }, [currentUser]);
+
+  const toggleFriendCalendar = useCallback((friendUserId: string) => {
+    setSelectedFriendIds((prev) =>
+      prev.includes(friendUserId)
+        ? prev.filter((id) => id !== friendUserId)
+        : [...prev, friendUserId]
+    );
+  }, []);
+
+  const respondToEvent = useCallback(async (eventId: number, status: 'ACCEPTED' | 'DECLINED') => {
+    const target = eventsData.find((e) => e.id === eventId);
+    if (!target?.backendId) return false;
+    try {
+      const res = await eventApi.respondToEvent(target.backendId, status);
+      setEventsData((prev) =>
+        prev.map((e) =>
+          e.id === eventId
+            ? { ...e, myResponseStatus: status, attendeeResponses: res.attendeeResponses }
+            : e
+        )
+      );
+      showToast(
+        status === 'ACCEPTED' ? 'Đã xác nhận tham gia' : 'Đã từ chối lời mời',
+        target.title,
+        status === 'ACCEPTED' ? 'success' : 'info'
+      );
+      return true;
+    } catch (err) {
+      showToast('Không thể gửi phản hồi', err instanceof Error ? err.message : 'Lỗi kết nối', 'error');
+      return false;
+    }
+  }, [eventsData]);
+
+  useEffect(() => {
+    const validIds = selectedFriendIds.filter((id) => connectedFriends.some((f) => f.id === id));
+    if (!currentUser || validIds.length === 0) {
+      setEventsData((prev) => prev.filter((e) => !e.isShared));
+      return;
+    }
+
+    let active = true;
+    const loadFriendEvents = async () => {
+      try {
+        const allShared = await Promise.all(
+          validIds.map((fId) =>
+            eventApi.getSharedFriendEvents(fId, selectedYear, selectedMonth + 1)
+          )
+        );
+        if (!active) return;
+        const mappedEvents = allShared.flat().map(eventFromDto);
+        setEventsData((prev) => [
+          ...prev.filter((e) => !e.isShared),
+          ...mappedEvents,
+        ]);
+      } catch (err) {
+        if (active) {
+          showToast('Không tải được lịch bạn bè', err instanceof Error ? err.message : 'Lỗi kết nối', 'error');
+        }
+      }
+    };
+
+    void loadFriendEvents();
+    return () => {
+      active = false;
+    };
+  }, [currentUser, connectedFriends, selectedFriendIds, selectedYear, selectedMonth]);
+
 
   useEffect(() => {
     let active = true;
     setTasksData([]); setNotesData([]); setCategories(defaultCategories);
+    setConnectedFriends([]); setSelectedFriendIds([]);
     setEventsData(prev => prev.filter(e => e.categoryId === 'holiday' || (currentUser && e.categoryId === 'birthday')));
     if (!currentUser) { void syncHubClient.stop(); return; }
     const load = async () => {
@@ -267,10 +370,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setNotesData(notes.map(mapDtoToKeepNote));
         setCategories([...defaultCategories, ...cats.filter(c => !defaultCategories.some(d => d.id === c.id))]);
         setCategoryFilters(prev => ({ ...prev, ...Object.fromEntries(cats.map(c => [c.id, true])) }));
+        void refreshFriends();
       } catch (e) { if (active && (e as { status?: number })?.status !== 401) showToast('Không tải được dữ liệu', e instanceof Error ? e.message : 'Lỗi kết nối', 'error'); }
     };
     void load(); void syncHubClient.start();
-    const unsubData = syncHubClient.onDataChanged(() => { void load(); });
+    const unsubData = syncHubClient.onDataChanged(() => { void load(); void refreshFriends(); });
     const unsubNotif = syncHubClient.onNotificationReceived(n => showToast(n.title, n.message, 'info'));
     return () => { active = false; unsubData(); unsubNotif(); void syncHubClient.stop(); };
   }, [currentUser?.id, selectedYear, selectedMonth, selectedDay]);
@@ -690,6 +794,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toasts,
         showToast,
         removeToast,
+        connectedFriends,
+        selectedFriendIds,
+        toggleFriendCalendar,
+        refreshFriends,
+        respondToEvent,
       }}
     >
       {children}

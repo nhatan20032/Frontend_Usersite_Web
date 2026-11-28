@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../context/LanguageContext';
 import type { Priority } from '../../types';
+import { eventApi } from '../../api/eventApi';
+import type { FreeBusyUserDto } from '../../api/eventApi';
 import { Select } from '../ui/Select';
 import { Input } from '../ui/Input';
 import { DatePicker } from '../ui/DatePicker';
@@ -18,6 +20,8 @@ import {
   CheckCircle2,
   CalendarPlus,
   List,
+  AlertTriangle,
+  HelpCircle,
 } from 'lucide-react';
 
 const colorPalette = [
@@ -72,6 +76,7 @@ export const CreateEventModal: React.FC = () => {
     eventsData,
     tasksData,
     categories,
+    connectedFriends,
   } = useApp();
   const { language } = useLanguage();
 
@@ -87,9 +92,14 @@ export const CreateEventModal: React.FC = () => {
   const [description, setDescription] = useState<string>('');
   const [guestEmail, setGuestEmail] = useState<string>('');
   const [guests, setGuests] = useState<string[]>([]);
+  const [guestDropdownOpen, setGuestDropdownOpen] = useState<boolean>(false);
+  const [freeBusyList, setFreeBusyList] = useState<FreeBusyUserDto[]>([]);
+  const [isLoadingFreeBusy, setIsLoadingFreeBusy] = useState<boolean>(false);
+  const [editingResponses, setEditingResponses] = useState<Record<string, 'PENDING' | 'ACCEPTED' | 'DECLINED'>>({});
   const [selectedColor, setSelectedColor] = useState<string>('#8AB4F8');
   const [selectedCategory, setSelectedCategory] = useState<string>('event');
   const [status, setStatus] = useState<'busy' | 'free'>('busy');
+  const [visibility, setVisibility] = useState<'private' | 'friends' | 'public'>('private');
   const [reminder, setReminder] = useState<string>('30m');
 
   // Subtasks State for Task Tab
@@ -135,9 +145,11 @@ export const CreateEventModal: React.FC = () => {
           setSelectedColor(event.colorTag || '#8AB4F8');
           setSelectedCategory(event.categoryId || event.type || 'event');
           setStatus(event.status || 'busy');
+          setVisibility(event.visibility || 'private');
           if (event.attendees && event.attendees.length > 0) {
             setGuests(event.attendees);
           }
+          setEditingResponses(event.attendeeResponses || {});
           if (event.alertTime?.includes('15')) {
             setReminder('15m');
           } else if (event.alertTime?.includes('60') || event.alertTime?.includes('1 giờ')) {
@@ -174,9 +186,12 @@ export const CreateEventModal: React.FC = () => {
       setDescription('');
       setGuestEmail('');
       setGuests([]);
+      setEditingResponses({});
+      setFreeBusyList([]);
       setSelectedColor('#8AB4F8');
       setSelectedCategory(activeTab === 'task' ? 'task' : 'event');
       setStatus('busy');
+      setVisibility('private');
       setReminder('30m');
       setSubtaskList([]);
       setNewSubtaskInput('');
@@ -192,20 +207,85 @@ export const CreateEventModal: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeModal, closeModal]);
 
+  useEffect(() => {
+    if (activeModal !== 'create' && activeModal !== 'edit') return;
+    const realEmails = guests.filter((g) => g.includes('@'));
+    if (realEmails.length === 0) {
+      setFreeBusyList([]);
+      return;
+    }
+    let active = true;
+    setIsLoadingFreeBusy(true);
+    const dateStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+    eventApi
+      .getFreeBusy(realEmails, dateStr)
+      .then((res) => {
+        if (active) setFreeBusyList(res);
+      })
+      .catch(() => {
+        if (active) setFreeBusyList([]);
+      })
+      .finally(() => {
+        if (active) setIsLoadingFreeBusy(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [activeModal, guests, selectedYear, selectedMonth, selectedDay]);
+
   if (activeModal !== 'create' && activeModal !== 'edit') return null;
+
+  const parseHourValue = (timeStr: string): number => {
+    const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if (!match) return 9;
+    let h = Number(match[1]);
+    const m = Number(match[2]);
+    if (match[3]) {
+      const ampm = match[3].toUpperCase();
+      if (ampm === 'PM' && h < 12) h += 12;
+      if (ampm === 'AM' && h === 12) h = 0;
+    }
+    return h + m / 60;
+  };
+
+  const selectedStartDate = new Date(selectedYear, selectedMonth, selectedDay, Math.floor(parseHourValue(startTime)), Math.round((parseHourValue(startTime) % 1) * 60));
+  const selectedEndDate = new Date(selectedYear, selectedMonth, selectedDay, Math.floor(parseHourValue(endTime)), Math.round((parseHourValue(endTime) % 1) * 60));
+
+  const conflictingGuests = freeBusyList.filter((u) =>
+    u.exists &&
+    u.busySlots.some((slot) => {
+      const s = new Date(slot.startTime);
+      const e = new Date(slot.endTime);
+      return s < selectedEndDate && e > selectedStartDate;
+    })
+  );
+
+  const filteredFriendSuggestions = connectedFriends.filter((f) => {
+    const emailLower = f.email.toLowerCase();
+    if (guests.some((g) => g.toLowerCase() === emailLower)) return false;
+    const q = guestEmail.trim().toLowerCase();
+    if (!q) return true;
+    return f.name.toLowerCase().includes(q) || emailLower.includes(q);
+  });
+
+  const addGuestEmail = (rawEmail: string) => {
+    const norm = rawEmail.trim().toLowerCase();
+    if (!norm) return;
+    if (!guests.some((g) => g.toLowerCase() === norm)) {
+      setGuests((prev) => [...prev, norm]);
+    }
+    setGuestEmail('');
+    setGuestDropdownOpen(false);
+  };
 
   const handleAddGuest = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && guestEmail.trim()) {
       e.preventDefault();
-      if (!guests.includes(guestEmail.trim())) {
-        setGuests([...guests, guestEmail.trim()]);
-      }
-      setGuestEmail('');
+      addGuestEmail(guestEmail);
     }
   };
 
   const handleRemoveGuest = (indexToRemove: number) => {
-    if (indexToRemove === 0) return; // Giữ lại người tổ chức
     setGuests(guests.filter((_, idx) => idx !== indexToRemove));
   };
 
@@ -308,6 +388,7 @@ export const CreateEventModal: React.FC = () => {
       colorTag: selectedColor,
       categoryId: selectedCategory || 'event',
       status,
+      visibility,
     };
 
     if (activeModal === 'edit' && activeEditItem) {
@@ -485,40 +566,198 @@ export const CreateEventModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* Row 2: Add Guests (Chỉ dành cho Sự kiện) */}
+              {/* Row 2: Add Guests + Free/Busy Timeline (Chuẩn Google Calendar) */}
               {activeTab === 'event' && (
                 <div className="flex items-start gap-3.5">
                   <Users className="w-5 h-5 text-[var(--text-secondary)] mt-2 shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <Input
-                      type="text"
-                      value={guestEmail}
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      onKeyDown={handleAddGuest}
-                      placeholder={language === 'vi' ? 'Thêm khách (nhập email rồi nhấn Enter)...' : 'Add guests (press Enter)...'}
-                    />
-                    <div className="flex flex-wrap gap-1.5">
-                      {guests.map((guest, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--surface-container)] border border-[var(--border-subtle)] text-[11px] text-[var(--text-primary)]"
-                        >
-                          <div className="w-4 h-4 rounded-full bg-[var(--google-blue)] text-[var(--surface-canvas)] text-[11px] font-bold flex items-center justify-center">
-                            {guest.charAt(0).toUpperCase()}
+                  <div className="flex-1 space-y-2 relative">
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        value={guestEmail}
+                        onFocus={() => setGuestDropdownOpen(true)}
+                        onBlur={() => setTimeout(() => setGuestDropdownOpen(false), 180)}
+                        onChange={(e) => {
+                          setGuestEmail(e.target.value);
+                          setGuestDropdownOpen(true);
+                        }}
+                        onKeyDown={handleAddGuest}
+                        placeholder={language === 'vi' ? 'Thêm khách (chọn bạn bè hoặc nhập email)...' : 'Add guests (select friend or enter email)...'}
+                      />
+
+                      {/* Autocomplete Dropdown Bạn bè */}
+                      {guestDropdownOpen && filteredFriendSuggestions.length > 0 && (
+                        <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-[#202124] border border-[#3C4043] rounded-xl shadow-xl py-1 max-h-40 overflow-y-auto custom-scrollbar">
+                          <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                            {language === 'vi' ? 'Bạn bè gợi ý' : 'Suggested friends'}
                           </div>
-                          <span className="truncate max-w-[200px]">{guest}</span>
-                          {idx > 0 && (
+                          {filteredFriendSuggestions.map((friend) => (
                             <button
+                              key={friend.id}
                               type="button"
-                              onClick={() => handleRemoveGuest(idx)}
-                              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                addGuestEmail(friend.email);
+                              }}
+                              className="w-full px-3 py-1.5 flex items-center gap-2.5 hover:bg-[#2D2F31] text-left transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                              <X className="w-3 h-3" />
+                              <div
+                                className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
+                                style={{ backgroundColor: friend.avatarBg }}
+                              >
+                                {friend.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="text-xs font-medium text-[var(--text-primary)] truncate">{friend.name}</div>
+                                <div className="text-[10px] text-[var(--text-muted)] truncate">{friend.email}</div>
+                              </div>
                             </button>
-                          )}
+                          ))}
                         </div>
-                      ))}
+                      )}
                     </div>
+
+                    {/* Guest Chips kèm Badge RSVP */}
+                    {guests.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {guests.map((guest, idx) => {
+                          const resp = editingResponses[guest.toLowerCase()];
+                          return (
+                            <div
+                              key={idx}
+                              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--surface-container)] border border-[var(--border-subtle)] text-[11px] text-[var(--text-primary)]"
+                            >
+                              <div className="relative w-4 h-4 rounded-full bg-[var(--google-blue)] text-[var(--surface-canvas)] text-[10px] font-bold flex items-center justify-center">
+                                {guest.charAt(0).toUpperCase()}
+                                {resp === 'ACCEPTED' && (
+                                  <span title="Đã chấp nhận" className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-[#1E8E3E] text-white flex items-center justify-center">
+                                    <Check className="w-2 h-2" />
+                                  </span>
+                                )}
+                                {resp === 'DECLINED' && (
+                                  <span title="Đã từ chối" className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-[#D93025] text-white flex items-center justify-center">
+                                    <X className="w-2 h-2" />
+                                  </span>
+                                )}
+                                {resp === 'PENDING' && (
+                                  <span title="Chờ phản hồi" className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-[#5F6368] text-white flex items-center justify-center">
+                                    <HelpCircle className="w-2 h-2" />
+                                  </span>
+                                )}
+                              </div>
+                              <span className="truncate max-w-[180px]">{guest}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveGuest(idx)}
+                                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
+                                aria-label={`Xóa ${guest}`}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Banner cảnh báo trùng lịch bận (Non-blocking) */}
+                    {conflictingGuests.length > 0 && (
+                      <div className="p-2 rounded-lg bg-[#E37400]/15 border border-[#E37400]/30 text-[11px] text-[#FDD663] flex items-start gap-2">
+                        <AlertTriangle className="w-3.5 h-3.5 text-[#E37400] shrink-0 mt-0.5" />
+                        <span>
+                          {language === 'vi'
+                            ? `${conflictingGuests.map((c) => c.fullName || c.email).join(', ')} đang có lịch bận trong khung giờ này (vẫn có thể gửi lời mời).`
+                            : `${conflictingGuests.map((c) => c.fullName || c.email).join(', ')} may be busy at this time (you can still invite).`}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Mini Timeline Rảnh/Bận (06:00 - 22:00) giống Google Calendar Find a Time */}
+                    {(isLoadingFreeBusy || freeBusyList.some((u) => u.exists)) && (
+                      <div className="bg-[#161718] border border-[var(--border-grid)] rounded-xl p-2.5 space-y-2">
+                        <div className="flex items-center justify-between text-[10px] text-[var(--text-muted)]">
+                          <span className="font-semibold uppercase tracking-wider">
+                            {language === 'vi' ? 'Lịch rảnh / bận trong ngày' : 'Guest Availability'}
+                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-xs bg-[#5F6368]" />
+                              {language === 'vi' ? 'Bận' : 'Busy'}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-xs border border-[#8AB4F8] bg-[#8AB4F8]/30" />
+                              {language === 'vi' ? 'Giờ hẹn' : 'Selected'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Thước giờ 06h - 22h */}
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 shrink-0" />
+                          <div className="flex-1 flex justify-between text-[9px] font-mono text-[var(--text-muted)] px-0.5">
+                            <span>06h</span>
+                            <span>10h</span>
+                            <span>14h</span>
+                            <span>18h</span>
+                            <span>22h</span>
+                          </div>
+                        </div>
+
+                        {freeBusyList
+                          .filter((u) => u.exists)
+                          .map((u) => {
+                            const minH = 6;
+                            const maxH = 22;
+                            const span = maxH - minH;
+                            const selStartH = Math.max(minH, Math.min(maxH, parseHourValue(startTime)));
+                            const selEndH = Math.max(minH, Math.min(maxH, parseHourValue(endTime)));
+                            const selLeft = ((selStartH - minH) / span) * 100;
+                            const selWidth = Math.max(2, ((selEndH - selStartH) / span) * 100);
+
+                            const dayStart = new Date(selectedYear, selectedMonth, selectedDay, 0, 0, 0);
+                            const dayEnd = new Date(selectedYear, selectedMonth, selectedDay, 23, 59, 59);
+
+                            return (
+                              <div key={u.email} className="flex items-center gap-2">
+                                <span className="w-20 shrink-0 text-[10px] text-[var(--text-secondary)] truncate" title={u.email}>
+                                  {u.fullName || u.email.split('@')[0]}
+                                </span>
+                                <div className="flex-1 h-5 bg-[#202124] border border-[var(--border-grid)] rounded relative overflow-hidden">
+                                  {u.busySlots
+                                    .filter((s) => new Date(s.endTime) > dayStart && new Date(s.startTime) < dayEnd)
+                                    .map((slot, sIdx) => {
+                                      const st = new Date(slot.startTime);
+                                      const en = new Date(slot.endTime);
+                                      const sH = st < dayStart ? minH : st.getHours() + st.getMinutes() / 60;
+                                      const eH = en > dayEnd ? maxH : en.getHours() + en.getMinutes() / 60;
+                                      const clampS = Math.max(minH, Math.min(maxH, sH));
+                                      const clampE = Math.max(minH, Math.min(maxH, eH));
+                                      if (clampE <= clampS) return null;
+                                      const left = ((clampS - minH) / span) * 100;
+                                      const width = Math.max(2, ((clampE - clampS) / span) * 100);
+                                      return (
+                                        <div
+                                          key={sIdx}
+                                          title={`${slot.title} (${st.toTimeString().slice(0, 5)} - ${en.toTimeString().slice(0, 5)})`}
+                                          className="absolute top-0.5 bottom-0.5 rounded-xs bg-[#5F6368]/80 text-[9px] text-white/90 px-1 truncate flex items-center"
+                                          style={{ left: `${left}%`, width: `${width}%` }}
+                                        >
+                                          {slot.title}
+                                        </div>
+                                      );
+                                    })}
+
+                                  {/* Khung giờ đang chọn */}
+                                  <div
+                                    className="absolute top-0 bottom-0 border border-[#8AB4F8] bg-[#8AB4F8]/25 pointer-events-none"
+                                    style={{ left: `${selLeft}%`, width: `${selWidth}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -709,15 +948,27 @@ export const CreateEventModal: React.FC = () => {
                     />
 
                     {activeTab === 'event' && (
-                      <Select
-                        value={status}
-                        buttonClassName="h-8 px-2.5 text-[11px]"
-                        onChange={(val) => setStatus(val as 'busy' | 'free')}
-                        options={[
-                          { value: 'busy', label: language === 'vi' ? 'Bận' : 'Busy' },
-                          { value: 'free', label: language === 'vi' ? 'Rảnh' : 'Free' },
-                        ]}
-                      />
+                      <>
+                        <Select
+                          value={status}
+                          buttonClassName="h-8 px-2.5 text-[11px]"
+                          onChange={(val) => setStatus(val as 'busy' | 'free')}
+                          options={[
+                            { value: 'busy', label: language === 'vi' ? 'Bận' : 'Busy' },
+                            { value: 'free', label: language === 'vi' ? 'Rảnh' : 'Free' },
+                          ]}
+                        />
+                        <Select
+                          value={visibility}
+                          buttonClassName="h-8 px-2.5 text-[11px]"
+                          onChange={(val) => setVisibility(val as 'private' | 'friends' | 'public')}
+                          options={[
+                            { value: 'private', label: language === 'vi' ? '🔒 Riêng tư' : '🔒 Private' },
+                            { value: 'friends', label: language === 'vi' ? '👥 Bạn bè' : '👥 Friends' },
+                            { value: 'public', label: language === 'vi' ? '🌐 Công khai' : '🌐 Public' },
+                          ]}
+                        />
+                      </>
                     )}
 
                     <Select
